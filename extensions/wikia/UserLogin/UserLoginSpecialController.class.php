@@ -7,9 +7,6 @@
  *
  */
 class UserLoginSpecialController extends WikiaSpecialPageController {
-	const DROPDOWN_TABINDEX_START =  0;
-	const SPECIAL_USERLOGIN_TABINDEX_START = 5;
-
 	private $userLoginHelper = null;
 
 	public function __construct() {
@@ -21,6 +18,8 @@ class UserLoginSpecialController extends WikiaSpecialPageController {
 		$this->formPostAction = $loginTitle->getLocalUrl();
 		$this->isMonobookOrUncyclo = ( $this->wg->User->getSkin() instanceof SkinMonoBook || $this->wg->User->getSkin() instanceof SkinUncyclopedia );
 		$this->userLoginHelper = F::build( 'UserLoginHelper' );
+		
+		$this->tabIndexer = $this->app->getLocalRegistry()->get('tabIndexer');
 	}
 
 	private function initializeTemplate() {
@@ -163,7 +162,6 @@ class UserLoginSpecialController extends WikiaSpecialPageController {
 			}
 		}
 		
-		$this->tabindex = self::SPECIAL_USERLOGIN_TABINDEX_START;
 		$this->formData = $this->generateFormData();
 	}
 
@@ -187,8 +185,7 @@ class UserLoginSpecialController extends WikiaSpecialPageController {
 		if (isset($query['title'])) {
 			unset($query['title']);
 		}
-
-		$this->tabindex = self::DROPDOWN_TABINDEX_START;
+		
 		$this->suppressCreateAccount = true;
 		$this->supressLogInBtnBig = true;
 		$this->formData = $this->generateFormData();
@@ -200,7 +197,6 @@ class UserLoginSpecialController extends WikiaSpecialPageController {
 		$this->loginToken = UserLoginHelper::getLoginToken();
 		$this->signupUrl = Title::newFromText('UserSignup', NS_SPECIAL)->getFullUrl();
 
-		$this->tabindex = self::SPECIAL_USERLOGIN_TABINDEX_START;
 		$this->formData = $this->generateFormData();
 	}
 
@@ -560,7 +556,7 @@ class UserLoginSpecialController extends WikiaSpecialPageController {
 			'label' => wfMsg('yourname'),
 			'isInvalid' => (!empty($errParam) && $errParam === 'username'),
 			'value' => htmlspecialchars($this->username),
-			'tabindex' => ++$this->tabindex,
+			'tabindex' => $this->tabIndexer->getNext(),
 		);
 		$userNameInput['errorMsg'] = $userNameInput['isInvalid'] ? $this->msg : '';
 
@@ -572,7 +568,7 @@ class UserLoginSpecialController extends WikiaSpecialPageController {
 			'label' => wfMsg('yourpassword'),
 			'isInvalid' => (!empty($errParam) && $errParam === 'password'),
 			'value' => htmlspecialchars($this->password),
-			'tabindex' => ++$this->tabindex,
+			'tabindex' => $this->tabIndexer->getNext(),
 		);
 		$passwordInput['errorMsg'] = $passwordInput['isInvalid'] ? $this->msg : '';
 
@@ -590,14 +586,14 @@ class UserLoginSpecialController extends WikiaSpecialPageController {
 			'checked' => $this->keeploggedin,
 			'class' => 'keep-logged-in',
 			'label' => wfMsg('userlogin-remembermypassword'),
-			'tabindex' => ++$this->tabindex,
+			'tabindex' => $this->tabIndexer->getNext(),
 		);
 
 		$loginButton = array(
 			'type' => 'submit',
 			'value' => wfMsg('login'),
 			'class' => 'login-button',
-			'tabindex' => ++$this->tabindex,
+			'tabindex' => $this->tabIndexer->getNext(),
 		);
 		
 		if( empty($this->supressLogInBtnBig) ) {
@@ -620,7 +616,7 @@ class UserLoginSpecialController extends WikiaSpecialPageController {
 			$specialSignupLink = SpecialPage::getTitleFor('UserSignup')->getLocalURL();
 			$createAccount = array(
 				'type' => 'custom',
-				'output' => wfMsgExt('userlogin-get-account', 'content', array($specialSignupLink, ++$this->tabindex)),
+				'output' => wfMsgExt('userlogin-get-account', 'content', array($specialSignupLink, $this->tabIndexer->getNext())),
 				'class' => 'get-account'
 			);
 			$form['inputs'][] = $createAccount;
