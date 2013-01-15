@@ -446,12 +446,12 @@ class EditPageLayout extends EditPage {
 		return $html;
 	}
 
-	public function renderSummaryBox() {
+	public function renderSummaryBox($tabindex) {
 		$html = Xml::element('textarea', array(
 			'id' => $this->mSummaryBox['name'],
 			'name' => $this->mSummaryBox['name'],
 			'placeholder' => $this->mSummaryBox['placeholder'],
-			'tabindex' => '1', // BugId:5327
+			'tabindex' => ( !empty($tabindex) ? $tabindex : '1'), // BugId:5327
 		), $this->summary, false /* $allowShortTag */);
 
 		return $html;

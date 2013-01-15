@@ -11,6 +11,7 @@ class EditPageLayoutController extends WikiaController {
 
 	public function init() {
 		$this->bodytext = $this->app->getSkinTemplateObj()->data['bodytext'];
+		$this->tabIndexer = $this->app->getLocalRegistry()->get('tabIndexer');
 	}
 
 	/**
@@ -120,7 +121,7 @@ class EditPageLayoutController extends WikiaController {
 		$this->minorEditCheckbox = !empty($editPage->minoredit);
 
 		// summary box
-		$this->summaryBox = $editPage->renderSummaryBox();
+		$this->summaryBox = $editPage->renderSummaryBox($this->tabIndexer->getNext());
 
 		// extra buttons
 		$this->buttons = $editPage->getControlButtons();
