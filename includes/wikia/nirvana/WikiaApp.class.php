@@ -67,7 +67,6 @@ class WikiaApp {
 	/**
 	 * this variable is use for local cache of view. Used by getViewOnce, renderViewOnce
 	 */
-
 	protected static $viewCache = array();
 
 	/**
@@ -78,7 +77,6 @@ class WikiaApp {
 	 */
 
 	public function __construct(WikiaGlobalRegistry $globalRegistry = null, WikiaLocalRegistry $localRegistry = null, WikiaHookDispatcher $hookDispatcher = null, WikiaFunctionWrapper $functionWrapper = null) {
-
 		if(!is_object($globalRegistry)) {
 			F::setInstance('WikiaGlobalRegistry', new WikiaGlobalRegistry());
 			$globalRegistry = F::build( 'WikiaGlobalRegistry' );
@@ -118,6 +116,8 @@ class WikiaApp {
 			}
 			error_log( __METHOD__ . ': ' . $message );
 		}
+		
+		$this->localRegistry->set('tabIndexer', WikiaTabIndexer::getInstance());
 	}
 
 	/**

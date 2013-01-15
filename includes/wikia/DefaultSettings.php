@@ -102,6 +102,7 @@ $wgAutoloadClasses['WikiaFunctionWrapper'] = $IP . '/includes/wikia/nirvana/Wiki
 $wgAutoloadClasses['WikiaBaseTest'] = $IP . '/includes/wikia/tests/WikiaBaseTest.class.php';
 $wgAutoloadClasses['WikiaAppMock'] = $IP . '/includes/wikia/tests/WikiaAppMock.class.php';
 $wgAutoloadClasses['WikiaMockProxy'] = $IP . '/includes/wikia/tests/WikiaMockProxy.class.php';
+$wgAutoloadClasses['WikiaTabIndexer'] = $IP . '/includes/wikia/WikiaTabIndexer.class.php';
 
 /**
  * Exceptions
