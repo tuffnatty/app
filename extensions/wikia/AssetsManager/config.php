@@ -610,6 +610,7 @@ $config['monobook_js'] = array(
 		'//extensions/wikia/GlobalNotification/GlobalNotification.js',
 		'//extensions/wikia/WikiaTracker/js/WikiaTracker_config.js',
 		'//extensions/wikia/WikiaTracker/js/WikiaTracker.js',
+		'//extensions/wikia/WikiaStyleGuide/js/Form.js',
 
 		'//resources/wikia/libraries/bootstrap/tooltip.js',
 		'//resources/wikia/libraries/bootstrap/popover.js',
