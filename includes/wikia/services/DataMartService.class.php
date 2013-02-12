@@ -407,6 +407,7 @@
 		 * @return Array The list, the key contains article ID's and each item as a "namespace_id" and "pageviews" key
 		 */
 		public static function getTopArticlesByPageview( $wikiId, Array $articleIds = null, Array $namespaces = null, $excludeNamespaces = false, $limit = 200 ) {
+			return array(); // DISABLE TMPORARLY (killing DB)
 			$app = F::app();
 			$app->wf->ProfileIn( __METHOD__ );
 
