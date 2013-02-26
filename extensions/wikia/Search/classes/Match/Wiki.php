@@ -3,7 +3,7 @@
  * Class definition for \Wikia\Search\Match\Wiki
  */
 namespace Wikia\Search\Match;
-use \Wikia\Search\Result as Result;
+use \WikiaSearchResult as Result;
 use \WikiaHomePageHelper as HomePageHelper;
 
 class Wiki extends AbstractMatch

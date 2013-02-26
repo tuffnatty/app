@@ -263,7 +263,8 @@ class WikiaSearchResultSet extends WikiaObject implements Iterator,ArrayAccess {
 	protected function prependWikiMatchIfExists() {
 		if ( $this->searchConfig->hasWikiMatch() ) {
     		$this->resultsFound++;
-    		return $this->addResult( $this->searchConfig->getWikiMatch()->getResult() );
+    		$result = $this->searchConfig->getWikiMatch()->getResult();
+    		$this->results[$result['url']] = new WikiaSearchResultSetSingleton( $result ); 
 		}
 		return $this;
 	}

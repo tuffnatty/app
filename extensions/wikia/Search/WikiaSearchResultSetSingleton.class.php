@@ -3,12 +3,13 @@
 class WikiaSearchResultSetSingleton extends WikiaSearchResultSet
 {
 	public function __construct( WikiaSearchResult $result ) {
+		global $wgLanguageCode;
 		$this->results = array( $result );
 		
 		$cityId			= $result->getCityId();
 
 		$helper = new WikiaHomePageHelper();
-		$vizData = $helper->getWikiInfoForVisualization( $cityId, $this->wg->LanguageCode );
+		$vizData = $helper->getWikiInfoForVisualization( $cityId, $wgLanguageCode );
 		$stats = $helper->getWikiStats( $cityId );
 		
 		$this->setHeader( 'cityId',				$cityId );
