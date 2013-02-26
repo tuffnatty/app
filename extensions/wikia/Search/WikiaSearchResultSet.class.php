@@ -236,49 +236,7 @@ class WikiaSearchResultSet extends WikiaObject implements Iterator,ArrayAccess {
 			return $this;
 		}
 
-		$articleMatch	= $this->searchConfig->getArticleMatch();
-		$article		= $articleMatch->getCanonicalArticle();
-		$title			= $article->getTitle();
-		$articleId		= $article->getID();
-		$titleNs		= $title->getNamespace();
-
-		if (! in_array( $titleNs, $this->searchConfig->getNamespaces() ) ) {
-			// we had an article match by name, but not in our desired namespaces
-			wfProfileOut(__METHOD__);
-			return $this;
-		}
-
-		$articleMatchId	= sprintf( '%s_%s', $this->wg->CityId, $articleId );
-		$articleService	= F::build('ArticleService', array( $articleId ) );
-		$firstRev		= $title->getFirstRevision();
-		$created		= $firstRev ? $this->wf->Timestamp(TS_ISO_8601, $firstRev->getTimestamp()) : '';
-		$lastRev		= Revision::newFromId($title->getLatestRevID());
-		$touched		= $lastRev ? $this->wf->Timestamp(TS_ISO_8601, $lastRev->getTimestamp()) : '';
-		
-		$fieldsArray = array(
-				'wid'			=>	$this->wg->CityId,
-				'title'			=>	(string) $title,
-				'url'			=>	urldecode( $title->getFullUrl() ),
-				'score'			=>	'PTT',
-				'isArticleMatch'=>	true,
-				'ns'			=>	$titleNs,
-				'pageId'		=>	$articleId,
-				'created'		=>	$created,
-				'touched'		=>	$touched,
-				);
-		//@TODO: we could put categories ^^ here but we aren't really using them yet
-
-		$result		= F::build( 'WikiaSearchResult', array($fieldsArray) );
-		$snippet	= $articleService->getTextSnippet(250);
-
-		$result->setText( $snippet );
-		if ( $articleMatch->hasRedirect() ) {
-			$result->setVar( 'redirectTitle', $articleMatch->getArticle()->getTitle() );
-		}
-
-		$result->setVar( 'id', $articleMatchId );
-
-		$this->addResult( $result );
+		$this->addResult( $this->searchConfig->getArticleMatch()->getResult() );
 
 		$this->resultsFound++;
 
