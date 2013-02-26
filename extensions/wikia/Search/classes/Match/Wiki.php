@@ -3,7 +3,7 @@
  * Class definition for \Wikia\Search\Match\Wiki
  */
 namespace Wikia\Search\Match;
-use \WikiaSearchResult as Result;
+use \Wikia\Search\Result as Result;
 use \WikiaHomePageHelper as HomePageHelper;
 
 class Wiki extends AbstractMatch
@@ -34,6 +34,7 @@ class Wiki extends AbstractMatch
 			$fields[\WikiaSearch::field( 'title' )] = $data['name'];
 			$fields['url'] = sprintf('%s://%s%s', $parsed['scheme'], $parsed['host'], $parsed['path']);
 			$fields['isWikiMatch'] = true;
+			$fields['thumbnail'] = array_shift( empty( $data['wiki_images'] ) ? array() : $data['wiki_images'] );
 
 			$result = new Result( $fields );
 			
@@ -59,6 +60,7 @@ class Wiki extends AbstractMatch
 				$fields['url'] = $this->interface->getMainPageUrlForWikiId( $this->id )
 				);
 		$result = new Result( $fields );
+		
 		
 		
 		$result->setText( $this->preprocessText( $this->getMainPageTextForWikiId( $this->id ) ) );
