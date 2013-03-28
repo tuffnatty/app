@@ -43,6 +43,7 @@ $app->registerClass('AbExperiment',"{$dir}/AbTesting.class.php");
 $app->registerClass('AbTestingData',"{$dir}/AbTestingData.class.php");
 $app->registerClass('ResourceLoaderAbTestingModule',"{$dir}/ResourceLoaderAbTestingModule.class.php");
 $app->registerClass('SpecialAbTestingController',"{$dir}/SpecialAbTestingController.class.php");
+$app->registerClass('SpecialAbTesting2Controller',"{$dir}/SpecialAbTesting2Controller.class.php");
 
 /**
  * message files
@@ -86,10 +87,25 @@ $app->wg->set( 'wgResourceModules', array(
 	)
 ), 'wikia.ext.abtesting.edit' );
 
+
+$app->wg->set( 'wgResourceModules', array(
+	 'scripts' => array(
+		 'extensions/wikia/AbTesting/js/AbTestEditor2.js',
+	 ),
+), 'wikia.ext.abtesting.edit2' );
+
+$app->wg->set( 'wgResourceModules', array(
+	 'styles' => array(
+		 'extensions/wikia/AbTesting/css/AbTestEditor2.scss',
+	 ),
+), 'wikia.ext.abtesting.edit2.styles' );
+
+
 //AbTesting is an Oasis-only experiment for now
 //$app->registerHook( 'WikiaMobileAssetsPackages', 'AbTesting', 'onWikiaMobileAssetsPackages' );
 
 $app->registerSpecialPage('AbTesting', 'SpecialAbTestingController');
+$app->registerSpecialPage('AbTesting2', 'SpecialAbTesting2Controller');
 
 
 /*
