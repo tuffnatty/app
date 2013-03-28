@@ -16,7 +16,7 @@ class SpecialAbTesting2Controller extends WikiaSpecialPageController {
 		}
 
 		$this->getResponse()->addModuleStyles('wikia.ext.abtesting.edit2.styles');
-		$this->getResponse()->addModules('wikia.ext.abtesting.edit');
+		$this->getResponse()->addModules('wikia.ext.abtesting.edit2');
 
 	}
 }
