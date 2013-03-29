@@ -14,6 +14,7 @@ $messages['en'] = array(
 	'abtesting-heading-id' => 'ID',
 	'abtesting-heading-name' => 'Name',
 	'abtesting-heading-description' => 'Description',
+	'abtesting-heading-status' => 'Status',
 
 	'abtesting-heading-start-time' => 'Start Time (UTC)',
 	'abtesting-heading-end-time' => 'End Time (UTC)',
@@ -59,6 +60,7 @@ $messages['qqq'] = array(
 	'abtesting-heading-id' => 'Label for the ID field',
 	'abtesting-heading-name' => 'Label for the Name field',
 	'abtesting-heading-description' => 'Label for the Description field',
+	'abtesting-heading-status' => 'Label for the Status field (active/inactive)',
 
 	'abtesting-heading-start-time' => 'Label for the experiment start time',
 	'abtesting-heading-end-time' => 'Label for the experiement end time',
@@ -72,6 +74,9 @@ $messages['qqq'] = array(
 	'abtesting-add-experiment-title' => 'Add Experiment',
 	'abtesting-edit-experiment-title' => 'Edit Experiment',
 	'abtesting-add-treatment-group' => 'Button for adding a new treatment group',
+
+	'abtesting-status-active' => 'Test in Active (in progress) state',
+	'abtesting-status-inactive' => 'Test in Inactive (not running) state',
 
 	'abtesting-edit-button' => 'Edit button',
 	'abtesting-save-button' => 'Save button',
