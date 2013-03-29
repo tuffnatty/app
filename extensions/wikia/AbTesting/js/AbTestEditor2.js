@@ -1,0 +1,3 @@
+$( function() {
+	$('td.timeago').timeago();
+})

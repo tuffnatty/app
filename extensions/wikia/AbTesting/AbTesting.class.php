@@ -18,6 +18,9 @@ class AbTesting extends WikiaObject {
 	const FLAG_LIMIT_TO_SPECIAL_WIKIS = 8;
 	const DEFAULT_FLAGS = 3;
 
+	const STATUS_ACTIVE = 0;
+	const STATUS_INACTIVE = 1;
+
 	static public $flags = array(
 		self::FLAG_GA_TRACKING => 'ga_tracking',
 		self::FLAG_DW_TRACKING => 'dw_tracking',

@@ -22,8 +22,6 @@ class SpecialAbTesting2Controller extends WikiaSpecialPageController {
 		$abData = new AbTestingData();
 		$experiments = $abData->getAll();
 		foreach ($experiments as &$exp) {
-			ChromePhp::log($exp);
-
 			$exp['actions'] = array();
 			// add "Edit experiment" button
 			$exp['actions'][] = array(

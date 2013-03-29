@@ -54,8 +54,9 @@ class AbTestingData extends WikiaObject {
 					'id' => $row->e_id,
 					'name' => $row->e_name,
 					'description' => $row->e_description,
-					'status' => 'inactive',
+					'status' => AbTesting::STATUS_INACTIVE,
 					'next_activate' => null,
+					'next_deactivate' => null,
 					'versions' => array(),
 					'groups' => array(),
 				);
@@ -89,14 +90,15 @@ class AbTestingData extends WikiaObject {
 					'group_ranges' => array(),
 				);
 				if($row->is_active) {
-					$ret[$e_id]['status'] = 'active';
+					$ret[$e_id]['status'] = AbTesting::STATUS_ACTIVE;
+					$ret[$e_id]['next_deactivate'] = $row->v_end_time_unix;
 				}
 				if($row->in_future &&
 					(
 						$ret[$e_id]['next_activate'] === null ||
-						$row->v_start_time < $ret[$e_id]['next_activate']
+						$row->v_start_time_unix < $ret[$e_id]['next_activate']
 					) ) {
-					$ret[$e_id]['next_activate'] = $row->v_start_time;
+					$ret[$e_id]['next_activate'] = $row->v_start_time_unix;
 				}
 			}
 			if ( $v_id ) {
@@ -139,7 +141,9 @@ class AbTestingData extends WikiaObject {
 					'v.flags as v_flags',
 				'r.ranges as r_ranges, r.group_id as r_group_id',
 				'v.start_time <= current_timestamp && v.end_time >= current_timestamp as is_active',
-				'v.start_time > current_timestamp as in_future'
+				'v.start_time > current_timestamp as in_future',
+				'UNIX_TIMESTAMP(v.start_time) as v_start_time_unix',
+				'UNIX_TIMESTAMP(v.end_time) as v_end_time_unix'
 			),
 			$where, // conditions
 			__METHOD__,
