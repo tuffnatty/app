@@ -54,6 +54,8 @@ class AbTestingData extends WikiaObject {
 					'id' => $row->e_id,
 					'name' => $row->e_name,
 					'description' => $row->e_description,
+					'status' => 'inactive',
+					'next_activate' => null,
 					'versions' => array(),
 					'groups' => array(),
 				);
@@ -86,6 +88,16 @@ class AbTestingData extends WikiaObject {
 					'flags' => $row->v_flags,
 					'group_ranges' => array(),
 				);
+				if($row->is_active) {
+					$ret[$e_id]['status'] = 'active';
+				}
+				if($row->in_future &&
+					(
+						$ret[$e_id]['next_activate'] === null ||
+						$row->v_start_time < $ret[$e_id]['next_activate']
+					) ) {
+					$ret[$e_id]['next_activate'] = $row->v_start_time;
+				}
 			}
 			if ( $v_id ) {
 				$ver = &$exp['versions'][$v_id];
@@ -126,6 +138,8 @@ class AbTestingData extends WikiaObject {
 				'v.id as v_id, v.start_time as v_start_time, v.end_time as v_end_time, v.ga_slot as v_ga_slot',
 					'v.flags as v_flags',
 				'r.ranges as r_ranges, r.group_id as r_group_id',
+				'v.start_time <= current_timestamp && v.end_time >= current_timestamp as is_active',
+				'v.start_time > current_timestamp as in_future'
 			),
 			$where, // conditions
 			__METHOD__,

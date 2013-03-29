@@ -17,6 +17,31 @@ class SpecialAbTesting2Controller extends WikiaSpecialPageController {
 
 		$this->getResponse()->addModuleStyles('wikia.ext.abtesting.edit2.styles');
 		$this->getResponse()->addModules('wikia.ext.abtesting.edit2');
+		$this->setHeaders();
+
+		$abData = new AbTestingData();
+		$experiments = $abData->getAll();
+		foreach ($experiments as &$exp) {
+			ChromePhp::log($exp);
+
+			$exp['actions'] = array();
+			// add "Edit experiment" button
+			$exp['actions'][] = array(
+				'cmd' => 'edit-experiment',
+				'class' => 'edit-pencil sprite',
+				'text' => $this->wf->msg('abtesting-edit-button'),
+			);
+		}
+		$this->setVal( 'experiments', $experiments );
+
+		$actions = array();
+		$actions[] = array(
+			'cmd' => 'add-experiment',
+			'class' => 'add sprite-small',
+			'text' => $this->wf->msg('abtesting-create-experiment'),
+		);
+		$this->setVal( 'actions', $actions );
 
 	}
+
 }
