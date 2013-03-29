@@ -5,6 +5,7 @@
 		<th><?= wfMsg( 'abtesting-heading-id' ) ?></th>
 		<th><?= wfMsg( 'abtesting-heading-name' ) ?></th>
 		<th><?= wfMsg( 'abtesting-heading-description' ) ?></th>
+		<th colspan="2"><?= wfMsg( 'abtesting-heading-status' ) ?></th>
 		<th class="actions"></th>
 	</tr>
 	</thead>

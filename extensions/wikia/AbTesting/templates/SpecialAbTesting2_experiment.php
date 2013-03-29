@@ -1,24 +1,27 @@
 <?
 /** @var $abTesting AbTesting */
-global $wgLang;
 $active = $experiment[ 'status' ] == AbTesting::STATUS_ACTIVE;
 $has_next = $active ? $experiment[ 'next_deactivate' ] !== null : $experiment[ 'next_activate' ] !== null;
+$class = array();
 if ($active) {
 	$status = wfMessage('abtesting-status-active')->text();
 	$timeAgo = $experiment[ 'next_deactivate' ] ? wfTimestamp(TS_ISO_8601, $experiment[ 'next_deactivate' ] ) : '';
-	$timeString = $experiment[ 'next_deactivate' ] ? $wgLang->timeanddate($experiment[ 'next_deactivate' ] ) : '';
+	$timeString = $experiment[ 'next_deactivate' ] ? $wg->Lang->timeanddate($experiment[ 'next_deactivate' ] ) : '';
+	$class[] = 'status-active';
 } else {
 	$status = wfMessage('abtesting-status-inactive')->text();
 	$timeAgo = $experiment[ 'next_activate' ] ? wfTimestamp(TS_ISO_8601, $experiment[ 'next_activate' ] ) : '';
-	$timeString = $experiment[ 'next_activate' ] ? $wgLang->timeanddate($experiment[ 'next_activate' ] ) : '';
+	$timeString = $experiment[ 'next_activate' ] ? $wg->Lang->timeanddate($experiment[ 'next_activate' ] ) : '';
+	$class[] = 'status-inactive';
 }
+$class = implode(' ', $class);
 ?>
-<tr class="exp<?= empty( $showDetails ) ? ' collapsed' : '' ?>" data-id="<?= $experiment[ 'id' ] ?>">
+<tr class="<?= $class ?>" data-id="<?= $experiment[ 'id' ] ?>">
 	<td class="arrow-nav"><img class="arrow" src="<?= $wg->BlankImgUrl ?>" /></td>
 	<td><?= $experiment[ 'id' ] ?></td>
 	<td><?= htmlspecialchars( $experiment[ 'name' ] ) ?></td>
 	<td><?= htmlspecialchars( $experiment[ 'description' ] ) ?></td>
-	<td><?= $status ?></td>
+	<td class="column-status"><?= $status ?></td>
 	<td>
 		<? if ($active && $has_next): ?>
 			Ends <span class="timeago" title="<?= $timeAgo ?>"><?= $timeString ?> </span>

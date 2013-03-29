@@ -1,0 +1,16 @@
+@import "skins/oasis/css/core/color";
+
+body {
+	background: black !important;
+}
+
+#AbTestEditor {
+	.status-inactive {
+		color: $color-alternate-text;
+	}
+	.status-active {
+		.column-status {
+			color: #2eaa31;
+		}
+	}
+}
