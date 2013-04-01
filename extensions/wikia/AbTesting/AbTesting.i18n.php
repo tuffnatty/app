@@ -15,6 +15,7 @@ $messages['en'] = array(
 	'abtesting-heading-name' => 'Name',
 	'abtesting-heading-description' => 'Description',
 	'abtesting-heading-status' => 'Status',
+	'abtesting-heading-actions' => 'Actions',
 
 	'abtesting-heading-start-time' => 'Start Time (UTC)',
 	'abtesting-heading-end-time' => 'End Time (UTC)',
@@ -61,6 +62,7 @@ $messages['qqq'] = array(
 	'abtesting-heading-name' => 'Label for the Name field',
 	'abtesting-heading-description' => 'Label for the Description field',
 	'abtesting-heading-status' => 'Label for the Status field (active/inactive)',
+	'abtesting-heading-actions' => 'Label for the Actions field (Edit, Deactivate, ...,  buttons)',
 
 	'abtesting-heading-start-time' => 'Label for the experiment start time',
 	'abtesting-heading-end-time' => 'Label for the experiement end time',
