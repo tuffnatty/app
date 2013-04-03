@@ -14,7 +14,7 @@ class VideoClipGamingVideo extends VideoObject {
 		'setting' => array( 'type'=>PandoraSDSObject::TYPE_COLLECTION, 'subject'=>'wikia:setting' ),
 		'type' => array( 'type'=>PandoraSDSObject::TYPE_LITERAL, 'subject'=>'type', 'value'=>'schema:VideoObject' ),
 		'content_url' => array( 'type'=>PandoraSDSObject::TYPE_LITERAL, 'subject'=>'schema:contentURL' ),
-	    'soundtrack' => array( 'type'=>PandoraSDSObject::TYPE_COLLECTION, 'subject'=>'schema:encodesCreativeWork', 'childType' => 'schema:CreativeWork' ),
+	    'soundtrack' => array( 'type'=>PandoraSDSObject::TYPE_COLLECTION, 'subject'=>'schema:encodesCreativeWork', 'childType' => 'schema:MusicRecording' ),
 	    'characters' => array( 'type'=>PandoraSDSObject::TYPE_COLLECTION, 'subject'=>'wikia:character' ),
 	);
 
