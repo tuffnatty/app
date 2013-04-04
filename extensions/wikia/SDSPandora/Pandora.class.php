@@ -8,7 +8,7 @@ class Pandora {
 
 	public static $config = array(
 
-		'endpoint_base' => 'http://dev-arturd:9292',
+		'endpoint_base' => 'http://dev-arturd:9494',
 		'endpoint_api_v' => '/api/v0.1/',
 		'id_base_url' => 'http://sds.wikia.com/',
 		'current_collection_name' => '',
