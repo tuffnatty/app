@@ -4,7 +4,7 @@
  * Date: 14.02.13
  */
 
-class VideoClipCookingVideo extends SDSFormMapping {
+class VideoClipCookingVideo extends VideoObject {
 
 	const type = 'http://sds.wikia.com/vocabs/VideoClipCookingVideo';
 

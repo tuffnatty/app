@@ -4,7 +4,7 @@
  * Date: 14.02.13
  */
 
-class VideoClipHowToVideo extends SDSFormMapping {
+class VideoClipHowToVideo extends VideoObject {
 
 	const type = 'http://sds.wikia.com/vocabs/VideoClipHowToVideo';
 

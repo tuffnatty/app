@@ -4,7 +4,7 @@
  * Date: 06.02.13
  */
 
-class VideoClipMovieTrailersVideo extends SDSFormMapping {
+class VideoClipMovieTrailersVideo extends VideoObject {
 
 	const type = 'http://sds.wikia.com/vocabs/VideoClipMovieTrailersVideo';
 

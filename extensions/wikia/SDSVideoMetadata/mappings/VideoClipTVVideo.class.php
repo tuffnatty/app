@@ -7,7 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class VideoClipTVVideo extends SDSFormMapping {
+class VideoClipTVVideo extends VideoObject {
 
 	const type = 'http://sds.wikia.com/vocabs/VideoClipTVVideo';
 
