@@ -45,7 +45,7 @@ class SDSVideoMetadataController extends WikiaSpecialPageController {
 			'ormKey' => 'setting'
 		),
 
-		'character' => array(
+		'characters' => array(
 			'controller' => 'PandoraForms',
 			'template' => 'reference_list',
 			'type' => 'VideoClipGamingVideo VideoClipMusicVideo VideoClipTVVideo VideoClipMovieTrailersVideo',
@@ -54,12 +54,23 @@ class SDSVideoMetadataController extends WikiaSpecialPageController {
 			'suggestionsType' => 'character'
 		),
 
+		/* MUSIC, HOW TO, TRAVEL, CRAFT, COOKING */
+		'celebrity' => array(
+			'controller' => 'PandoraForms',
+			'template' => 'reference_list',
+			'type' => 'VideoClipMusicVideo VideoClipHowToVideo VideoClipTravelVideo VideoClipCookingVideo VideoClipCraftVideo',
+			'label' => 'sdsvideometadata-vc-celebrity',
+			'ormKey' => 'celebrity',
+			'suggestionsType' => 'person'
+		),
+
+
 		/* TV, MOVIE */
 		'actors' => array(
 			'controller' => 'PandoraForms',
 			'template' => 'reference_list',
 			'type' => 'VideoClipTVVideo VideoClipMovieTrailersVideo',
-			'label' => 'sdsvideometadata-vc-game',
+			'label' => 'sdsvideometadata-vc-actors',
 			'ormKey' => 'actors',
 			'suggestionsType' => 'actor'
 		),
@@ -70,7 +81,7 @@ class SDSVideoMetadataController extends WikiaSpecialPageController {
 		'keywords' => array(
 			'controller' => 'PandoraForms',
 			'template' => 'literal_list',
-			'type' => 'VideoClipGamingVideo VideoClipTVVideo',
+			'type' => 'VideoClipGamingVideo VideoClipTVVideo VideoClipMovieTrailersVideo',
 			'label' => 'sdsvideometadata-vc-kind',
 			'ormKey' => 'keywords'
 		),

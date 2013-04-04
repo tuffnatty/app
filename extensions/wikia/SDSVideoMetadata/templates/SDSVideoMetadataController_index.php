@@ -74,7 +74,13 @@
 				<?= $formBuilder->renderField( 'setting' ); ?>
 
 				<!-- Characters -->
-				<?= $formBuilder->renderField( 'character' ); ?>
+				<?= $formBuilder->renderField( 'characters' ); ?>
+
+				<!-- Actors -->
+				<?= $formBuilder->renderField( 'actors' ); ?>
+
+				<!-- Celebrity -->
+				<?= $formBuilder->renderField( 'celebrity' ); ?>
 
 			</fieldset>
 
