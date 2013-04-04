@@ -5,7 +5,7 @@ import httplib
 import json
 import time
 
-server = 'dev-adam:9292'
+server = 'dev-arturd:9494'
 path = '/api/v0.1/'
 object_url = 'http://sds.wikia.com/'
 collection = 'sds'
@@ -332,6 +332,14 @@ data = {
 			'schema:genre': 'Western',
 			'schema:copyrightYear': 2010,
 			'schema:associatedMedia': [{'id': object_url + collection + '/sugestionsImage09'}],
+			'schema:actors': [
+				{'id': object_url + collection + '/jeff_bridges'},
+				{'id': object_url + collection + '/hailee_steinfeld'},
+				{'id': object_url + collection + '/matt_damon'},
+				{'id': object_url + collection + '/josh_brolin'},
+				{'id': object_url + collection + '/barry_pepper'},
+				{'id': object_url + collection + '/dakin_matthews'},
+			]
 		},
 		{
 			'shortId': 'the_cabin_in_the_woods',
@@ -723,6 +731,106 @@ data = {
 			'schema:width': 100,
 			'schema:name': 'theformula1'
 		},		
+	],
+	'schema:Person': [
+		{
+			'shortId': 'jeff_bridges',
+			'rdf:type': 'http://schema.org/Person',
+			'schema:name': 'Jeff Bridges',
+			'schema:image': 'http://ia.media-imdb.com/images/M/MV5BNTU1NjM4MDYzMl5BMl5BanBnXkFtZTcwMjIwMjMyMw@@._V1._SY314_CR10,0,214,314_.jpg',
+			'schema:birthDate': '1949-12-04T00:00:00Z',
+		},
+		{
+			'shortId': 'hailee_steinfeld',
+			'rdf:type': 'http://schema.org/Person',
+			'schema:name': 'Hailee Steinfeld',
+			'schema:image': 'http://ia.media-imdb.com/images/M/MV5BMjMwMzAzNTUxNF5BMl5BanBnXkFtZTcwNDQyNDE3OA@@._V1._SY314_CR10,0,214,314_.jpg',
+			'schema:birthDate': '1996-12-11T00:00:00Z',
+		},
+		{
+			'shortId': 'matt_damon',
+			'rdf:type': 'http://schema.org/Person',
+			'schema:name': 'Matt Damon',
+			'schema:image': 'http://ia.media-imdb.com/images/M/MV5BMTM0NzYzNDgxMl5BMl5BanBnXkFtZTcwMDg2MTMyMw@@._V1._SY314_CR10,0,214,314_.jpg',
+			'schema:birthDate': '1970-10-08T00:00:00Z',
+		},
+		{
+			'shortId': 'josh_brolin',
+			'rdf:type': 'http://schema.org/Person',
+			'schema:name': 'Josh Brolin',
+			'schema:image': 'http://ia.media-imdb.com/images/M/MV5BMTQ1MzYyMjQ0Nl5BMl5BanBnXkFtZTcwMTA0ODkyMg@@._V1._SX214_CR0,0,214,314_.jpg',
+			'schema:birthDate': '1968-02-12T00:00:00Z',
+		},
+		{
+			'shortId': 'barry_pepper',
+			'rdf:type': 'http://schema.org/Person',
+			'schema:name': 'Barry Pepper',
+			'schema:image': 'http://ia.media-imdb.com/images/M/MV5BMTg0MTEzMjcxM15BMl5BanBnXkFtZTcwMjEwMjMxNw@@._V1._SY314_CR1,0,214,314_.jpg',
+			'schema:birthDate': '1970-04-04T00:00:00Z',
+		},
+		{
+			'shortId': 'dakin_matthews',
+			'rdf:type': 'http://schema.org/Person',
+			'schema:name': 'Dakin Matthews',
+			'schema:image': 'http://ia.media-imdb.com/images/M/MV5BMjI3MzE4Mzg2NF5BMl5BanBnXkFtZTcwMTA2MDMxOA@@._V1._SY314_CR6,0,214,314_.jpg',
+			'schema:birthDate': '1940-11-07T00:00:00Z',
+		},
+	],
+	'wikia:Character': [
+		{
+			'shortId': 'private_martin',
+			'rdf:type': 'http://sds.wikia.com/vocabs/wikia/Character',
+			'schema:name': 'Private Martin',
+			'schema:photos': [{'id': object_url + collection + '/sugestionsImage01'}],
+		},
+		{
+			'shortId': 'sergeant_evans',
+			'rdf:type': 'http://sds.wikia.com/vocabs/wikia/Character',
+			'schema:name': 'Sergeant Evans',
+			'schema:photos': [{'id': object_url + collection + '/sugestionsImage02'}],
+		},
+		{
+			'shortId': 'private_alexei_ivanovich_voronin',
+			'rdf:type': 'http://sds.wikia.com/vocabs/wikia/Character',
+			'schema:name': 'Private Alexei Ivanovich Voronin',
+			'schema:photos': [{'id': object_url + collection + '/sugestionsImage03'}],
+		},
+		{
+			'shortId': 'captain_foley ',
+			'rdf:type': 'http://sds.wikia.com/vocabs/wikia/Character',
+			'schema:name': 'Captain Foley ',
+			'schema:photos': [{'id': object_url + collection + '/sugestionsImage04'}],
+		},
+		{
+			'shortId': 'sergeant_moody',
+			'rdf:type': 'http://sds.wikia.com/vocabs/wikia/Character',
+			'schema:name': 'Sergeant Moody',
+			'schema:photos': [{'id': object_url + collection + '/sugestionsImage05'}],
+		},
+		{
+			'shortId': 'private_elder',
+			'rdf:type': 'http://sds.wikia.com/vocabs/wikia/Character',
+			'schema:name': 'Private Elder',
+			'schema:photos': [{'id': object_url + collection + '/sugestionsImage06'}],
+		},
+		{
+			'shortId': 'captain_price',
+			'rdf:type': 'http://sds.wikia.com/vocabs/wikia/Character',
+			'schema:name': 'Captain Price',
+			'schema:photos': [{'id': object_url + collection + '/sugestionsImage07'}],
+		},
+		{
+			'shortId': 'sergeant_waters',
+			'rdf:type': 'http://sds.wikia.com/vocabs/wikia/Character',
+			'schema:name': 'Sergeant Waters',
+			'schema:photos': [{'id': object_url + collection + '/sugestionsImage08'}],
+		},
+		{
+			'shortId': 'major_gerald_tiberius_ingram ',
+			'rdf:type': 'http://sds.wikia.com/vocabs/wikia/Character',
+			'schema:name': 'Major Gerald Tiberius Ingram ',
+			'schema:photos': [{'id': object_url + collection + '/sugestionsImage09'}],
+		},
 	]
 }
 
