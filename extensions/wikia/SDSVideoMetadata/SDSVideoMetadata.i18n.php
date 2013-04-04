@@ -59,7 +59,8 @@ $messages['en'] = array(
 	'sdsvideometadata-vc-song' => 'Song',
 	'sdsvideometadata-vc-artist' => 'Artist',
 	'sdsvideometadata-vc-music-label' => 'Music Label',
-	'sdsvideometadata-vc-pal' => 'PAL'
+	'sdsvideometadata-vc-pal' => 'PAL',
+	'sdsvideometadata-vc-characters' => 'Characters'
 );
 
 /** Message documentation (Message documentation) */
@@ -118,5 +119,6 @@ $messages['qqq'] = array(
 	'sdsvideometadata-vc-song' => 'Label for song property',
 	'sdsvideometadata-vc-artist' => 'Label for artist property',
 	'sdsvideometadata-vc-music-label' => 'Label for music label property',
-	'sdsvideometadata-vc-pal' => 'Label for PAL property'
+	'sdsvideometadata-vc-pal' => 'Label for PAL property',
+	'sdsvideometadata-vc-characters' => 'Label for characters property'
 );

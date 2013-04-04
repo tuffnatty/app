@@ -49,8 +49,8 @@ class SDSVideoMetadataController extends WikiaSpecialPageController {
 			'controller' => 'PandoraForms',
 			'template' => 'reference_list',
 			'type' => 'VideoClipGamingVideo VideoClipMusicVideo VideoClipTVVideo VideoClipMovieTrailersVideo',
-			'label' => 'sdsvideometadata-vc-game',
-			'ormKey' => 'character',
+			'label' => 'sdsvideometadata-vc-characters',
+			'ormKey' => 'characters',
 			'suggestionsType' => 'character'
 		),
 

@@ -73,6 +73,9 @@
 				<!-- Setting -->
 				<?= $formBuilder->renderField( 'setting' ); ?>
 
+				<!-- Characters -->
+				<?= $formBuilder->renderField( 'character' ); ?>
+
 			</fieldset>
 
 			<div class="input-group">
