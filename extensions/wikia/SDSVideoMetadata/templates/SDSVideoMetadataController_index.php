@@ -97,7 +97,7 @@
 
 			<input type="submit" id="VMDFormSave" value="<?= wfMessage('sdsvideometadata-save')->text() ?>"
 			       disabled="disabled">
-			<button id="VMDSkip" class="secondary">Skip</button>
+			<button id="VMDSkip" class="secondary"><?= wfMessage('sdsvideometadata-skip')->text() ?></button>
 
 		</form>
 		<div id="VMD-player-wrapper" class="VMD-player-wrapper">
