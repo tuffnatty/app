@@ -17,9 +17,9 @@ define('pandora', ['wikia.deferred', 'wikia.nirvana'], function(deferred, nirvan
 	 *
 	 *  'type' (string) - type of the object
 	 *  'query' (string) - query match
-	 *  'count' (number) - max number of returned results OPTIONAL (default = 10)
+	 *  'limit' (number) - max number of returned results OPTIONAL (default = 10)
 	 **/
-	function getSuggestions(type,query,count) {
+	function getSuggestions(type,query,limit) {
 		var dfd = new deferred();
 
 		abortRequest();
@@ -27,7 +27,7 @@ define('pandora', ['wikia.deferred', 'wikia.nirvana'], function(deferred, nirvan
 		xhrRequest = nirvana.getJson('Pandora', 'getSuggestions', {
 			type: type,
 			query: query,
-			count: count
+			limit: limit
 		}, function(resp) {
 			if (resp.success === false) {
 				dfd.reject(resp.message);

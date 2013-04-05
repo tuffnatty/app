@@ -1,6 +1,6 @@
 <div class="input-group <?= $type ?>">
 	<label for="<?= $name ?>"><?= $labelMsg ?></label>
-	<ul>
+	<ul class="literal-list">
 		<?php
 		if ( !is_array( $list ) ) $list = array();
 		foreach ($list as $item):

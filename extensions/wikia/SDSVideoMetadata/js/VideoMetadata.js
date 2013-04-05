@@ -42,14 +42,11 @@ require(['jquery', 'wikia.mustache', 'wikia.loader', 'JSMessages', 'pandora'], f
 		$noResultsInfo.addClass('hidden');
 		startSuggestionsThrobber($dropdown);
 
-		pandora.getSuggestions(type, query).done(function(data) {
+		pandora.getSuggestions(type, query, numberOfSuggestions).done(function(data) {
 			if (data.length > 0) {
 				var html = '',
 					i;
 				for (i = 0; i < data.length; i += 1) {
-					if (i > 5) { // temporary (results should be limited in request)
-						break;
-					}
 					html += mustache.render(cachedTemplates.referenceItem, data[i]);
 				}
 				stopSuggestionsThrobber($dropdown);
@@ -169,6 +166,20 @@ require(['jquery', 'wikia.mustache', 'wikia.loader', 'JSMessages', 'pandora'], f
 		}
 	}
 
+	function addLiteralItem($target) { // temporary - literal-lists UI will change
+		var $literalList = $target.siblings('.literal-list'),
+			$lastItem = $literalList.children(':last'),
+			clonned = $lastItem.clone();
+		$lastItem.children('.remove').removeClass('hidden');
+		clonned.children('input').val('');
+		clonned.appendTo($literalList);
+
+	}
+
+	function removeLiteralItem($target) { // temporary - literal-lists UI will change
+		$target.parent().remove();
+	}
+
 	/**********************************************************
 	  Initializing Function for Video Metadata form interface
 	**********************************************************/
@@ -239,6 +250,17 @@ require(['jquery', 'wikia.mustache', 'wikia.loader', 'JSMessages', 'pandora'], f
 				event.preventDefault();
 			}
 		});
+
+		// temporary adding and removing item from literal list
+		cachedSelectors.form.on('click', '.add', function(event){
+			event.preventDefault();
+			addLiteralItem($(event.target));
+		});
+		cachedSelectors.form.on('click', '.literal-list .remove', function(event){
+			event.preventDefault();
+			removeLiteralItem($(event.target));
+		});
+
 
 		// lock video position when scrolling
 		videoPlayerPosition = cachedSelectors.videoPlayer.offset().top;
