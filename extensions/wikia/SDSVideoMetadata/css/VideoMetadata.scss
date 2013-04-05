@@ -114,7 +114,7 @@
 			.remove-item {
 				background-image: url("/extensions/wikia/SDSVideoMetadata/images/remove_icon.png") /* base64 */ ;
 				@if $is-dark-wiki {
-					background-image: url("/extensions/wikia/SDSVideoMetadata/images/remove_icon.png_dark.png") /* base64 */ ;
+					background-image: url("/extensions/wikia/SDSVideoMetadata/images/remove_icon_dark.png") /* base64 */ ;
 				}
 				display: block;
 				height: 10px;
