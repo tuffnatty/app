@@ -15,7 +15,7 @@ class VideoClipGamingVideo extends VideoObject {
 		'type' => array( 'type'=>PandoraSDSObject::TYPE_LITERAL, 'subject'=>'type', 'value'=>'schema:VideoObject' ),
 		'content_url' => array( 'type'=>PandoraSDSObject::TYPE_LITERAL, 'subject'=>'schema:contentURL' ),
 	    'soundtrack' => array( 'type'=>PandoraSDSObject::TYPE_COLLECTION, 'subject'=>'schema:encodesCreativeWork', 'childType' => 'schema:MusicRecording' ),
-	    'characters' => array( 'type'=>PandoraSDSObject::TYPE_COLLECTION, 'subject'=>'wikia:character' ),
+	    'characters' => array( 'type'=>PandoraSDSObject::TYPE_COLLECTION, 'subject'=>'wikia:character', 'childType' => 'wikia:Character' ),
 	);
 
 	protected function getMapArray( $mapType = 'main' ) {
