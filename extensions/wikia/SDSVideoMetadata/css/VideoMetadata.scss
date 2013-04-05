@@ -198,6 +198,7 @@
 		}
 		.create-new-btn {
 			display: block;
+			@include ellipses();
 		}
 		.throbber {
 			position: relative;

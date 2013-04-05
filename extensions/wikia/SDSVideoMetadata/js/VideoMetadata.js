@@ -56,6 +56,8 @@ require(['jquery', 'wikia.mustache', 'wikia.loader', 'JSMessages', 'pandora'], f
 				$noResultsInfo.removeClass('hidden');
 			}
 		}).fail(function(errorMessage) {
+			stopSuggestionsThrobber($dropdown);
+			$noResultsInfo.removeClass('hidden');
 			if (errorMessage) {
 				console.log(errorMessage);
 			}
@@ -117,7 +119,10 @@ require(['jquery', 'wikia.mustache', 'wikia.loader', 'JSMessages', 'pandora'], f
 		if ($list.children().length === 0) {
 			$list.addClass('hidden');
 		}
+	}
 
+	function changeCreateNewRefItemLabel($target) {
+		$target.siblings('.suggestions-dropdown').find('.object-name').text($target.val());
 	}
 
 	function chooseClipType(event) { // show form part for type specific properties
@@ -203,10 +208,12 @@ require(['jquery', 'wikia.mustache', 'wikia.loader', 'JSMessages', 'pandora'], f
 				if ($dropdown.length > 0) {
 					loadSuggestions($dropdown);
 					showSuggestionsDropdown($dropdown);
+					changeCreateNewRefItemLabel($target);
 
 				} else {
 					createSuggestionsDropdown(event.target);
 					showSuggestionsDropdown($dropdown);
+					changeCreateNewRefItemLabel($target);
 
 				}
 			} else {
@@ -219,6 +226,7 @@ require(['jquery', 'wikia.mustache', 'wikia.loader', 'JSMessages', 'pandora'], f
 			if ($dropdown.length > 0) {
 				$target.val('');
 				hideSuggestionsDropdown($dropdown);
+				changeCreateNewRefItemLabel($target);
 			}
 		});
 		cachedSelectors.form.on('mousedown', '.suggestions-dropdown .reference-item', function(event){

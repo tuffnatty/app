@@ -14,7 +14,7 @@ $messages['en'] = array(
 
 	// UI buttons messages
 	'sdsvideometadata-vc-remove-item' => 'Remove',
-	'sdsvideometadata-vc-create-new-item' => 'Create new',
+	'sdsvideometadata-vc-create-new-item' => 'Create a',
 	'sdsvideometadata-vc-add-item' => 'Add more',
 	'sdsvideometadata-save' => 'Save and Continue',
 	'sdsvideometadata-skip' => 'Skip',
