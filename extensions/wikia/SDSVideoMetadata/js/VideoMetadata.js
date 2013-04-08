@@ -3,7 +3,8 @@ require(['jquery', 'wikia.mustache', 'wikia.loader', 'JSMessages', 'pandora'], f
 	var cachedSelectors = {},
 		cachedTemplates = {},
 		charCountForSuggestions = 1, // minimal number of characters in input field to trigger suggestions dropdown
-		numberOfSuggestions = 5,
+		numberOfSuggestions = 15,
+		numberOfSuggestionsPresented = 5,
 		videoPlayerPosition = null;
 
 	function showSuggestionsDropdown($dropdown) {
@@ -45,9 +46,14 @@ require(['jquery', 'wikia.mustache', 'wikia.loader', 'JSMessages', 'pandora'], f
 		pandora.getSuggestions(type, query, numberOfSuggestions).done(function(data) {
 			if (data.length > 0) {
 				var html = '',
-					i;
+					i,
+					$referenceList = $dropdown.siblings('.reference-list'),
+					countdown = numberOfSuggestionsPresented;
 				for (i = 0; i < data.length; i += 1) {
-					html += mustache.render(cachedTemplates.referenceItem, data[i]);
+					if( !containsReference($referenceList, data[i].objectId) ) {
+						if ( countdown-- == 0 ) break;
+						html += mustache.render(cachedTemplates.referenceItem, data[i]);
+					}
 				}
 				stopSuggestionsThrobber($dropdown);
 				$dropdown.children('ul').append(html);
@@ -62,6 +68,22 @@ require(['jquery', 'wikia.mustache', 'wikia.loader', 'JSMessages', 'pandora'], f
 				console.log(errorMessage);
 			}
 		});
+	}
+
+	function getReferenceItemsData($referenceList) {
+		var items = [];
+		$referenceList.find('.object-id').each(function() {
+			items.push($(this).val());
+		});
+		return items;
+	}
+
+	function containsReference($referenceList, ref) {
+		var items = getReferenceItemsData($referenceList);
+		for(var i in items) {
+			if( items[i] == ref ) return true;
+		}
+		return false;
 	}
 
 	function startSuggestionsThrobber($dropdown) {
