@@ -50,7 +50,7 @@ abstract class WikiaApiController extends WikiaController {
 					ksort( $paramKeys, SORT_NATURAL );
 
 					if ( $paramKeys !== $origParam ) {
-						throw new BadRequestApiException( 'The parameters\' order is incorrect ' );
+						throw new BadRequestApiException( 'The parameters\' order is incorrect' );
 					}
 				}
 			} else {
