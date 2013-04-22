@@ -35,6 +35,9 @@ class Factory
 		if ( $config->getVideoTitleSearch() ) {
 			return new Select\VideoTitle( $container );
 		}
+		if ( $config->getVideoGenreSearch() ) {
+			return new Select\VideoGenre( $container );
+		}
 		return new Select\OnWiki( $container );
 	}
 	
@@ -50,28 +53,36 @@ class Factory
 	}
 	
 	/**
+	 * Returns a Solarium_Client instance based on our configuration
+	 * @return \Solarium_Client
+	 */
+	public function createClient() {
+		$service = new MediaWikiService;
+		$host = $service->isOnDbCluster() ? $service->getGlobalWithDefault( 'SolrHost', 'localhost' ) : 'staff-search-s1';
+		$host = (! empty( $_GET['newsolrhost'] ) ) ? $service->getGlobal( 'AlternateSolrHost' ) : $host;
+		$solariumConfig = array(
+				'adapter' => 'Solarium_Client_Adapter_Curl',
+				'adapteroptions' => array(
+						'host'    => $host,
+						'port'    => empty( $_GET['newsolrhost'] ) ? $service->getGlobalWithDefault( 'SolrPort', 8180 ) : 8983,
+						'path'    => '/solr/',
+						)
+				);
+		if ( $service->isOnDbCluster() && $service->getGlobal( 'WikiaSearchUseProxy' ) && $service->getGlobalWithDefault( 'SolrProxy' ) !== null && empty( $_GET['newsolrhost'] ) ) {
+			$solariumConfig['adapteroptions']['proxy'] = $service->getGlobal( 'SolrProxy' );
+			$solariumConfig['adapteroptions']['port'] = null;
+		}
+		return new Solarium_Client( $solariumConfig );
+	}
+	
+	/**
 	 * If an instance of Solarium_Client has not been created yet, create it.
 	 * @param DependencyContainer $container
 	 */
 	protected function validateClient( DependencyContainer $container ) {
-		$service = (new \Wikia\Search\ProfiledClassFactory)->get( 'Wikia\Search\MediaWikiService' );
 		$client = $container->getClient();
 		if ( empty( $client ) ) {
-			$host = $service->isOnDbCluster() ? $service->getGlobalWithDefault( 'SolrHost', 'localhost' ) : 'staff-search-s1';
-			$host = (! empty( $_GET['newsolrhost'] ) ) ? $service->getGlobal( 'AlternateSolrHost' ) : $host;
-			$solariumConfig = array(
-					'adapter' => 'Solarium_Client_Adapter_Curl',
-					'adapteroptions' => array(
-							'host'    => $host,
-							'port'    => empty( $_GET['newsolrhost'] ) ? $service->getGlobalWithDefault( 'SolrPort', 8180 ) : 8983,
-							'path'    => '/solr/',
-							)
-					);
-			if ( $service->isOnDbCluster() && $service->getGlobal( 'WikiaSearchUseProxy' ) && $service->getGlobalWithDefault( 'SolrProxy' ) !== null && empty( $_GET['newsolrhost'] ) ) {
-				$solariumConfig['adapteroptions']['proxy'] = $service->getGlobal( 'SolrProxy' );
-				$solariumConfig['adapteroptions']['port'] = null;
-			}
-			$container->setClient( new Solarium_Client( $solariumConfig ) );
+			$container->setClient( $this->createClient() );
 		}
 	}
 }

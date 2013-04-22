@@ -180,7 +180,7 @@ abstract class AbstractSelect
 	 */
 	protected function registerQueryParams( Solarium_Query_Select $query ) {
 		$sort = $this->config->getSort();
-		$query->addFields      ( $this->config->getRequestedFields() )
+		$query->setFields      ( $this->config->getRequestedFields() )
 		      ->removeField    ('*')
 		      ->setStart       ( $this->config->getStart() )
 		      ->setRows        ( $this->config->getLength() )
