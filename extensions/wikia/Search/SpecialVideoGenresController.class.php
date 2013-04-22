@@ -2,12 +2,12 @@
 
 class SpecialVideoGenresController extends WikiaSpecialPageController
 {
-	
+
 	public function __construct() {
 		parent::__construct( 'VideoGenres', 'VideoGenres', false );
 	}
-	
-	
+
+
 	public function index() {
 		$config = new Wikia\Search\Config;
 		$genre = $this->getVal( 'genre', null );
@@ -20,8 +20,9 @@ class SpecialVideoGenresController extends WikiaSpecialPageController
 		$results = $search->search();
 		if ( $genre ) {
 			$this->setVal( 'results', $results );
+			$this->setVal( 'genre', $genre );
 		}
 		$this->setVal( 'facets', $search->getFacets() );
 	}
-	
+
 }
