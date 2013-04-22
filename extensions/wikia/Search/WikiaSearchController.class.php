@@ -139,6 +139,21 @@ class WikiaSearchController extends WikiaSpecialPageController {
 		$this->getResponse()->setFormat( 'json' );
 		$this->getResponse()->setData( $this->queryServiceFactory->getFromConfig( $searchConfig )->searchAsApi() );
 	}
+	
+	public function searchVideosByActor() {
+		$searchConfig = new Wikia\Search\Config;
+		$searchConfig->setRank( 'most-viewed' );
+		$actor = $this->getVal( 'actor' );
+		if ( empty( $actor ) ) {
+			throw new Exception( "Please include a value for 'actor'." );
+		}
+		$searchConfig
+		    ->setVideoActorSearch( true )
+		    ->setQuery( $actor )
+		;
+		$this->getResponse()->setFormat( 'json' );
+		$this->getResponse()->setData( $this->queryServiceFactory->getFromConfig( $searchConfig )->searchAsApi() );
+	}
 
 	/**
 	 * Controller Helper Methods
