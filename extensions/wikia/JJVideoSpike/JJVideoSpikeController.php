@@ -21,5 +21,13 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 
 	}
 
+	public function test() {
+
+		$art = new ArticleSubject(383882);
+		$art->getSubjects();
+
+
+		die("<hr>");
+	}
 
 }

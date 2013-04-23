@@ -10,4 +10,6 @@ $app = F::app();
  * special pages
  */
 $app->registerClass('JJVideoSpikeController', $dir . 'JJVideoSpikeController.php');
+$app->registerClass('ArticleSubject', $dir.'ArticleSubject.class.php');
+
 $app->registerSpecialPage('JJVideoSpike', 'JJVideoSpikeController');
