@@ -10,6 +10,7 @@ class ArticleSubject {
 	protected $articleId;
 	protected $articleBody;
 	protected $allSubjectList;
+	protected $articleTitle;
 
 	public function __construct( $articleId, $articleBody='' ) {
 
@@ -23,7 +24,7 @@ class ArticleSubject {
 
 		$text = preg_replace( '/[^a-zA-Z0-9]/', ' ', $text );
 		$text = preg_replace( '/[ ]{1,}/', ' ', $text );
-		return strtolower( $text );
+		return trim ( strtolower( $text ) );
 	}
 
 	public function setAllSubjectList( $subjectList ) {
@@ -42,7 +43,7 @@ class ArticleSubject {
 		if ( !empty( $titleObject ) && $titleObject->exists() ) {
 
 			$article = new Article( $titleObject );
-
+			$this->articleTitle = $titleObject->getDBKey();
 		}
 		else {
 
@@ -66,11 +67,31 @@ class ArticleSubject {
 		$subjectList = array();
 
 		$normalizedBody = $this->normalizeText( $this->articleBody );
+
+		$articleLinks = array();
+		preg_match_all( '/\[\[.*?(\]\]|\|)/', $this->articleBody, $articleLinks );
+
+
+		foreach ( $articleLinks[0] as $i => $link ) {
+			$articleLinks[0][$i] = $this->normalizeText( $link );
+		}
+
+		$articleLinks = $articleLinks[0];
+
 		foreach ( $this->allSubjectList as $subject ) {
 
 			$normalizedSubject = $this->normalizeText( $subject[0] );
 			if ( strpos( $normalizedBody, $normalizedSubject ) !== false ) {
-				$subjectList[] = $subject;
+				$subjectList['body'][] = $subject;
+			}
+			if ( $normalizedSubject == $this->normalizeText( $this->articleTitle ) ) {
+				$subjectList['title'][] = $subject;
+			}
+
+			foreach ( $articleLinks as $link ) {
+				if ( $normalizedSubject == $link ) {
+					$subjectList['links'] = $subject;
+				}
 			}
 		}
 
