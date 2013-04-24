@@ -11,5 +11,6 @@ $app = F::app();
  */
 $app->registerClass('JJVideoSpikeController', $dir . 'JJVideoSpikeController.php');
 $app->registerClass('ArticleSubject', $dir.'ArticleSubject.class.php');
+$app->registerClass('WikiSubjects', $dir.'WikiSubjects.class.php');
 
 $app->registerSpecialPage('JJVideoSpike', 'JJVideoSpikeController');

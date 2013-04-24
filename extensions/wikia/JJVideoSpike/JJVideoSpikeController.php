@@ -23,11 +23,30 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 
 	public function test() {
 
-		$art = new ArticleSubject(383882);
-		$art->getSubjects();
 
+		$title = $this->request->getVal( 'art', '' );
+		$art = false;
 
-		die("<hr>");
+		if ( !empty( $title ) ) {
+
+			$titleObj = Title::newFromText( $title );
+			if ( !empty( $titleObj ) && $titleObj->exists() ) {
+
+				$art = new ArticleSubject( $titleObj->getArticleID() );
+			}
+		}
+
+		if ( empty( $art ) ) {
+			$art = new ArticleSubject(383882);
+		}
+
+		$subjectsObject = new WikiSubjects();
+		$art->setAllSubjectList( $subjectsObject->get() );
+
+		$subjects = $art->getSubjects();
+		var_dump( $subjects );
+
+		die("<hr>!");
 	}
 
 }

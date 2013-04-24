@@ -19,6 +19,13 @@ class ArticleSubject {
 		}
 	}
 
+	public function normalizeText( $text ) {
+
+		$text = preg_replace( '/[^a-zA-Z0-9]/', ' ', $text );
+		$text = preg_replace( '/[ ]{1,}/', ' ', $text );
+		return strtolower( $text );
+	}
+
 	public function setAllSubjectList( $subjectList ) {
 		$this->allSubjectList = $subjectList;
 	}
@@ -56,8 +63,18 @@ class ArticleSubject {
 			$this->fetchArticleBody();
 		}
 
-		var_dump( $this->articleBody );
+		$subjectList = array();
 
+		$normalizedBody = $this->normalizeText( $this->articleBody );
+		foreach ( $this->allSubjectList as $subject ) {
+
+			$normalizedSubject = $this->normalizeText( $subject[0] );
+			if ( strpos( $normalizedBody, $normalizedSubject ) !== false ) {
+				$subjectList[] = $subject;
+			}
+		}
+
+		return $subjectList;
 	}
 
 
