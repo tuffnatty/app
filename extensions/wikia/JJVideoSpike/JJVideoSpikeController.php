@@ -6,7 +6,8 @@
  */
 
 class JJVideoSpikeController extends WikiaSpecialPageController {
-
+	private $videoMetadataProvider;
+	private $relevancyEstimator;
 	public function __construct() {
 
 		// parent SpecialPage constructor call MUST be done
@@ -22,7 +23,6 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 	}
 
 	public function test() {
-
 
 		$title = $this->request->getVal( 'art', '' );
 		$art = false;
@@ -49,4 +49,32 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		die("<hr>!");
 	}
 
+	public function rel() {
+		$videoTitle = $this->getVal( "video" );
+		if ( $videoTitle == null ) {
+			$videoTitle = "IGN Live Presents WWE '13";
+		}
+		$videMetadata = $this->videoMetadataProvider->get( $videoTitle );
+		$title = $this->getVal( "articleTitle" );
+		if( $title ) {
+			$titleObject = Title::newFromText( $title );
+		} else {
+			$id = $this->getVal( "articleId" );
+			if( !$id ) {
+				$id = 383882;
+			} else {
+				$id = intval( $id );
+			}
+			$titleObject = Title::newFromID( $id );
+		}
+		$article = false;
+		if ( !empty( $titleObject ) && $titleObject->exists() ) {
+			$article = new Article( $titleObject );
+			var_dump( $article->getTitle() );
+		}
+		$estimate = $this->relevancyEstimator->compositeEstimate( $article, $videMetadata );
+		var_dump($estimate);
+		die();
+	}
 }
+
