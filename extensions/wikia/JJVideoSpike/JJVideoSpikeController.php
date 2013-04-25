@@ -14,6 +14,23 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 	}
 
 
+	private function getArticleId( $param = 'art' ) {
+
+		$title = $this->request->getVal( $param, '' );
+		$art = false;
+
+		if ( !empty( $title ) ) {
+
+			$titleObj = Title::newFromText( $title );
+			if ( !empty( $titleObj ) && $titleObj->exists() ) {
+
+				$art = $titleObj->getArticleID();
+			}
+		}
+
+		return $art;
+	}
+
 	public function index() {
 
 
@@ -23,22 +40,13 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 
 	public function test() {
 
-
-		$title = $this->request->getVal( 'art', '' );
-		$art = false;
-
-		if ( !empty( $title ) ) {
-
-			$titleObj = Title::newFromText( $title );
-			if ( !empty( $titleObj ) && $titleObj->exists() ) {
-
-				$art = new ArticleSubject( $titleObj->getArticleID() );
-			}
+		$articleId = $this->getArticleId();
+		if ( !$articleId ) {
+			die("ARTICLE NOT FOUND");
 		}
 
-		if ( empty( $art ) ) {
-			$art = new ArticleSubject(383882);
-		}
+		$art = new ArticleSubject( $articleId );
+
 
 		$subjectsObject = new WikiSubjects();
 		$art->setAllSubjectList( $subjectsObject->get() );
@@ -47,6 +55,18 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		var_dump( $subjects );
 
 		die("<hr>!");
+	}
+
+
+	public function testSuggestions() {
+
+		$articleId = $this->getArticleId();
+		if ( !$articleId ) {
+			die("ARTICLE NOT FOUND");
+		}
+
+		$suggestions = new ArticleVideoSuggestion( $articleId );
+
 	}
 
 }
