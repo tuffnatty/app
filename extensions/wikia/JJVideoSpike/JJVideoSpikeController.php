@@ -66,7 +66,8 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		}
 
 		$suggestions = new ArticleVideoSuggestion( $articleId );
-
+		$suggestions->getBySubject();
+		die("<hr>");
 	}
 
 }

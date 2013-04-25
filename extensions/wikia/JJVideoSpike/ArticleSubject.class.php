@@ -9,7 +9,7 @@ class ArticleSubject {
 
 	protected $articleId;
 	protected $articleBody;
-	protected $allSubjectList;
+	protected $allSubjectList = array();
 	protected $articleTitle;
 
 	public function __construct( $articleId, $articleBody='' ) {
@@ -18,6 +18,18 @@ class ArticleSubject {
 		if ( !empty( $articleBody ) ) {
 			$this->articleBody = $articleBody;
 		}
+	}
+
+	private function makeArrayUnique( $array ) {
+		$result = array_map("unserialize", array_unique(array_map("serialize", $array)));
+
+		foreach ($result as $key => $value)	{
+			if ( is_array($value) )	{
+				$result[$key] = $this->makeArrayUnique($value);
+			}
+		}
+
+		return $result;
 	}
 
 	public function normalizeText( $text ) {
@@ -90,14 +102,44 @@ class ArticleSubject {
 
 			foreach ( $articleLinks as $link ) {
 				if ( $normalizedSubject == $link ) {
-					$subjectList['links'] = $subject;
+						$subjectList['links'][] = $subject;
 				}
 			}
 		}
 
-		return $subjectList;
+
+		return $this->makeArrayUnique( $subjectList );
 	}
 
 
+	public function getPrioritizedList( $max = 5 ) {
+
+		$list = $this->getSubjects();
+		$prioritized = array();
+
+		if ( !empty( $list['title'] ) ) {
+			$prioritized[] = $list['title'][0];
+		}
+
+		if ( !empty( $list['links'] ) ) {
+			foreach ( $list['links'] as  $item ) {
+				if ( count( $this->makeArrayUnique($prioritized) ) >= $max ) {
+					break;
+				}
+				$prioritized[] = $item;
+			}
+		}
+
+		if ( !empty( $list['body'] ) ) {
+			foreach ( $list['body'] as $item ) {
+				if ( count( $this->makeArrayUnique($prioritized) ) >= $max ) {
+					break;
+				}
+				$prioritized[] = $item;
+			}
+		}
+
+		return $this->makeArrayUnique( $prioritized );
+	}
 
 }
