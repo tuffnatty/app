@@ -12,12 +12,40 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 
 		// parent SpecialPage constructor call MUST be done
 		parent::__construct( 'JJVideoSpike', '', false );
+		$this->videoMetadataProvider = new JJVideoMetadataProvider();
+		$estimatorFactory = new CompositeRelevancyEstimatorFactory();
+		$this->relevancyEstimator = $estimatorFactory->get();
 	}
 
 
 	public function index() {
 
-
+		$videoTitle = $this->getVal( "video" );
+		if ( $videoTitle == null ) {
+			$videoTitle = "Scarface_-_This_is_paradise";
+		}
+		$videMetadata = $this->videoMetadataProvider->get( $videoTitle );
+		$title = $this->getVal( "articleTitle" );
+		if( $title ) {
+			$titleObject = Title::newFromText( $title );
+		} else {
+			$id = $this->getVal( "articleId" );
+			if( !$id ) {
+				$id = 15;
+			} else {
+				$id = intval( $id );
+			}
+			$titleObject = Title::newFromID( $id );
+		}
+		$article = false;
+		if ( !empty( $titleObject ) && $titleObject->exists() ) {
+			$article = new Article( $titleObject );
+		}
+		var_dump($article);
+		$estimate = $this->relevancyEstimator->compositeEstimate( $article, $videMetadata );
+		//var_dump($estimate);
+		$this->setVal("estimates:", $estimate);
+		$this->getResponse()->setFormat("json");
 		die("AAAA");
 
 	}
@@ -70,11 +98,12 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		$article = false;
 		if ( !empty( $titleObject ) && $titleObject->exists() ) {
 			$article = new Article( $titleObject );
-			var_dump( $article->getTitle() );
 		}
 		$estimate = $this->relevancyEstimator->compositeEstimate( $article, $videMetadata );
-		var_dump($estimate);
-		die();
+		//var_dump($estimate);
+		$this->setVal("estimates:", $estimate);
+		$this->getResponse()->setFormat("json");
+		//die();
 	}
 }
 

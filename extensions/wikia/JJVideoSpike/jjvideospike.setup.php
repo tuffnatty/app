@@ -18,6 +18,8 @@ $app->registerClass('JJVideoMetadataProvider', $dir.'JJVideoMetadataProvider.cla
 $app->registerClass('ITokenizer', $dir.'util/ITokenizer.php');
 $app->registerClass('Tokenizer', $dir.'util/Tokenizer.php');
 $app->registerClass('StopWordsTokenizerFilter', $dir.'util/StopWordsTokenizerFilter.php');
+$app->registerClass('ToLowerTokenizerFilter', $dir.'util/ToLowerTokenizerFilter.php');
+$app->registerClass('UniqueTokensTokenizerFilter', $dir.'util/UniqueTokensTokenizerFilter.php');
 
 $app->registerClass('CompositeRelevancyEstimatorFactory', $dir.'relevancy/CompositeRelevancyEstimatorFactory.php');
 $app->registerClass('CompositeRelevancyEstimator', $dir.'relevancy/CompositeRelevancyEstimator.php');

@@ -18,7 +18,6 @@ class Tokenizer implements ITokenizer {
 		$tokens = preg_split( $this->splitExpression, $string, -1, PREG_SPLIT_NO_EMPTY );
 		$resultTokens = array();
 		foreach ( $tokens as $i => $token ) {
-			var_dump($token);
 			if ( strlen( $token ) >= $this->minTokenSize ) $resultTokens[] = $token;
 		}
 		return $resultTokens;

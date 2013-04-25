@@ -22,7 +22,7 @@ class StopWordsTokenizerFilter implements ITokenizer {
 		$tokens = $this->tokenizer->tokenize( $string );
 		$resultTokens = array();
 		foreach ( $tokens as $i => $token ) {
-			if ( !isset($this->stopWordsSet[$token]) ) $resultTokens[] = $token;
+			if ( !isset($this->stopWordsSet[ strtolower($token) ]) ) $resultTokens[] = $token;
 		}
 		return $resultTokens;
 	}
