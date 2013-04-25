@@ -28,4 +28,6 @@ $app->registerClass('MatchAllRelevancyEstimator', $dir.'relevancy/MatchAllReleva
 
 
 $app->registerSpecialPage('JJVideoSpike', 'JJVideoSpikeController');
+$app->registerClass('ArticleVideoSuggestion', $dir.'ArticleVideoSuggestion.class.php');
+
 
