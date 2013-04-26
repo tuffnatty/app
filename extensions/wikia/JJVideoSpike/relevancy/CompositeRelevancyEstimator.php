@@ -12,7 +12,7 @@ class CompositeRelevancyEstimator {
 		$this->estimators[ $name ] = $estimator;
 	}
 
-	public function compositeEstimate( Article $article, array $metatags ) {
+	public function compositeEstimate( ArticleInformation $article, VideoInformation $metatags ) {
 		$result = array();
 		foreach ( $this->estimators as $name => $estimator ) {
 			$result[ $name ] = $estimator->estimate( $article, $metatags );

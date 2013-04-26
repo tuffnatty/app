@@ -19,6 +19,11 @@ class CompositeRelevancyEstimatorFactory {
 		$matchAllCountAll = new MatchAllRelevancyEstimator();
 		$matchAllCountAll->setMaxMatchesPerToken(1000);
 		$estimator->addEstimator( "MatchAllEstimator (allow multiple matches)", $matchAllCountAll );
+		$estimator->addEstimator( "MatchFullTokensEstimator", new MatchFullTokensEstimator());
+		$estimator->addEstimator( "FuzzyMatchFullTokensEstimator", new FuzzyMatchFullTokensEstimator());
+		$estimator->addEstimator( "TitleRelevancyEstimator", new TitleRelevancyEstimator());
+		$estimator->addEstimator( "TitleRelevancyEstimator (all meta)", new TitleRelevancyEstimator( array( "keywords", "tags", "description", "category", "title" ) ));
+
 		return $estimator;
 	}
 }

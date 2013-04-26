@@ -6,5 +6,5 @@
  */
 
 interface IRelevancyEstimator {
-	public function estimate( Article $article, array $metatags );
+	public function estimate( ArticleInformation $article, VideoInformation $metatags );
 }

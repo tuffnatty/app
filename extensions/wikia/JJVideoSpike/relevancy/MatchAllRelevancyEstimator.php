@@ -10,21 +10,26 @@ class MatchAllRelevancyEstimator implements IRelevancyEstimator {
 	private $maxMatchesPerToken = 1;
 
 	function __construct( ITokenizer $tokenizer = null ) {
-		if ( $tokenizer == null ) $tokenizer = new StopWordsTokenizerFilter( new Tokenizer() );
+		if ( $tokenizer == null ) {
+			$tokenizer = new Tokenizer();
+			$tokenizer = new ToLowerTokenizerFilter( $tokenizer );
+			$tokenizer = new StopWordsTokenizerFilter( $tokenizer );
+			$tokenizer = new StopWordsTokenizerFilter( $tokenizer, array("man", "releasedate", "dvd", "the", "interview") );
+		}
 		$this->tokenizer = $tokenizer;
 	}
 
-	public function estimate(Article $article, array $metatags) {
-		$content = $article->getContent();
+	public function estimate( ArticleInformation $article, VideoInformation $metatags ) {
+		$content = $article->getArticle()->getContent();
 		$count = 0;
 		//var_dump( $metatags );
-		foreach ( $metatags as $tagType => $tagString ) {
+		foreach ( $metatags->getMetadata() as $tagType => $tagString ) {
 			$tagTokens = $this->tokenizer->tokenize( $tagString );
 			foreach ( $tagTokens as $i => $tagToken ) {
 				$offset = 0;
 				$countForToken = 0;
 				while ( ($offset = strpos( strtolower( $content ), strtolower( $tagToken), $offset )) != false ) {
-					// echo "Found: " . $tagToken . "<br/>";
+					// echo "Found: " . $tagToken . "\n";
 					$count += 1;
 					$offset += 1;
 					$countForToken += 1;

@@ -279,9 +279,11 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		if ( !empty( $titleObject ) && $titleObject->exists() ) {
 			$article = new Article( $titleObject );
 		}
-		$estimate = $this->relevancyEstimator->compositeEstimate( $article, $videMetadata );
+		$estimate = $this->relevancyEstimator->compositeEstimate(
+			new ArticleInformation( $article ),
+			new VideoInformation( $videMetadata ) );
 		//var_dump($estimate);
-		$this->setVal("estimates:", $estimate);
+		$this->setVal("estimates", $estimate);
 		$this->getResponse()->setFormat("json");
 		//die();
 	}

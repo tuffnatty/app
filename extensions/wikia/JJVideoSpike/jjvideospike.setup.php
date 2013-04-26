@@ -25,6 +25,12 @@ $app->registerClass('CompositeRelevancyEstimatorFactory', $dir.'relevancy/Compos
 $app->registerClass('CompositeRelevancyEstimator', $dir.'relevancy/CompositeRelevancyEstimator.php');
 $app->registerClass('IRelevancyEstimator', $dir.'relevancy/IRelevancyEstimator.php');
 $app->registerClass('MatchAllRelevancyEstimator', $dir.'relevancy/MatchAllRelevancyEstimator.php');
+$app->registerClass('MatchFullTokensEstimator', $dir.'relevancy/MatchFullTokensEstimator.php');
+$app->registerClass('FuzzyMatchFullTokensEstimator', $dir.'relevancy/FuzzyMatchFullTokensEstimator.php');
+$app->registerClass('TitleRelevancyEstimator', $dir.'relevancy/TitleRelevancyEstimator.php');
+
+$app->registerClass('ArticleInformation', $dir.'ArticleInformation.php');
+$app->registerClass('VideoInformation', $dir.'VideoInformation.php');
 
 
 $app->registerSpecialPage('JJVideoSpike', 'JJVideoSpikeController');
