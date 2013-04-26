@@ -66,8 +66,45 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		}
 
 		$suggestions = new ArticleVideoSuggestion( $articleId );
-		$suggestions->getBySubject();
-		die("<hr>");
+
+		$result = $suggestions->getBySubject();
+
+		$subjects = $suggestions->getSubject();
+
+		$this->setVal( 'subject', $subjects[0][0] );
+
+		$this->inflateWithVideoData( $result );
+
+
+		$this->setVal( 'results' , $result );
+
+
+	}
+
+	private function inflateWithVideoData( &$result ) {
+
+		$config = array(
+			'contextWidth' => 460,
+			'maxHeight' => 250
+		);
+
+		foreach ( $result['items'] as $i => $r ) {
+
+
+			$title = Title::newFromText( $r['title'], NS_FILE );
+			$file = wfFindFile( $title );
+
+			$htmlParams = array(
+				'custom-title-link' => $title,
+				'linkAttribs' => array( 'class' => 'video-thumbnail' )
+			);
+
+			if ( !empty( $file ) ) {
+				$thumb = $file->transform( array('width'=>460, 'height'=>250), 0 );
+				$result['items'][$i]['thumb'] = $thumb->toHtml( $htmlParams );
+			}
+		}
+
 	}
 
 }

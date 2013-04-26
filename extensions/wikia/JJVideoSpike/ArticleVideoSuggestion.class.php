@@ -36,15 +36,17 @@ class ArticleVideoSuggestion {
 		$search = (new Wikia\Search\QueryService\Factory)->get( $container );
 		$response = $search->search();
 
-		$result = array(
-			'caption' => $this->wf->Msg( 'vet-suggestions' ),
-			'totalItemCount' => 0,
-			'nextStartFrom' => $response['nextStartFrom'],
-			'currentSetItemCount' => count($response['items']),
-			'items' => $response['items']
-		);
+		$videoController = new VideoEmbedToolController();
 
-		return $result;
+		$response = $videoController->processSearchResponse( $response, $start, $length );
+
+
+		return $response;
+	}
+
+	public function getSubject() {
+		$articleSubject = $this->articleSubject->getPrioritizedList();
+		return $articleSubject;
 	}
 
 	public function getBySubject() {
@@ -54,10 +56,15 @@ class ArticleVideoSuggestion {
 
 		$articleSubject = $this->articleSubject->getPrioritizedList();
 
+		$result = array();
+
+		if ( count( $articleSubject ) > 0 ) {
 
 
-		//var_dump( $wikiSubject );
-		var_dump( $articleSubject );
+			$result = $this->makeQuery( $articleSubject[0][0] );
 
+		}
+
+		return $result;
 	}
 }
