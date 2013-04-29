@@ -21,13 +21,22 @@ $app->registerClass('StopWordsTokenizerFilter', $dir.'util/StopWordsTokenizerFil
 $app->registerClass('ToLowerTokenizerFilter', $dir.'util/ToLowerTokenizerFilter.php');
 $app->registerClass('UniqueTokensTokenizerFilter', $dir.'util/UniqueTokensTokenizerFilter.php');
 
+// relevancy
 $app->registerClass('CompositeRelevancyEstimatorFactory', $dir.'relevancy/CompositeRelevancyEstimatorFactory.php');
-$app->registerClass('CompositeRelevancyEstimator', $dir.'relevancy/CompositeRelevancyEstimator.php');
-$app->registerClass('IRelevancyEstimator', $dir.'relevancy/IRelevancyEstimator.php');
-$app->registerClass('MatchAllRelevancyEstimator', $dir.'relevancy/MatchAllRelevancyEstimator.php');
-$app->registerClass('MatchFullTokensEstimator', $dir.'relevancy/MatchFullTokensEstimator.php');
-$app->registerClass('FuzzyMatchFullTokensEstimator', $dir.'relevancy/FuzzyMatchFullTokensEstimator.php');
-$app->registerClass('TitleRelevancyEstimator', $dir.'relevancy/TitleRelevancyEstimator.php');
+$app->registerClass('CompositeRelevancyEstimator',        $dir.'relevancy/CompositeRelevancyEstimator.php');
+$app->registerClass('IRelevancyEstimator',                $dir.'relevancy/IRelevancyEstimator.php');
+$app->registerClass('MatchAllRelevancyEstimator',         $dir.'relevancy/MatchAllRelevancyEstimator.php');
+$app->registerClass('MatchFullTokensEstimator',           $dir.'relevancy/MatchFullTokensEstimator.php');
+$app->registerClass('FuzzyMatchFullTokensEstimator',      $dir.'relevancy/FuzzyMatchFullTokensEstimator.php');
+$app->registerClass('TitleRelevancyEstimator',            $dir.'relevancy/TitleRelevancyEstimator.php');
+$app->registerClass('SubjectRelevancyEstimator',          $dir.'relevancy/SubjectRelevancyEstimator.php');
+$app->registerClass('SubjectRelevancyEstimator2',         $dir.'relevancy/SubjectRelevancyEstimator2.php');
+
+//normalization
+$app->registerClass('CompositeNormalizingFunction', $dir.'normalizingFunctions/CompositeNormalizingFunction.php');
+$app->registerClass('INormalizingFunction',         $dir.'normalizingFunctions/INormalizingFunction.php');
+$app->registerClass('LinearNormalizingFunction',    $dir.'normalizingFunctions/LinearNormalizingFunction.php');
+$app->registerClass('SigmoidNormalizingFunction',   $dir.'normalizingFunctions/SigmoidNormalizingFunction.php');
 
 $app->registerClass('ArticleInformation', $dir.'ArticleInformation.php');
 $app->registerClass('VideoInformation', $dir.'VideoInformation.php');

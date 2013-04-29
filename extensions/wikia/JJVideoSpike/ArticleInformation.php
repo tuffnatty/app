@@ -19,4 +19,11 @@ class ArticleInformation {
 	public function getArticle() {
 		return $this->article;
 	}
+
+	public function getSubjects() {
+		$art = new ArticleSubject( $this->getArticle()->getTitle()->getArticleID() );
+		$subjectsObject = new WikiSubjects();
+		$art->setAllSubjectList( $subjectsObject->get() );
+		return $art->getPrioritizedList();
+	}
 }
