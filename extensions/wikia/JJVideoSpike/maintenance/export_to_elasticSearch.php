@@ -5,29 +5,69 @@
  *
  */
 
-require_once( dirname(__FILE__)."../../../../../maintenance/commandLine.inc" );
+require_once( dirname( __FILE__ ) . '/../../../../maintenance/Maintenance.php' );
 
 
-$db = wfGetDB( DB_SLAVE, array(), "video151" );
+class exportToElasticSearch extends Maintenance {
+
+	protected $providers = array('anyclip', 'dailymotion', 'ign', 'movieclips', 'realgravity', 'screenplay');
+
+	public function __construct() {
+		parent::__construct();
+		$this->mDescription = "Import video metadata to elastic search engine";
+		$this->addOption( 'provider', 'Provider name', true, true, 'p' );
+	}
+
+	/**
+	 * Do the actual work. All child classes will need to implement this
+	 */
+	public function execute() {
+
+		$provider = $this->getOption( 'provider', '' );
+		if ( !in_array( $provider, $this->providers ) ) {
+			die( " You need to choose provider: " . implode( ", ", $this->providers ) );
+		}
+
+		$db = wfGetDB( DB_SLAVE, array(), "video151" );
+		$elems = $db->query("SELECT i.*, p.page_id
+							 FROM image i LEFT JOIN page p ON i.img_name = p.page_title
+							 WHERE i.img_media_type='VIDEO' AND p.page_id > 0 AND i.img_minor_mime = '{$provider}' LIMIT 500");
 
 
-/*
- Provider: anyclip
- Provider: dailymotion
- Provider: ign
- Provider: movieclips
- Provider: realgravity
- Provider: screenplay
- */
+		$elastic = new ElasticSearchQuery('testing', 'test');
 
-$elems = $db->query("SELECT * FROM image WHERE img_minor_mime = 'realgravity' LIMIT 50");
+		while ( $r = $elems->fetchObject() ) {
 
-while ( $r = $elems->fetchObject() ) {
+			$metadata = unserialize( $r->img_metadata );
+			$keywords = array();
+			if ( isset($metadata['keywords']) ) {
+				$keywordsA = explode(",", $metadata['keywords']);
+				foreach ( $keywordsA as $keyword ) {
+					$keywords[] = trim( $keyword );
+				}
+			}
 
+			$toIndex = array(
+				'video_id' => $r->page_id,
+				'title' => $r->img_name,
+				'description' => isset( $metadata['description'] ) ? $metadata['description'] : '',
+				'keywords' => $keywords
+			);
 
-	echo "\n ====== \n ";
-	echo 'Title: ' . $r->img_name . "\n";
-	echo 'Provider: ' . $r->img_minor_mime . "\n";
-	echo 'Meta : ' ;
-	print_r( unserialize( $r->img_metadata ) );
+			$resp = $elastic->indexData( $r->page_id, $toIndex );
+
+			print_r( $toIndex );
+			print_r( $resp );
+			echo "================================\n";
+		}
+
+	}
+
 }
+
+$maintClass = "exportToElasticSearch";
+require_once( RUN_MAINTENANCE_IF_MAIN );
+
+
+
+
