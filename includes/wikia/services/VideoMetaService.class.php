@@ -19,7 +19,10 @@ class VideoMetaService {
 	const LIM_RELATED = -2;
 
 	/**
+	 * termsForTitle
+	 *
 	 * Return a list of terms for a video title
+	 *
 	 * @param string $videoTitle - The text title for a video
 	 * @param int $maxCount - Filter the terms returned to only those
 	 *                        who appear less than maxCount times across all videos
@@ -77,6 +80,8 @@ class VideoMetaService {
 	}
 
 	/**
+	 * relatedVideos
+	 *
 	 * Returns a list of relevant videos based on a list of terms passed in.
 	 *
 	 * @param array $terms - An array of VideoMetaTerm objects
@@ -136,6 +141,110 @@ class VideoMetaService {
 
 		return $videoTitles;
 	}
+
+	/**
+	 * leastUsedKeywords
+	 *
+	 * Return an array of the least used keywords (a term where type == 'keyword')
+	 *
+	 * @param int $threshold - Do not return any keywords used more than $threshold times
+	 * @param int $limit - Return only $limit keywords
+	 * @return array - An array of VideoMetaTerm objects
+	 */
+	public function leastUsedKeywords ( $threshold = 10, $limit = 100 ) {
+		return self::fetchTerms( $threshold, $limit, 'ASC', 'keyword');
+	}
+
+	/**
+	 * mostUsedKeywords
+	 *
+	 * Return an array of the most used keywords (a term where type == 'keyword')
+	 *
+	 * @param int $threshold - Do not return any keywords used less than $threshold times
+	 * @param int $limit - Return only $limit keywords
+	 * @return array - An array of VideoMetaTerm objects
+	 */
+	public function mostUsedKeywords ( $threshold = 10000, $limit = 100 ) {
+		return self::fetchTerms( $threshold, $limit, 'DESC', 'keyword');
+	}
+
+	/**
+	 * leastUsedTerms
+	 *
+	 * Return an array of the least used terms
+	 *
+	 * @param int $threshold - Do not return any keywords used more than $threshold times
+	 * @param int $limit - Return only $limit keywords
+	 * @param string $type - The type of term to return (e.g. 'keyword', 'category', 'genre')
+	 * @return array - An array of VideoMetaTerm objects
+	 */
+	public function leastUsedTerms ( $threshold = 10, $limit = 100, $type = '' ) {
+		return self::fetchTerms( $threshold, $limit, 'ASC', $type);
+	}
+
+	/**
+	 * mostUsedTerms
+	 *
+	 * Return an array of the most used terms;
+	 *
+	 * @param int $threshold - Do not return any keywords used less than $threshold times
+	 * @param int $limit - Return only $limit keywords
+	 * @param string $type - The type of term to return (e.g. 'keyword', 'category', 'genre')
+	 * @return array - An array of VideoMetaTerm objects
+	 */
+	public function mostUsedTerms ( $threshold = 10000, $limit = 100, $type = '' ) {
+		return self::fetchTerms( $threshold, $limit, 'DESC', $type);
+	}
+
+	/**
+	 * fetchTerms
+	 *
+	 * Returns an array of terms
+	 *
+	 * @param $threshold - A threshold on the term frequency to return
+	 * @param int $limit - Return only $limit keywords
+	 * @param string $sort - The sort direction of the terms returned
+	 * @param string $type - The type of term to return (e.g. 'keyword', 'category', 'genre')
+	 * @return array - An array of VideoMetaTerm objects
+	 * @throws Exception
+	 */
+	private function fetchTerms ( $threshold, $limit, $sort = 'ASC',  $type = '' ) {
+		$app = F::App();
+
+		if ( !preg_match('/^(asc|desc)$/i', $sort)) {
+			throw new Exception("Bad parameter: 3rd parameter to fetchTerms must be 'asc' or 'desc'");
+		}
+
+		$cmp = '<';
+		if ( strtolower($sort) == 'desc' ) {
+			$cmp = '>';
+		}
+
+		$sql = 'SELECT type, term, count ' .
+			'  FROM vid_term, vid_term_freq ' .
+			' WHERE term_id=id ' .
+			"   AND count $cmp $threshold ";
+
+		if (!empty($type)) {
+			$sql .= "AND type = $type ";
+		}
+
+		$sql .= "ORDER BY count $sort " .
+				" LIMIT $limit ";
+
+		$dbr = wfGetDB(DB_SLAVE, array(), $app->wg->ExternalDatawareDB);
+		$res = $dbr->query($sql, __METHOD__);
+
+		$terms = array();
+		while ($row = $res->fetchObject()) {
+			$term = new VideoMetaTerm( $row->type, $row->term, $row->count );
+			if (!empty($term)) {
+				$terms[] = $term;
+			}
+		}
+
+		return $terms;
+	}
 }
 
 /**
@@ -161,6 +270,7 @@ class VideoMeta {
 
 	/**
 	 * Return the list of terms for this video, optionally constraining on $type
+	 * 
 	 * @param string $type Only return terms of type $type
 	 */
 	public function terms ( $type = '' ) {
