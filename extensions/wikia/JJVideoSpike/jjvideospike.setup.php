@@ -45,4 +45,6 @@ $app->registerClass('VideoInformation', $dir.'VideoInformation.php');
 $app->registerSpecialPage('JJVideoSpike', 'JJVideoSpikeController');
 $app->registerClass('ArticleVideoSuggestion', $dir.'ArticleVideoSuggestion.class.php');
 
+$app->registerClass('FreebaseClient', $dir . 'FreebaseClient.class.php');
+
 
