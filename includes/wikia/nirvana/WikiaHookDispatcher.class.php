@@ -43,6 +43,7 @@ class WikiaHookDispatcher {
 	}
 
 	public function __call( $method, $args ) {
+		wfProfileIn('!hook wrapper');
 		if ( empty( $this->hookHandlers[$method] ) ) {
 			throw new WikiaException( "Unknown hook handler: {$method}" );
 		}
@@ -56,6 +57,7 @@ class WikiaHookDispatcher {
 			$handler = $this->hookHandlers[$method]['object'];
 		}
 
+		wfProfileOut('!hook wrapper');
 		return call_user_func_array( array( $handler, $this->hookHandlers[$method]['method'] ), $args );
 	}
 

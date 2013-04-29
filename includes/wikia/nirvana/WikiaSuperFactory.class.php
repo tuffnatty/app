@@ -83,7 +83,9 @@ abstract class WikiaSuperFactory {
 	 * @return JSMessages|JSSnippets|Title|User|Article|Category|AssetsManager|WikiaRequest|WikiaResponse|object|Wikia
 	 */
 	public static function build($className, Array $params = array(), $constructorMethod = '__construct') {
+		wfProfileIn(__METHOD__);
 		if(isset(self::$constructors[$className]) && array_key_exists('INSTANCE', self::$constructors[$className])) {
+			wfProfileOut(__METHOD__);
 			return self::$constructors[$className]['INSTANCE'];
 		}
 
@@ -92,6 +94,7 @@ abstract class WikiaSuperFactory {
 				$method = new ReflectionMethod($className, $constructorMethod);
 			}
 			catch(ReflectionException $e) {
+				wfProfileOut(__METHOD__);
 				throw new WikiaException("WikiaFactory: Unknown constructor ($constructorMethod) for class: $className");
 			}
 			self::addClassConstructor($className, array(), $constructorMethod);
@@ -108,14 +111,20 @@ abstract class WikiaSuperFactory {
 				self::$reflections[$className] = new ReflectionClass($className);
 			}
 			if(!empty($buildParams)) {
+				wfProfileIn(__METHOD__ . '-constructor');
 				$object = self::$reflections[$className]->newInstanceArgs($buildParams);
+				wfProfileOut(__METHOD__ . '-constructor');
 			}
 			else {
+				wfProfileIn(__METHOD__ . '-constructor');
 				$object = self::$reflections[$className]->newInstanceArgs();
+				wfProfileOut(__METHOD__ . '-constructor');
 			}
 		}
 		else {
+			wfProfileIn(__METHOD__ . '-constructor');
 			$object = call_user_func_array(array($className, $constructorMethod), $buildParams);
+			wfProfileOut(__METHOD__ . '-constructor');
 		}
 
 		if(isset(self::$setters[$className])) {
@@ -123,6 +132,7 @@ abstract class WikiaSuperFactory {
 				call_user_func(array($object, $setterName), $value);
 			}
 		}
+		wfProfileOut(__METHOD__);
 		return $object;
 	}
 
