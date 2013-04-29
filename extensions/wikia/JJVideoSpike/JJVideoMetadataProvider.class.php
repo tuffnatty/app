@@ -8,6 +8,7 @@
 class JJVideoMetadataProvider {
 
 	public function get( $title ) {
+
 		$title = Title::newFromText( $title, NS_FILE );
 		$file = wfFindFile($title);
 		if( !$file ) return false;
@@ -25,10 +26,28 @@ class JJVideoMetadataProvider {
 				$resultMeta['category'] = $meta['category'];
 			if ( isset($meta['title']) )
 				$resultMeta['title'] = $meta['title'];
+			if ( isset($meta['actors']) ) {
+				$resultMeta['actors'] = $meta['actors'];
+			}
+			if ( isset($meta['genres']) ) {
+				$resultMeta['genres'] = $meta['genres'];
+			}
 			return $resultMeta;
 		} else {
 			return false;
 		}
+	}
+
+	public function getExpanded( $title, $metadata=null ) {
+
+		if ( empty( $metadata ) ) {
+			$metadata = $this->get( $title );
+		}
+
+
+
+		return $metadata;
+
 	}
 
 }

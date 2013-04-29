@@ -145,7 +145,7 @@ class VideoEmbedToolController extends WikiaController {
 		$this->response->setData( $response->getData() );
 	}
 
-	private function processSearchResponse( Wikia\Search\ResultSet\AbstractResultSet $response, $svStart, $svSize, $trimTitle = false, $excludedVideos = array() ) {
+	public function processSearchResponse( Wikia\Search\ResultSet\AbstractResultSet $response, $svStart, $svSize, $trimTitle = false, $excludedVideos = array() ) {
 		$data = array();
 		$nextStartFrom = $svStart;
 		foreach( $response  as $result ) {   /* @var $result Wikia\Search\ResultSet\AbstractResultset */
@@ -158,10 +158,18 @@ class VideoEmbedToolController extends WikiaController {
 				continue;
 			}
 
+			if ( is_object( $this->request ) ) {
+				$videoWidth = $this->request->getVal( 'videoWidth', self::VIDEO_THUMB_DEFAULT_WIDTH );
+				$videoHeight = $this->request->getVal( 'videoHeight', self::VIDEO_THUMB_DEFAULT_HEIGHT );
+			} else {
+				$videoWidth = self::VIDEO_THUMB_DEFAULT_WIDTH;
+				$videoHeight = self::VIDEO_THUMB_DEFAULT_HEIGHT;
+			}
+
 			WikiaFileHelper::inflateArrayWithVideoData( $singleVideoData,
 				Title::newFromText($singleVideoData['title'], NS_FILE),
-				$this->request->getVal( 'videoWidth', self::VIDEO_THUMB_DEFAULT_WIDTH ),
-				$this->request->getVal( 'videoHeight', self::VIDEO_THUMB_DEFAULT_HEIGHT ),
+				$videoWidth,
+				$videoHeight,
 				true
 			);
 

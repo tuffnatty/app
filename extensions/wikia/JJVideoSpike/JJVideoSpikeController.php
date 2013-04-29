@@ -90,6 +90,16 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		die("<hr>!");
 	}
 
+
+	public function elastic() {
+
+
+		$title = Title::newFromID(2);
+		$title->getCategorySortkey();
+
+		die("<hr>");
+	}
+
 	public function moar() {
 
 		print_r( '<pre>' );
