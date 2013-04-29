@@ -9,12 +9,6 @@ if ( !defined( 'MEDIAWIKI' ) ) {
  */
 
 /**
- * @FIXME: use classes autoloader instead
- */
-require( "$IP/extensions/wikia/AdServer.php" );
-require_once( "$IP/extensions/wikia/AdEngine/AdEngine.php" );
-
-/**
  * Author: Inez Korczyński
  */
 function GetLinksArrayFromMessage($messagename) { // feel free to suggest better name for this function

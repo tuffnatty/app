@@ -26,6 +26,18 @@ class Grouping extends Base
 	protected $host;
 	
 	/**
+	 * Returns a truncated description based on desired word count.
+	 * @param int $wordCount
+	 * @return string
+	 */
+	public function getDescription( $wordCount = 60 ) {
+		$desc = $this->getHeader( 'desc' );
+		$count = str_word_count( $desc );
+		$ellipses = $count > $wordCount ? '&hellip;' : '';
+		return empty( $desc ) ? '' : implode( ' ', array_slice( explode( ' ', $desc ), 0, $wordCount ) ) . $ellipses;
+	}
+	
+	/**
 	 * Uses DependencyContainer to pre-populate attributes, and then configures stuff.
 	 * @param DependencyContainer $container
 	 */
@@ -50,20 +62,7 @@ class Grouping extends Base
 		$valueGroup  = $valueGroups[$this->metaposition];
 		$this->host  = $valueGroup->getValue();
 		$this->resultsFound = $valueGroup->getNumFound();
-		$docs = $valueGroup->getDocuments();
-		$highlighting = $this->searchResultObject->getHighlighting();
-		if ( $highlighting !== null ) {
-			foreach ( $docs as $doc ) {
-				$hlResult = $highlighting->getResult( $doc['id'] );
-				if (! empty( $hlResult ) ) {
-					$field = $hlResult->getField( Utilities::field( 'html' ) );
-					if ( count( $field ) > 0 ) {
-						$doc->setText( $field[0] );
-					}
-				}
-			}
-		}
-		$this->setResults( $docs );
+		$this->setResults( $valueGroup->getDocuments() );
 		return $this;
 	}
 	
@@ -73,17 +72,20 @@ class Grouping extends Base
 	 */
 	protected function configureHeaders() {
 		$doc = end( $this->results ); // there's only one
+		$wikiId = $doc['wid'];
+		$wikiId = $wikiId ?: $this->service->getWikiIdByHost( $this->host );
+		$title = $this->service->getGlobalForWiki( 'wgSitename', $wikiId );
 		if (! empty( $doc ) ) {
-			$wikiId = $doc['wid'];
-			$this->addHeaders( $doc->getFields() )
-			     ->addHeaders( $this->service->getVisualizationInfoForWikiId( $wikiId ) )
-			     ->addHeaders( $this->service->getStatsInfoForWikiId( $wikiId ) )
-			     ->setHeader ( 'wikititle', $this->service->getGlobalForWiki( 'wgSitename', $wikiId ) )
-			     ->setHeader ( 'hub', $this->service->getHubForWikiId( $wikiId ) );
-			
-			if (! $this->getHeader( 'description' ) ) {
-				$this->setHeader( 'description', $this->service->getDescriptionTextForWikiId( $wikiId ) );
-			}
+			$this->addHeaders( $doc->getFields() );
+			$title = $title ?: $doc[Utilities::field( 'wikititle' )]; // apparently wgSitename can be false for some wiki IDs
+		}
+		$this->addHeaders( $this->service->getVisualizationInfoForWikiId( $wikiId ) )
+			 ->addHeaders( $this->service->getStatsInfoForWikiId( $wikiId ) )
+			 ->setHeader ( 'wikititle', $title )
+			 ->setHeader ( 'title', $title )
+			 ->setHeader ( 'hub', $this->service->getHubForWikiId( $wikiId ) );
+		if ( $this->getDescription() == '' ) {
+			$this->setHeader( 'desc', $this->service->getSimpleMessage( 'wikiasearch2-crosswiki-description', array( $title ) ) );
 		}
 		return $this;
 	}
@@ -127,6 +129,30 @@ class Grouping extends Base
 	 */
 	public function toArray() {
 		return $this->getHeader();
+	}
+
+	/**
+	 * Returns a formatted message about the number of articles on a wiki
+	 * @return string
+	 */
+	public function getArticlesCountMsg() {
+		return $this->service->shortNumForMsg($this->getHeader('articles_count')?:0, 'wikiasearch2-pages');
+	}
+
+	/**
+	 * Returns a formatted message about the number of images on a wiki
+	 * @return string
+	 */
+	public function getImagesCountMsg() {
+		return $this->service->shortNumForMsg($this->getHeader('images_count')?:0, 'wikiasearch2-images');
+	}
+
+	/**
+	 * Returns a formatted message about the number of videos on a wiki
+	 * @return string
+	 */
+	public function getVideosCountMsg() {
+		return $this->service->shortNumForMsg($this->getHeader('videos_count')?:0, 'wikiasearch2-videos');
 	}
 
 }

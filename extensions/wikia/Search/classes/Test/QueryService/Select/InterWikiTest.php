@@ -14,6 +14,7 @@ class InterWikiTest extends Wikia\Search\Test\BaseTest {
 	 */
 	public function testExtractMatch() {
 		$mockConfig = $this->getMock( 'Wikia\Search\Config', array( 'getQuery', 'setWikiMatch', 'getWikiMatch' ) );
+		$mockQuery = $this->getMock( 'Wikia\Search\Query\Select', array( 'getSanitizedQuery' ), array( 'foo' ) );
 		$mockService = $this->getMockBuilder( 'Wikia\Search\MediaWikiService' )
 		                      ->disableOriginalConstructor()
 		                      ->setMethods( array( 'getWikiMatchByHost' ) )
@@ -31,7 +32,11 @@ class InterWikiTest extends Wikia\Search\Test\BaseTest {
 		$mockConfig
 		    ->expects( $this->once() )
 		    ->method ( 'getQuery' )
-		    ->with   ( Wikia\Search\Config::QUERY_RAW )
+		    ->will   ( $this->returnValue( $mockQuery ) )
+	    ;
+		$mockQuery
+		    ->expects( $this->once() )
+		    ->method ( 'getSanitizedQuery' )
 		    ->will   ( $this->returnValue( 'star wars' ) )
 		;
 		$mockService
@@ -111,7 +116,7 @@ class InterWikiTest extends Wikia\Search\Test\BaseTest {
 		
 		$mockGrouping = $this->getMockBuilder( 'Solarium_Query_Select_Component_Grouping' )
 		                     ->disableOriginalConstructor()
-		                     ->setMethods( array( 'setLimit', 'setOffset', 'setFields' ) )
+		                     ->setMethods( array( 'setLimit', 'setOffset', 'setFields', 'setNumberOfGroups' ) )
 		                     ->getMock();
 		
 		$mockSelect = $this->getMockBuilder( 'Wikia\Search\QueryService\Select\InterWiki' )
@@ -130,15 +135,16 @@ class InterWikiTest extends Wikia\Search\Test\BaseTest {
 		    ->with   ( Wikia\Search\QueryService\Select\InterWiki::GROUP_RESULTS_GROUPING_ROW_LIMIT )
 		    ->will   ( $this->returnValue( $mockGrouping ) )
 		;
-		$mockConfig
-		    ->expects( $this->once() )
-		    ->method ( 'getStart' )
-		    ->will   ( $this->returnValue( 0 ) )
-		;
 		$mockGrouping
 		    ->expects( $this->once() )
 		    ->method ( 'setOffset' )
 		    ->with   ( 0 )
+		    ->will   ( $this->returnValue( $mockGrouping ) )
+		;
+		$mockGrouping
+		    ->expects( $this->once() )
+		    ->method ( 'setNumberOfGroups' )
+		    ->with   ( true )
 		    ->will   ( $this->returnValue( $mockGrouping ) )
 		;
 		$mockGrouping
@@ -212,20 +218,6 @@ class InterWikiTest extends Wikia\Search\Test\BaseTest {
 		                   ->setConstructorArgs( array( $dc ) )
 		                   ->setMethods( array( null ) )
 		                   ->getMockForAbstractClass();
-		
-		$mockConfig
-		    ->expects( $this->once() )
-		    ->method ( 'setLength' )
-		    ->with   ( Wikia\Search\QueryService\Select\InterWIki::GROUP_RESULTS_GROUPINGS_LIMIT )
-		    ->will   ( $this->returnValue( $mockConfig ) )
-		;
-		$mockConfig
-		    ->expects( $this->once() )
-		    ->method ( 'setIsInterWiki' )
-		    ->with   ( true )
-		    ->will   ( $this->returnValue( $mockConfig ) )
-		;
-		
 		$mockConfig
 		    ->expects( $this->any() )
 		    ->method ( 'getPage' )
@@ -353,19 +345,30 @@ class InterWikiTest extends Wikia\Search\Test\BaseTest {
 	 * @covers Wikia\Search\QueryService\Select\InterWiki::getFormulatedQuery
 	 */
 	public function testGetFormulatedQuery() {
+		$mockConfig = $this->getMock( 'Wikia\Search\Config', [ 'getQuery' ] );
+		
+		$dc = new \Wikia\Search\QueryService\DependencyContainer( array( 'config' => $mockConfig ) );
+		
 		$mockSelect = $this->getMockBuilder( 'Wikia\Search\QueryService\Select\InterWiki' )
-		                   ->disableOriginalConstructor()
-		                   ->setMethods( array( 'getQueryClausesString', 'getNestedQuery' ) )
+		                   ->setConstructorArgs( [ $dc ] )
+		                   ->setMethods( [ 'getQueryClausesString' ] )
 		                   ->getMock();
+		
+		$mockQuery = $this->getMock( 'Wikia\Search\Query\Select', [ 'getSolrQuery' ], [ 'foo' ] );
 		
 		$mockSelect
 		    ->expects( $this->once() )
 		    ->method ( 'getQueryClausesString' )
 		    ->will   ( $this->returnValue( 'foo' ) )
 		;
-		$mockSelect
+		$mockConfig
 		    ->expects( $this->once() )
-		    ->method ( 'getNestedQuery' )
+		    ->method ( 'getQuery' )
+		    ->will   ( $this->returnValue( $mockQuery ) )
+		;
+		$mockQuery
+		    ->expects( $this->once() )
+		    ->method ( 'getSolrQuery' )
 		    ->will   ( $this->returnValue( 'bar' ) )
 		;
 		$method = new ReflectionMethod( 'Wikia\Search\QueryService\Select\InterWiki', 'getFormulatedQuery' );

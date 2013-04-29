@@ -3,7 +3,9 @@
  * Class definition for Wikia\Search\Config
  */
 namespace Wikia\Search;
-use Wikia\Search\MediaWikiService, \Sanitizer, \Solarium_Query_Select, \Wikia\Search\Match, \ArrayAccess;
+use Wikia\Search\MediaWikiService, Wikia\Search\Match;
+use Wikia\Search\Query\Select as Query;
+use ArrayAccess, Solarium_Query_Select;
 /**
  * A config class intended to handle variable flags for search
  * Intended to be a dependency-injected receptacle for different search requirements
@@ -57,7 +59,7 @@ class Config implements ArrayAccess
 			'cityId'		=>	0,
 			'rank'			=>	'default',
 			'start'			=>	0,
-			'minimumMatch'	=> '66%',
+			'minimumMatch'	=> '80%',
 			);
 	
 	/**
@@ -90,11 +92,12 @@ class Config implements ArrayAccess
 	 * @var array
 	 */
 	private $queryFieldsToBoosts = array(
-			'title'             => 5,
-			'html'              => 1.5,
-			'redirect_titles'   => 4,
-			'categories'        => 1,
-			'nolang_txt'        => 7
+			'title'             => 100,
+			'html'              => 5,
+			'redirect_titles'   => 50,
+			'categories'        => 25,
+			'nolang_txt'        => 10,
+			'backlinks_txt'     => 25,
 			);
 	
 
@@ -164,7 +167,7 @@ class Config implements ArrayAccess
 	 * @param array $params
 	 */
 	public function __construct( array $params = array() ) {
-		$this->service = new MediaWikiService;
+		$this->service = (new \Wikia\Search\ProfiledClassFactory)->get( 'Wikia\Search\MediaWikiService' );
 		
 		$dynamicFilterCodes = array(
 				self::FILTER_CAT_VIDEOGAMES    => Utilities::valueForField( 'categories', 'Video Games', array( 'quote'=>'"' ) ),
@@ -247,67 +250,46 @@ class Config implements ArrayAccess
 	 * @return integer
 	 */
 	public function getLength() {
-		return ( $this->getArticleMatch() !== null && $this->getStart() === 0 ) 
+		return ( $this->hasMatch() && $this->getStart() === 0 ) 
 			? ( (int) $this->params['length'] ) - 1 
 			: $this->params['length'];
 	}
 	
 	/**
-	 * Used to store the query from the request as passed by the controller.
-	 * We remove any namespaces prefixes, but store the original query under the originalQuery param.
+	 * Receives a possibly dirty user input string and stores it in an
+	 * instance of Wikia\Search\Query\Select.
+	 * Uses the methods within that class to determine if we need to 
+	 * record a specific namespace associated with that query.
+	 * 
 	 * @param  string $query
 	 * @return Wikia\Search\Config provides fluent interface
 	 */
 	public function setQuery( $query ) {
 		
-		$query = html_entity_decode( Sanitizer::StripAllTags ( $query ), ENT_COMPAT, 'UTF-8');
+		$this->params['query'] = new Query( $query );
 		
-		$this->params['originalQuery'] = $query;
-		
-		if ( strpos( $query, ':' ) !== false ) {
-			$queryNsExploded = explode( ':', $query );
-			$queryNamespaceStr = array_shift( $queryNsExploded );
-			$queryNamespace	= $this->service->getNamespaceIdForString( $queryNamespaceStr );
-			if ( $queryNamespace ) {
-				$namespaces = $this->getNamespaces();
-			    if ( empty( $namespaces ) || (! in_array( $queryNamespace, $namespaces ) ) ) {
-			        $this->params['queryNamespace'] = $queryNamespace;
-			    } 
-			    $query = implode( ':', $queryNsExploded );
+		$namespace = $this->params['query']->getNamespaceId();
+		if ( $namespace !== null ) {
+			$namespaces = $this->getNamespaces();
+			if ( empty( $namespaces ) || (! in_array( $namespace, $namespaces ) ) ) {
+				$this->params['queryNamespace'] = $namespace;
 			}
 		}
-		
-		$this->params['query'] = $query;
-		
 		return $this;
 	}
 	
 	/**
-	 * Most of the time, we want the query escaped for XSS and Lucene syntax well-formedness
-	 * @param  int $strategy one of the self::QUERY_ constants
-	 * @return string
+	 * Returns the query we've stored.
+	 * @return Wikia\Search\Query\Select
 	 */
-	public function getQuery( $strategy = self::QUERY_DEFAULT ) {
+	public function getQuery() {
 		if (! isset( $this->params['query'] ) ) {
 			return false;
 		}
-		$query = $strategy !== self::QUERY_DEFAULT ? $this->params['query'] : Utilities::sanitizeQuery( $this->params['query'] );
-		$query = $strategy === self::QUERY_ENCODED ? htmlentities( $query, ENT_COMPAT, 'UTF-8' ) : $query;
-		
-		if ( $this->isInterWiki() ) {
-			$query = preg_replace( '/ wiki\b/i', '', $query);
+		if ( is_string( $this->params['query'] ) ) {
+			$this->setQuery( $this->params['query'] );
 		}
-		return $query;
-	}
-	
-	/**
-	 * Strips out quotes, and sanitizes the query for Lucene query syntax (can be deactivated by passing true)
-	 * @param  boolean $raw
-	 * @return string
-	 */
-	public function getQueryNoQuotes( $raw = false ) {
-		$query = preg_replace( "/['\"]/", '', preg_replace( "/(\\w)['\"](\\w)/", '$1 $2',  $this->getQuery( self::QUERY_RAW ) ) );
-		return $raw ? $query : Utilities::sanitizeQuery( $query );
+		return $this->params['query'];
 	}
 	
 	/**

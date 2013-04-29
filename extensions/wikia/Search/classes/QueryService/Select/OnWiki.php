@@ -24,7 +24,6 @@ class OnWiki extends AbstractSelect
 	 * @var array
 	 */
 	protected $boostFunctions = array(
-		'log(views)^0.66', 
 		'log(backlinks)'
 	);
 	
@@ -33,7 +32,7 @@ class OnWiki extends AbstractSelect
 	 * @return Wikia\Search\Match\Article|null
 	 */
 	public function extractMatch() {
-		$match = $this->service->getArticleMatchForTermAndNamespaces( $this->config->getOriginalQuery(), $this->config->getNamespaces() );
+		$match = $this->service->getArticleMatchForTermAndNamespaces( $this->config->getQuery()->getSanitizedQuery(), $this->config->getNamespaces() );
 		if (! empty( $match ) ) {
 			$this->config->setArticleMatch( $match );
 		}
@@ -51,6 +50,7 @@ class OnWiki extends AbstractSelect
 		            ->registerHighlighting  ( $query )
 		            ->registerFilterQueries ( $query )
 		            ->registerSpellcheck    ( $query )
+		            ->registerDismax        ( $query )
 		;
 	}
 	
@@ -75,7 +75,7 @@ class OnWiki extends AbstractSelect
 	protected function registerSpellcheck( Select $query ) {
 		if ( $this->service->getGlobal( 'WikiaSearchSpellcheckActivated' ) ) {
 			$query->getSpellcheck()
-			      ->setQuery( $this->config->getQueryNoQuotes( true ) )
+			      ->setQuery( $this->config->getQuery()->getSanitizedQuery() )
 			      ->setCollate( true )
 			      ->setCount( self::SPELLING_RESULT_COUNT )
 			      ->setMaxCollationTries( self::SPELLING_MAX_COLLATION_TRIES )
@@ -115,7 +115,7 @@ class OnWiki extends AbstractSelect
 	 * @return string
 	 */
 	protected function getFormulatedQuery() {
-		return sprintf( '%s AND (%s)', $this->getQueryClausesString(), $this->getNestedQuery() );
+		return sprintf( '%s AND (%s)', $this->getQueryClausesString(), $this->config->getQuery()->getSolrQuery() );
 	}
 	
 	/**
@@ -130,19 +130,5 @@ class OnWiki extends AbstractSelect
 		}
 		$queryClauses[] = "({$nsQuery})";
 		return sprintf( '(%s)', implode( ' AND ', $queryClauses ) );
-	}
-	
-	/**
-	 * Returns the string used to build out a boost query with Solarium
-	 * @return string
-	 */
-	protected function getBoostQueryString()
-	{
-		$queryNoQuotes = $this->config->getQueryNoQuotes( true );
-		$boostQueries = array(
-				Utilities::valueForField( 'html', $queryNoQuotes, array( 'boost'=>5, 'valueQuote'=>'\"' ) ),
-		        Utilities::valueForField( 'title', $queryNoQuotes, array( 'boost'=>10, 'valueQuote'=>'\"' ) ),
-		);
-		return implode( ' ', $boostQueries );
 	}
 }

@@ -7,7 +7,7 @@ use Wikia, ReflectionProperty, ReflectionMethod;
 /**
  * Tests on-wiki search functionality
  */
-class OnWikiTest extends Wikia\Search\Test\BaseTest {
+class OnWikiTest extends Wikia\Search\Test\BaseTest { 
 	
 	/**
 	 * @covers Wikia\Search\QueryService\Select\OnWiki::extractMatch
@@ -20,8 +20,10 @@ class OnWikiTest extends Wikia\Search\Test\BaseTest {
 		                      ->getMock();
 		
 		$mockConfig = $this->getMockBuilder( 'Wikia\Search\Config' )
-		                   ->setMethods( array( 'getOriginalQuery', 'getNamespaces', 'setArticleMatch', 'getMatch' ) )
+		                   ->setMethods( array( 'getQuery', 'getNamespaces', 'setArticleMatch', 'getMatch' ) )
 		                   ->getMock();
+		
+		$mockQuery = $this->getMock( 'Wikia\Search\Query\Select', array( 'getSanitizedQuery' ), array( 'foo' ) );
 		
 		$dc = new Wikia\Search\QueryService\DependencyContainer( array( 'service' => $mockService, 'config' => $mockConfig ) );
 		$mockSelect = $this->getMockBuilder( 'Wikia\Search\QueryService\Select\OnWiki' )
@@ -35,7 +37,12 @@ class OnWikiTest extends Wikia\Search\Test\BaseTest {
 		
 		$mockConfig
 		    ->expects( $this->once() )
-		    ->method ( 'getOriginalQuery' )
+		    ->method ( 'getQuery' )
+		    ->will   ( $this->returnValue( $mockQuery ) )
+	    ;
+		$mockQuery
+		    ->expects( $this->once() )
+		    ->method ( 'getSanitizedQuery' )
 		    ->will   ( $this->returnValue( 'term' ) )
 		;
 		$mockConfig
@@ -75,7 +82,7 @@ class OnWikiTest extends Wikia\Search\Test\BaseTest {
 		
 		$selectMethods = array( 
 				'registerQueryParams', 'registerHighlighting', 'registerFilterQueries', 
-				'registerSpellcheck', 'configureQueryFields' 
+				'registerSpellcheck', 'configureQueryFields', 'registerDismax'
 				);
 		$mockSelect = $this->getMockBuilder( 'Wikia\Search\QueryService\Select\OnWiki' )
 		                   ->disableOriginalConstructor()
@@ -108,6 +115,12 @@ class OnWikiTest extends Wikia\Search\Test\BaseTest {
 		$mockSelect
 		    ->expects( $this->once() )
 		    ->method ( 'registerSpellcheck' )
+		    ->with   ( $mockQuery )
+		    ->will   ( $this->returnValue( $mockSelect ) )
+		;
+		$mockSelect
+		    ->expects( $this->once() )
+		    ->method ( 'registerDismax' )
 		    ->with   ( $mockQuery )
 		    ->will   ( $this->returnValue( $mockSelect ) )
 		;
@@ -192,7 +205,8 @@ class OnWikiTest extends Wikia\Search\Test\BaseTest {
 		                      ->disableOriginalConstructor()
 		                      ->setMethods( array( 'getGlobal' ) )
 		                      ->getMock();
-		$mockConfig = $this->getMock( 'Wikia\Search\Config', array( 'getQueryNoQuotes', 'getCityId'  ) );
+		$mockConfig = $this->getMock( 'Wikia\Search\Config', array( 'getQuery', 'getCityId'  ) );
+		$mockQueryWrapper = $this->getMock( 'Wikia\Search\Query\Select', array( 'getSanitizedQuery' ), array( 'foo' ) );
 		
 		$dc = new Wikia\Search\QueryService\DependencyContainer( array( 'service' => $mockService, 'config' => $mockConfig ) );
 		$mockSelect = $this->getMockBuilder( 'Wikia\Search\QueryService\Select\OnWiki' )
@@ -213,8 +227,12 @@ class OnWikiTest extends Wikia\Search\Test\BaseTest {
 	    ;
 		$mockConfig
 		    ->expects( $this->once() )
-		    ->method ( 'getQueryNoQuotes' )
-		    ->with   ( true )
+		    ->method ( 'getQuery' )
+		    ->will   ( $this->returnValue( $mockQueryWrapper ) )
+	    ;
+		$mockQueryWrapper
+		    ->expects( $this->once() )
+		    ->method ( 'getSanitizedQuery' )
 		    ->will   ( $this->returnValue( 'foo' ) )
 		;
 		$mockSpellcheck
@@ -328,19 +346,30 @@ class OnWikiTest extends Wikia\Search\Test\BaseTest {
 	 * @covers Wikia\Search\QueryService\Select\OnWiki::getFormulatedQuery
 	 */
 	public function testGetFormulatedQuery() {
+		$mockConfig = $this->getMock( 'Wikia\Search\Config', [ 'getQuery' ] );
+		
+		$dc = new \Wikia\Search\QueryService\DependencyContainer( array( 'config' => $mockConfig ) );
+		
 		$mockSelect = $this->getMockBuilder( 'Wikia\Search\QueryService\Select\OnWiki' )
-		                   ->disableOriginalConstructor()
-		                   ->setMethods( array( 'getQueryClausesString', 'getNestedQuery' ) )
+		                   ->setConstructorArgs( [ $dc ] )
+		                   ->setMethods( array( 'getQueryClausesString' ) )
 		                   ->getMock();
+		
+		$mockQuery = $this->getMock( 'Wikia\Search\Query\Select', [ 'getSolrQuery' ], [ 'foo' ] );
 		
 		$mockSelect
 		    ->expects( $this->once() )
 		    ->method ( 'getQueryClausesString' )
 		    ->will   ( $this->returnValue( 'foo' ) )
 		;
-		$mockSelect
+		$mockConfig
 		    ->expects( $this->once() )
-		    ->method ( 'getNestedQuery' )
+		    ->method ( 'getQuery' )
+		    ->will   ( $this->returnValue( $mockQuery ) )
+		;
+		$mockQuery
+		    ->expects( $this->once() )
+		    ->method ( 'getSolrQuery' )
 		    ->will   ( $this->returnValue( 'bar' ) )
 		;
 		$method = new ReflectionMethod( 'Wikia\Search\QueryService\Select\OnWiki', 'getFormulatedQuery' );
@@ -376,35 +405,6 @@ class OnWikiTest extends Wikia\Search\Test\BaseTest {
 		$method->setAccessible( true );
 		$this->assertEquals(
 				'((wid:123) AND ((ns:0) OR (ns:14)))',
-				$method->invoke( $mockSelect )
-		);
-	}
-	
-	/**
-	 * @covers Wikia\Search\QueryService\Select\OnWiki::getBoostQueryString
-	 */
-	public function testGetBoostQueryString() {
-		$mockConfig = $this->getMock( 'Wikia\Search\Config', array( 'getQueryNoQuotes' ) );
-		$dc = new Wikia\Search\QueryService\DependencyContainer( array( 'config' => $mockConfig ) );
-		$mockSelect = $this->getMockBuilder( 'Wikia\Search\QueryService\Select\OnWiki' )
-		                   ->setConstructorArgs( array( $dc ) )
-		                   ->setMethods( null )
-		                   ->getMock();
-		$queryNoQuotes = 'foo';
-		$mockConfig
-		    ->expects( $this->once() )
-		    ->method ( 'getQueryNoQuotes' )
-		    ->with   ( true )
-		    ->will   ( $this->returnValue( $queryNoQuotes ) )
-		;
-		$method = new ReflectionMethod( 'Wikia\Search\QueryService\Select\OnWiki', 'getBoostQueryString' );
-		$method->setAccessible( true );
-		$boostQueries = array(
-				Wikia\Search\Utilities::valueForField( 'html', $queryNoQuotes, array( 'boost'=>5, 'valueQuote'=>'\"' ) ),
-				Wikia\Search\Utilities::valueForField( 'title', $queryNoQuotes, array( 'boost'=>10, 'valueQuote'=>'\"' ) ),
-		);
-		$this->assertEquals(
-				implode( ' ', $boostQueries ),
 				$method->invoke( $mockSelect )
 		);
 	}

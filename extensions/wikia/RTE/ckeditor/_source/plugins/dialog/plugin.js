@@ -264,6 +264,9 @@ CKEDITOR.DIALOG_RESIZE_BOTH = 3;
 		{
 			this.on( 'ok', function( evt )
 				{
+					// Wikia change - begin @author: kflorence
+					editor.fire( 'dialogOk', this );
+					// Wikia change - end
 					// Dialog confirm might probably introduce content changes (#5415).
 					editor.fire( 'saveSnapshot' );
 					setTimeout( function () { editor.fire( 'saveSnapshot' ); }, 0 );
@@ -276,6 +279,9 @@ CKEDITOR.DIALOG_RESIZE_BOTH = 3;
 		{
 			this.on( 'cancel', function( evt )
 				{
+					// Wikia change - begin @author: kflorence
+					editor.fire( 'dialogCancel', this );
+					// Wikia change - end
 					if ( definition.onCancel.call( this, evt ) === false )
 						evt.data.hide = false;
 				});
@@ -346,6 +352,7 @@ CKEDITOR.DIALOG_RESIZE_BOTH = 3;
 				{
 					// Wikia - start
 					this.fire('close', {close: true});
+					editor.fire( 'dialogClose', this );
 					// Wikia - end
 
 					if ( this.fire( 'cancel', { hide : true } ).hide !== false )

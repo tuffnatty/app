@@ -299,7 +299,7 @@ abstract class AbstractSelect
 			\Track::event(
 					( !empty( $resultCount ) ? 'search_start' : 'search_start_nomatch' ),
 					array(
-							'sterm'	=> $this->config->getQuery(), 
+							'sterm'	=> $this->config->getQuery()->getSanitizedQuery(), 
 							'stype'	=> $this->searchType 
 							)
 					);
@@ -314,16 +314,14 @@ abstract class AbstractSelect
 	
 	/**
 	 * Creates a nested query using extended dismax.
-	 * @return Solarium_Query_Select
+	 * @return AbstractSelect
 	 */
-	protected function getNestedQuery() {
-		$nestedQuery = $this->client->createSelect();
-		$nestedQuery->setQuery( $this->config->getQuery() );
+	protected function registerDismax( Solarium_Query_Select $select ) {
 		
 		$queryFieldsString = $this->getQueryFieldsString();
-		$dismax = $nestedQuery->getDismax()
-		                      ->setQueryFields( $queryFieldsString )
-		                      ->setQueryParser( 'edismax' )
+		$dismax = $select->getDismax()
+		                 ->setQueryFields( $queryFieldsString )
+		                 ->setQueryParser( 'edismax' )
 		;
 		
 		if ( $this->service->isOnDbCluster() ) {
@@ -338,7 +336,7 @@ abstract class AbstractSelect
 			    $dismax->setBoostFunctions( implode(' ', $this->boostFunctions ) );
 			}
 		}
-		return $nestedQuery;
+		return $this;
 	}
 	
 	/**

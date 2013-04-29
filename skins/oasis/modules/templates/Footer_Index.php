@@ -1,5 +1,9 @@
 <footer id="WikiaFooter" class="WikiaFooter <?= $showToolbar ? '' : 'notoolbar' ?>">
-	<?= F::app()->renderView('Ad', 'Index', array('slotname' => 'LEFT_SKYSCRAPER_3')) ?>
+	<?php
+		if (!WikiaPageType::isMainPage()) {
+			echo F::app()->renderView('Ad', 'Index', array('slotname' => 'LEFT_SKYSCRAPER_3'));
+		}
+	?>
 	<?php if( $showToolbar ): ?>
 		<div class="toolbar">
 			<?= F::app()->renderView('Notifications', 'Index'); ?>
@@ -12,5 +16,6 @@
 	<?php elseif( $showNotifications ) : // show notifications for anons (BugId:20730) ?>
 		<?= F::app()->renderView('Notifications', 'Index'); ?>
 	<?php endif; ?>
-	<?= F::app()->renderView('Spotlights', 'Index', array('mode'=>'FOOTER', 'adslots'=>array( 'SPOTLIGHT_FOOTER_1', 'SPOTLIGHT_FOOTER_2', 'SPOTLIGHT_FOOTER_3' ), 'adGroupName'=>'SPOTLIGHT_FOOTER')) ?>
+
+	<?= F::app()->renderView('Spotlights', 'Index'); ?>
 </footer>

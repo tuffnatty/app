@@ -112,6 +112,8 @@ class AbTestingData extends WikiaObject {
 						'version_id' => $v_id,
 						'group_id' => $g_id,
 						'ranges' => $row->r_ranges,
+						'styles' => $row->r_styles,
+						'scripts' => $row->r_scripts,
 					);
 				}
 			}
@@ -140,6 +142,7 @@ class AbTestingData extends WikiaObject {
 				'v.id as v_id, v.start_time as v_start_time, v.end_time as v_end_time, v.ga_slot as v_ga_slot',
 					'v.flags as v_flags',
 				'r.ranges as r_ranges, r.group_id as r_group_id',
+				', r.styles as r_styles, r.scripts as r_scripts',
 				'v.start_time <= current_timestamp && v.end_time >= current_timestamp as is_active',
 				'v.start_time > current_timestamp as in_future',
 				'UNIX_TIMESTAMP(v.start_time) as v_start_time_unix',

@@ -49,6 +49,7 @@ class MarketingToolboxController extends WikiaSpecialPageController {
 			$this->wg->SuppressPageHeader = true;
 			$this->wg->SuppressFooter = true;
 			$this->response->addAsset('/extensions/wikia/SpecialMarketingToolbox/css/MarketingToolbox.scss');
+			$this->response->addAsset('/skins/oasis/css/modules/CorporateDatepicker.scss');
 
 			$action = $this->getRequestedAction();
 
@@ -166,6 +167,11 @@ class MarketingToolboxController extends WikiaSpecialPageController {
 				$this->purgeCache( $module );
 
 				$this->putFlashMessage($this->wf->msg('marketing-toolbox-module-save-ok', $modulesData['activeModuleName']));
+
+				// send request to add popular/featured videos
+				if ( $module->isVideoModule() ) {
+					$response = WikiaHubsServicesHelper::addVideoToHubsV2Wikis( $module, $selectedModuleData['values'] );
+				}
 
 				$nextUrl = $this->getNextModuleUrl();
 				$this->response->redirect($nextUrl);

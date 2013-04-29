@@ -700,6 +700,7 @@ class AbstractSelectTest extends Wikia\Search\Test\BaseTest {
 		                    ->setMethods( array( 'get' ) )
 		                    ->getMock();
 		$mockConfig = $this->getMock( 'Wikia\Search\Config', array( 'setResults', 'setResultsFound', 'getPage', 'getQuery' ) );
+		$mockQuery = $this->getMock( 'Wikia\Search\Query\Select', array( 'getSanitizedQuery' ), array( 'foo' ) );
 		
 		$mockResult = $this->getMockBuilder( 'Solarium_Result_Select' )
 		                   ->disableOriginalConstructor()
@@ -750,6 +751,11 @@ class AbstractSelectTest extends Wikia\Search\Test\BaseTest {
 		$mockConfig
 		    ->expects( $this->once() )
 		    ->method ( 'getQuery' )
+	        ->will   ( $this->returnValue( $mockQuery ) )
+        ;
+		$mockQuery
+		    ->expects( $this->once() )
+		    ->method ( 'getSanitizedQuery' )
 		    ->will   ( $this->returnValue( 'foo' ) )
 		;
 		$reflspell = new ReflectionMethod( 'Wikia\Search\QueryService\Select\AbstractSelect', 'prepareResponse' );
@@ -781,17 +787,12 @@ class AbstractSelectTest extends Wikia\Search\Test\BaseTest {
 	}
 	
 	/**
-	 * @covers Wikia\Search\QueryService\Select\AbstractSelect::getNestedQuery
+	 * @covers Wikia\Search\QueryService\Select\AbstractSelect::registerDismax
 	 */
-	public function testGetNestedQuery() {
-		$mockClient = $this->getMockBuilder( 'Solarium_Client' )
-		                   ->disableOriginalConstructor()
-		                   ->setMethods( array( 'createSelect' ) )
-		                   ->getMock();
-		
+	public function testRegisterDismax() {
 		$mockQuery = $this->getMockBuilder( 'Solarium_Query_Select' )
 		                  ->disableOriginalConstructor()
-		                  ->setMethods( array( 'setQuery', 'getDismax' ) )
+		                  ->setMethods( array( 'getDismax' ) )
 		                  ->getMock();
 		
 		$dismaxMethods = array( 
@@ -811,28 +812,13 @@ class AbstractSelectTest extends Wikia\Search\Test\BaseTest {
 		                   ->setMethods( array( 'getMinimumMatch', 'getSkipBoostFunctions', 'getQuery' ) )
 		                   ->getMock();
 		
-		$deps = array( 'config' => $mockConfig, 'client' => $mockClient, 'service' => $mockService  );
+		$deps = array( 'config' => $mockConfig, 'service' => $mockService  );
 		$dc = new Wikia\Search\QueryService\DependencyContainer( $deps );
 		$mockSelect = $this->getMockBuilder( 'Wikia\Search\QueryService\Select\AbstractSelect' )
 		                   ->setConstructorArgs( array( $dc ) )
 		                   ->setMethods( array( 'getQueryFieldsString', 'getBoostQueryString' ) )
 		                   ->getMockForAbstractClass();
 		
-		$mockClient
-		    ->expects( $this->once() )
-		    ->method ( 'createSelect' )
-		    ->will   ( $this->returnValue( $mockQuery ) )
-		;
-		$mockConfig
-		    ->expects( $this->once() )
-		    ->method ( 'getQuery' )
-		    ->will   ( $this->returnValue( 'foo' ) )
-		;
-		$mockQuery
-		    ->expects( $this->once() )
-		    ->method ( 'setQuery' )
-		    ->with   ( 'foo' )
-		;
 		$mockSelect
 		    ->expects( $this->once() )
 		    ->method ( 'getQueryFieldsString' )
@@ -880,12 +866,12 @@ class AbstractSelectTest extends Wikia\Search\Test\BaseTest {
 		$mockConfig
 		    ->expects( $this->once() )
 		    ->method ( 'getMinimumMatch' )
-		    ->will   ( $this->returnValue( '66%' ) )
+		    ->will   ( $this->returnValue( '80%' ) )
 		;
 		$mockDismax
 		    ->expects( $this->once() )
 		    ->method ( 'setMinimumMatch' )
-		    ->with   ( '66%' )
+		    ->with   ( '80%' )
 		    ->will   ( $this->returnValue( $mockDismax ) )
 		;
 		$mockDismax
@@ -913,11 +899,11 @@ class AbstractSelectTest extends Wikia\Search\Test\BaseTest {
 		    ->method ( 'setBoostFunctions' )
 		    ->with   ( 'foo bar' )
 		;
-		$funcRefl = new ReflectionMethod( 'Wikia\Search\QueryService\Select\AbstractSelect', 'getNestedQuery' );
+		$funcRefl = new ReflectionMethod( 'Wikia\Search\QueryService\Select\AbstractSelect', 'registerDismax' );
 		$funcRefl->setAccessible( true );
 		$this->assertEquals(
-				$mockQuery,
-				$funcRefl->invoke( $mockSelect )
+				$mockSelect,
+				$funcRefl->invoke( $mockSelect, $mockQuery )
 		);
 	}
 	

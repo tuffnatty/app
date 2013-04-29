@@ -22,6 +22,9 @@
 			float: right;
 		}
 	}
+	.standard-leaderboard {
+		max-width: 728px;
+	}
 }
 
 #TOP_BUTTON, #TOP_BUTTON_WIDE {
@@ -107,17 +110,6 @@
 #PREFOOTER_LEFT_BOXAD.default-height, #PREFOOTER_RIGHT_BOXAD.default-height {
 	height: 250px;
 }
-
-
-/** Button ads **/
-#HOME_TOP_RIGHT_BUTTON {
-	display: none;
-}
-.home-top-right-button-visible {
-	display: block;
-	margin-bottom: 10px;
-}
-
 
 /** Spotlights **/
 #SPOTLIGHT_GLOBALNAV_1, #SPOTLIGHT_GLOBALNAV_2, #SPOTLIGHT_GLOBALNAV_3 {
