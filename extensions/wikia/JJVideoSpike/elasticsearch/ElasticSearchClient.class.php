@@ -25,8 +25,19 @@ class ElasticSearchClient {
 			return $this->serviceUrl . $this->index . '/' . $this->type . '/_search';
 		}
 
-		public function call( $method, $url, $jsonData ) {
+		public function call( $url, $method = null, $body = null ) {
 
+			$options = array( 'method' => ( $method ) ? $method : 'GET' );
+			//don't use wgHTTPProxy on devboxes, as cross-devbox calls will return 403
+			if ( !empty( $this->app->wg->develEnvironment ) ) $options['noProxy'] = true;
 
+			$httpRequest = MwHttpRequest::factory( $url,  $options );
+
+			if ( $body ) $httpRequest->setData( $body );
+			$status = $httpRequest->execute();
+			$statusCode = $httpRequest->getStatus();
+			$response = $httpRequest->getContent();
+
+			return json_decode( array('status'=>$status, 'statusCode'=>$statusCode, 'response'=>$response ) );
 		}
 }
