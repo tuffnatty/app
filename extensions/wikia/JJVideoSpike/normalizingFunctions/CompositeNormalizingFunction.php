@@ -15,7 +15,7 @@ class CompositeNormalizingFunction implements INormalizingFunction {
 		return $arg;
 	}
 
-	function add( INomralizingFunction $normalizingFunction ) {
+	function add( INormalizingFunction $normalizingFunction ) {
 		$this->functions[] = $normalizingFunction;
 	}
 }
