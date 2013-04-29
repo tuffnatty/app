@@ -236,6 +236,18 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		return $result;
 	}
 
+	public function whyICantHandleAllThisCokes() {
+		$cokeProvider = new JJVideoMetadataProvider();
+
+//		$cokeProvider->getExpanded( 'A Muppets Christmas Letters to Santa (2,008) - Featurette Miss Piggy' );
+//		$cokeProvider->getExpanded( 'Ace_Attorney_5_-_Japanese_TGS_2012_Trailer' );
+//		$cokeProvider->getExpanded( 'Age_of_Empires_Online_Video' );
+//		$cokeProvider->getExpanded( 'Assassin\'s_Creed_3_The_Tyranny_of_King_Washington_The_Redemption_Walkthrough_(Part_1)' );
+//		$cokeProvider->getExpanded( 'Aliens_Colonial_Marines_PC_Commentary' );
+		$cokeProvider->getExpanded( 'Astro_Boy_The_Video_Game_Nintendo_Wii_Trailer_-_GC_2009_VO_Talent_Kristen_Bell_and_Freddie_Highmore' );
+		die;
+	}
+
 	public function getMoarDataForThoseVideosHere() {
 		$typesMapping = array(
 			'actor' => 'actor',
@@ -276,7 +288,8 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 			'ABC TV On DVD 2,011 (2,010) - ABC TV on DVD Trailer 1',
 			'Abduction_(2,011)_-_Clip:_Diner_Shoot_Out',
 			'Abel\'s Field (2,012) - Home Video Trailer 2 for Abel\'s Field',
-			'Adventure Time The Complete Second Season (2,012) - Clip Princess Rescue Party'
+			'Adventure Time The Complete Second Season (2,012) - Clip Princess Rescue Party',
+			'The muppet show (1980) - kermit the frog trailer'
 		);
 
 		$score = 100;
