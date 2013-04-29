@@ -61,3 +61,5 @@ define("WPP_WALL_QUOTE_OF", 16);
 //Forum Order 
 define("WPP_WALL_ORDER_INDEX", 17);
 
+//Video Metadata
+define("WPP_VIDEO_METADATA_COMPLETED", 20);
