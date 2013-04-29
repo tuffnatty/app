@@ -21,6 +21,11 @@ $app->registerClass('StopWordsTokenizerFilter', $dir.'util/StopWordsTokenizerFil
 $app->registerClass('ToLowerTokenizerFilter', $dir.'util/ToLowerTokenizerFilter.php');
 $app->registerClass('UniqueTokensTokenizerFilter', $dir.'util/UniqueTokensTokenizerFilter.php');
 
+//elastic search
+$app->registerClass('ElasticSearchClient', $dir.'elasticsearch/ElasticSearchClient.class.php');
+$app->registerClass('ElasticSearchQuery', $dir.'elasticsearch/ElasticSearchQuery.class.php');
+
+
 // relevancy
 $app->registerClass('CompositeRelevancyEstimatorFactory', $dir.'relevancy/CompositeRelevancyEstimatorFactory.php');
 $app->registerClass('CompositeRelevancyEstimator',        $dir.'relevancy/CompositeRelevancyEstimator.php');

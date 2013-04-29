@@ -97,9 +97,16 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 
 	public function elastic() {
 
+		$elastic = new ElasticSearchQuery('testing', 'test');
+		$data = $elastic->getData('1');
 
-		$title = Title::newFromID(2);
-		$title->getCategorySortkey();
+		$dataToIndex = json_encode( array(
+			'name' => 'test'
+		));
+
+		$resp = $elastic->indexData('3', $dataToIndex);
+
+		var_dump( $resp );
 
 		die("<hr>");
 	}

@@ -11,33 +11,41 @@ class ElasticSearchClient {
 		protected $collection;
 		protected $index;
 
-		public function __construct( $index = 'video151', $type = 'videos' ) {
+		public function __construct( $index, $type ) {
 
 			$this->index = $index;
 			$this->type = $type;
 		}
 
 		public function getItemUrl( $itemId ) {
-			return $this->serviceUrl . $this->index . '/' . $this->type . '/' . $itemId;
+			return $this->serviceUrl . '/' . $this->index . '/' . $this->type . '/' . $itemId;
 		}
 
 		public function getSearchUrl() {
-			return $this->serviceUrl . $this->index . '/' . $this->type . '/_search';
+			return $this->serviceUrl . '/' .$this->index . '/' . $this->type . '/_search';
 		}
 
 		public function call( $url, $method = null, $body = null ) {
 
+			var_dump( $url );
+
 			$options = array( 'method' => ( $method ) ? $method : 'GET' );
 			//don't use wgHTTPProxy on devboxes, as cross-devbox calls will return 403
-			if ( !empty( $this->app->wg->develEnvironment ) ) $options['noProxy'] = true;
+			//if ( !empty( $this->app->wg->develEnvironment ) )
+			$options['noProxy'] = true;
 
 			$httpRequest = MwHttpRequest::factory( $url,  $options );
 
-			if ( $body ) $httpRequest->setData( $body );
+			if ( $body ) {
+				if ( is_array( $body) ) {
+					$body = json_encode( $body );
+				}
+				$httpRequest->setData( $body );
+			}
 			$status = $httpRequest->execute();
 			$statusCode = $httpRequest->getStatus();
 			$response = $httpRequest->getContent();
 
-			return json_decode( array('status'=>$status, 'statusCode'=>$statusCode, 'response'=>$response ) );
+			return array('status'=>$status, 'statusCode'=>$statusCode, 'response'=>$response );
 		}
 }
