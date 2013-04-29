@@ -10,10 +10,49 @@ class FreebaseClient {
 	const CACHE_DURATION = 86400; //1 day
 	const FREEBASE_API_KEY = 'AIzaSyCcxUdb9z4-7Y2oIX6Tq7lSQ7QMbU0XPfQ';
 
+	protected $personTypes = array(
+		'actor' => 'actor',
+		'/fictional_universe/fictional_character' => 'character',
+		'/m/02hrh1q' => 'actor', //actor id in freebase
+	);
+
+	protected $creativeWorkTypes = array(
+		'/film/film' => 'movie',
+		'/film/film_series' => 'movie',
+		'/tv/tv_program' => 'series',
+		'/tv/tv_series_season' => 'season',
+		'/tv/tv_series_episode' => 'episode',
+//			'/cvg/game_series' => ,
+		'/cvg/computer_videogame' => 'game',
+//			'/book/literary_series',
+		'/book/book_edition' => 'book',
+		'/book/book' => 'book'
+	);
+
 	protected $app;
 
 	public function __construct() {
 		$this->app = F::app();
+	}
+
+	public function getAllTypes() {
+		return array_merge( $this->personTypes, $this->creativeWorkTypes );
+	}
+
+	public function getPersonTypes() {
+		return $this->personTypes;
+	}
+
+	public function getCreativeWorkTypes() {
+		return $this->creativeWorkTypes;
+	}
+
+	public function getTypeMapping( $type ) {
+		$mappings = $this->getAllTypes();
+		if( isset( $mappings[ $type ] ) ) {
+			return $mappings[ $type ];
+		}
+		return null;
 	}
 
 	public function queryWithDomain( $query, $domain, $limit = 5 ) {
@@ -26,7 +65,12 @@ class FreebaseClient {
 
 	public function queryWithTypeFilter ( $query, $types, $limit = 5 ) {
 		if ( !is_array( $types ) ) {
-			$types = array( $types );
+			//types can be also a string containg a method name, which should be used for getting types list
+			if ( method_exists( $this, $types ) ) {
+				$types = array_keys( $this->{$types}() );
+			} else {
+				return null;
+			}
 		}
 		return $this->call( $query, $types, null, $limit );
 	}
