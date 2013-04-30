@@ -8,7 +8,16 @@ class FreebaseClient {
 
 	const FREEBASE_URL = 'https://www.googleapis.com/freebase/v1/search';
 	const CACHE_DURATION = 86400; //1 day
-	const FREEBASE_API_KEY = 'AIzaSyCcxUdb9z4-7Y2oIX6Tq7lSQ7QMbU0XPfQ';
+//	const FREEBASE_API_KEY = 'AIzaSyCcxUdb9z4-7Y2oIX6Tq7lSQ7QMbU0XPfQ';
+
+	protected static $apiKeys = array(
+//		'AIzaSyCcxUdb9z4-7Y2oIX6Tq7lSQ7QMbU0XPfQ', //adamr@wikia-inc.com
+		'AIzaSyCw6pe0LgDWX-3GRE7DyxF27OfeUGsW7Y4', //wikiawebtools001
+		'AIzaSyDhn8zBdeZb4LAjTHfvyzAR3ew5hFKn6_A',	//wikiawebtools002
+		'AIzaSyAPGE_YvtJTiKpDG59sVqiOcL7IsU-vz0M',	//wikiawebtools003
+		'AIzaSyCILgqeNo3j_cTMgj2CYVY11iTXnsiT9QY',	//wikiawebtools004
+		'AIzaSyDE1yvsyEJY8XsJp-Cq646x4rFjPhqcZdw',	//wikiawebtools005
+	);
 
 	protected $personTypes = array(
 		'actor' => 'actor',
@@ -87,8 +96,10 @@ class FreebaseClient {
 			'indent' => 'true',
 			'limit' => $limit,
 			'query' => trim( $query ),
-			'key' => static::FREEBASE_API_KEY
 		);
+		$cacheUrl = static::FREEBASE_URL . '?' . http_build_query( $q );
+		//get key for call
+		$q[ 'key' ] = static::getApiKey();
 
 		$filterDomain = ( $domain !== null ) ? "(all domain:\"{$domain}\"))" : null;
 		$filterTypes = ( $type !== null ) ? '(any type:'.implode( ' type:', $type ).')' : null;
@@ -99,13 +110,13 @@ class FreebaseClient {
 		}
 
 		$url = static::FREEBASE_URL . '?' . http_build_query( $q );
-		print_r( 'Proccessing: ' . $url . "\n" );
+//		print_r( 'Proccessing: ' . $url . "\n" );
 
-		$key = $this->generateMemKey( __METHOD__, md5( $url ) );
+		$key = $this->generateMemKey( __METHOD__, md5( $cacheUrl ) );
 		$content = $this->getFromCache( $key );
 
 		if ( empty( $content ) ) {
-			print_r( 'Connecting: ' . $url . "\n" );
+//			print_r( 'Connecting: ' . $url . "\n" );
 			$fb = MWHttpRequest::factory( $url );
 			$fb->execute();
 			$content = $fb->getContent();
@@ -125,6 +136,14 @@ class FreebaseClient {
 
 	protected function getFromCache( $key ) {
 		return $this->app->wg->memc->get( $key );
+	}
+
+	public static function getApiKey() {
+		$key = next( static::$apiKeys );
+		if ( $key !== false ) {
+			return $key;
+		}
+		return reset( static::$apiKeys );
 	}
 
 }
