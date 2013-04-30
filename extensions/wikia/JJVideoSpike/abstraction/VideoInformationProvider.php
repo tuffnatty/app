@@ -217,7 +217,7 @@ class VideoInformationProvider {
 			foreach ( $freebaseResult->result as $res ) {
 				if ( isset( $res->notable ) ) {
 					$type = $fbClient->getTypeMapping( $res->notable->id );
-					if ( $type !== null && $res->score > $score ) {
+					if ( $type !== null && $res->score > $score && strtolower( trim( $res->name ) ) === strtolower( trim ( $keyword ) ) ) {
 						$about[ $keyword ][] = array( 'title' => $res->name, 'type' => $type, 'score' => $res->score );
 						continue;
 					}
