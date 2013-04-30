@@ -29,13 +29,27 @@ class exportToElasticSearch extends Maintenance {
 		}
 
 		$db = wfGetDB( DB_SLAVE, array(), "video151" );
+
+
+		$cnt = $db->query("SELECT COUNT( * ) as cnt
+							 FROM image i LEFT JOIN page p ON i.img_name = p.page_title
+							 WHERE i.img_media_type='VIDEO' AND p.page_id > 0 AND i.img_minor_mime = '{$provider}' ");
+
+		$cntR = $cnt->fetchObject();
+
+		$numberOfVideos = $cntR->cnt;
+
+
 		$elems = $db->query("SELECT i.*, p.page_id
 							 FROM image i LEFT JOIN page p ON i.img_name = p.page_title
-							 WHERE i.img_media_type='VIDEO' AND p.page_id > 0 AND i.img_minor_mime = '{$provider}' LIMIT 500");
+							 WHERE i.img_media_type='VIDEO' AND p.page_id > 0 AND i.img_minor_mime = '{$provider}' ");
+
+
 
 
 		$elastic = new ElasticSearchQuery('testing', 'test');
 
+		$i = 1;
 		while ( $r = $elems->fetchObject() ) {
 
 			$metadata = unserialize( $r->img_metadata );
@@ -56,9 +70,11 @@ class exportToElasticSearch extends Maintenance {
 
 			$resp = $elastic->indexData( $r->page_id, $toIndex );
 
+			echo "== [$i / $numberOfVideos] ================================\n";
+
 			print_r( $toIndex );
 			print_r( $resp );
-			echo "================================\n";
+			$i++;
 		}
 
 	}
