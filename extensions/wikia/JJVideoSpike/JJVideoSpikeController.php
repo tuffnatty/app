@@ -430,6 +430,7 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 			}
 		} elseif ( $mode == 'elastic' ) {
 
+			$result = $suggestions->getFromElasticSearch();
 
 		}
 

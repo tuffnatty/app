@@ -107,7 +107,6 @@ class ArticleSubject {
 			}
 		}
 
-
 		return $this->makeArrayUnique( $subjectList );
 	}
 

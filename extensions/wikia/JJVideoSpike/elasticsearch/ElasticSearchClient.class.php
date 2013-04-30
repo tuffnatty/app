@@ -27,8 +27,6 @@ class ElasticSearchClient {
 
 		public function call( $url, $method = null, $body = null ) {
 
-			var_dump( $url );
-
 			$options = array( 'method' => ( $method ) ? $method : 'GET' );
 			//don't use wgHTTPProxy on devboxes, as cross-devbox calls will return 403
 			//if ( !empty( $this->app->wg->develEnvironment ) )

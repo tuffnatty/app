@@ -42,30 +42,35 @@ class exportToElasticSearch extends Maintenance {
 
 		$elems = $db->query("SELECT i.*, p.page_id
 							 FROM image i LEFT JOIN page p ON i.img_name = p.page_title
-							 WHERE i.img_media_type='VIDEO' AND p.page_id > 0 AND i.img_minor_mime = '{$provider}' ");
-
-
+							 WHERE i.img_media_type='VIDEO' AND p.page_id > 0 AND i.img_minor_mime = '{$provider}'");
 
 
 		$elastic = new ElasticSearchQuery('testing', 'test');
 
+		$metadataProvider = new VideoInformationProvider();
+
 		$i = 1;
 		while ( $r = $elems->fetchObject() ) {
 
-			$metadata = unserialize( $r->img_metadata );
-			$keywords = array();
-			if ( isset($metadata['keywords']) ) {
-				$keywordsA = explode(",", $metadata['keywords']);
-				foreach ( $keywordsA as $keyword ) {
-					$keywords[] = trim( $keyword );
-				}
+
+			$meta = $metadataProvider->getExpanded( $r->img_name );
+
+			$about = array();
+
+			foreach ( $meta['expanded']['about'] as $t => $m ) {
+				$about[] = array(
+					'title' => $m['title'],
+					'type' => $m['type']
+				);
 			}
 
 			$toIndex = array(
 				'video_id' => $r->page_id,
 				'title' => $r->img_name,
-				'description' => isset( $metadata['description'] ) ? $metadata['description'] : '',
-				'keywords' => $keywords
+				'description' => isset( $meta['description'] ) ? $meta['description'] : '',
+				'keywords' => isset( $meta['keywords'] ) ? $meta['keywords'] : array(),
+				'tags' => isset( $meta['tags'] ) ? $meta['tags'] : array(),
+				'about' => $about
 			);
 
 			$resp = $elastic->indexData( $r->page_id, $toIndex );
@@ -73,7 +78,6 @@ class exportToElasticSearch extends Maintenance {
 			echo "== [$i / $numberOfVideos] ================================\n";
 
 			print_r( $toIndex );
-			print_r( $resp );
 			$i++;
 		}
 

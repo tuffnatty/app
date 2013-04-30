@@ -91,5 +91,45 @@ class ArticleVideoSuggestion {
 		return $this->makeQuery( $query );
 	}
 
+	public function getFromElasticSearch() {
+
+		$subject = $this->getSubject();
+		if ( isset( $subject[0][0] ) ) {
+
+			$query = $subject[0][0];
+
+		} else {
+			$app = F::app();
+
+			$articleId = $this->articleId;
+			$article           = ( $articleId > 0 ) ? F::build( 'Article', array( $articleId ), 'newFromId' ) : null;
+			$articleTitle      = ( $article !== null ) ? $article->getTitle() : '';
+			$wikiTitleSansWiki = preg_replace( '/\bwiki\b/i', '', $app->wg->Sitename );
+
+			$query =  $articleTitle . ' ' . $wikiTitleSansWiki;
+
+		}
+
+		$this->setLastQuery( $query );
+
+		$elastic = new ElasticSearchQuery('testing','test');
+		$result = $elastic->search( $query );
+
+		$data = array();
+		$data['items'] = array();
+
+		if ( $result->hits->total > 0 ) {
+
+			foreach ( $result->hits->hits as $hit ) {
+				$data['items'][] = array(
+					'title' => $hit->_source->title,
+					'id' => $hit->_source->video_id
+				);
+			}
+		}
+
+		return $data;
+
+	}
 
 }

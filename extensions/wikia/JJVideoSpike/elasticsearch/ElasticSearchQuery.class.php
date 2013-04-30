@@ -33,10 +33,20 @@ class ElasticSearchQuery {
 		return false;
 	}
 
-	public function search( $phrase, $exactMatch=true, $field=null ) {
+	public function search( $phrase, $exactMatch=true ) {
 
+		$phrase = trim( trim( $phrase ), '"' );
+		if ( $exactMatch ) {
+			$phrase = '"' . $phrase . '"';
+		}
+		$url = $this->client->getSearchUrl() . '?q=' . $phrase;
+		$resp = $this->client->call( $url, 'GET' );
+		if ( $resp['statusCode'] == 200 ) {
 
+			return json_decode( $resp['response'] );
+		}
 
+		return false;
 	}
 
 
