@@ -452,6 +452,8 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 			$result = $this->relevancyService->mergeResults(
 				Title::newFromID( $articleId )->getBaseText()
 				, $resultSets );
+		} elseif ( $mode == 'mergeElastic' ) {
+			$result = $suggestions->getMergedElastic();
 		}
 
 		if ( isset( $subjects[0][0] ) ) {

@@ -10,13 +10,14 @@ class ArticleVideoSuggestion {
 	protected $articleId;
 	protected $articleSubject;
 	protected $wikiSubject;
+	protected $article;
 
 	protected $lastQuery;
 
 	public function __construct( $articleId ) {
 
 		$this->articleId = $articleId;
-
+		$this->article = new Article( Title::newFromID( $articleId ) );
 		$this->wikiSubject = new WikiSubjects();
 		$this->articleSubject = new ArticleSubject( $articleId );
 		$this->articleSubject->setAllSubjectList( $this->wikiSubject->get() );
@@ -135,4 +136,19 @@ class ArticleVideoSuggestion {
 
 	}
 
+	public function getMergedElastic() {
+		$articleSubject = new ArticleSubject( $this->articleId );
+		$prioritizedSubjects = $articleSubject->getPrioritizedList(5);
+		$articleTitle = Title::newFromID( $this->articleId )->getBaseText();
+		$relevancyService = new RelevancyEstimatorService();
+
+		$resultSets[] = $this->getFromElasticSearch($articleTitle);
+		foreach ( $prioritizedSubjects as $i => $subject ) {
+			$resultSets[] = $this->getFromElasticSearch( $subject );
+		}
+		$result = $relevancyService->mergeResults(
+			$articleTitle
+			, $resultSets );
+		return $result;
+	}
 }
