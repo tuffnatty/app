@@ -91,9 +91,10 @@ class ArticleVideoSuggestion {
 		return $this->makeQuery( $query );
 	}
 
-	public function getFromElasticSearch() {
+	public function getFromElasticSearch( $forceQuery = false ) {
 
 		$subject = $this->getSubject();
+
 		if ( isset( $subject[0][0] ) ) {
 
 			$query = $subject[0][0];
@@ -108,6 +109,10 @@ class ArticleVideoSuggestion {
 
 			$query =  $articleTitle . ' ' . $wikiTitleSansWiki;
 
+		}
+
+		if ( $forceQuery ) {
+			$query = $forceQuery;
 		}
 
 		$this->setLastQuery( $query );
