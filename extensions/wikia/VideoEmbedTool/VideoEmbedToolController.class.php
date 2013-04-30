@@ -60,7 +60,7 @@ class VideoEmbedToolController extends WikiaController {
 			//TODO: fill $currentVideosByTitle array with unwated videos
 			$currentVideosByTitle = array();
 
-			$response = $this->processSearchResponse( $response, $svStart, $svSize, $trimTitle, $currentVideosByTitle );
+			$response = $this->processSearchResponse( $response, $svStart, $svSize, $trimTitle, $currentVideosByTitle, $article );
 
 			$result = array(
 					'caption' => $this->wf->Msg( 'vet-suggestions' ),
@@ -81,6 +81,8 @@ class VideoEmbedToolController extends WikiaController {
 		$phrase = $this->request->getVal( 'phrase' );
 		$searchType = $this->request->getVal( 'type', 'local' );
 		$searchOrder = $this->request->getVal( 'order', 'default' );
+		$articleId = $this->request->getVal( 'articleId', null );
+		$article = ( $articleId > 0 ) ? F::build( 'Article', array( $articleId ), 'newFromId' ) : null;
 
 		$svSize = $svSize < 1 ? 1 : $svSize;
 
@@ -110,7 +112,7 @@ class VideoEmbedToolController extends WikiaController {
 			$search = (new Wikia\Search\QueryService\Factory)->getFromConfig( $wikiaSearchConfig );
 
 			$searchResults = $search->search();
-			$response = $this->processSearchResponse( $searchResults, $svStart, $svSize, $trimTitle );
+			$response = $this->processSearchResponse( $searchResults, $svStart, $svSize, $trimTitle, array(), $article );
 		}
 
 		$result = array (
@@ -145,9 +147,12 @@ class VideoEmbedToolController extends WikiaController {
 		$this->response->setData( $response->getData() );
 	}
 
-	public function processSearchResponse( Wikia\Search\ResultSet\AbstractResultSet $response, $svStart, $svSize, $trimTitle = false, $excludedVideos = array() ) {
+	public function processSearchResponse( Wikia\Search\ResultSet\AbstractResultSet $response, $svStart, $svSize, $trimTitle = false, $excludedVideos = array(), $article = null ) {
 		$data = array();
 		$nextStartFrom = $svStart;
+		$estimatorFactory = new CompositeRelevancyEstimatorFactory();
+		$estimator = $estimatorFactory->get();
+		$metadataProvider = new VideoInformationProvider();
 		foreach( $response  as $result ) {   /* @var $result Wikia\Search\ResultSet\AbstractResultset */
 			$singleVideoData = array();
 			$singleVideoData['pageid'] = $result['pageid'];
@@ -175,6 +180,20 @@ class VideoEmbedToolController extends WikiaController {
 
 			if ( $trimTitle > 0 ) {
 				$singleVideoData['title'] = mb_substr( $singleVideoData['title'], 0, $trimTitle );
+			}
+			try {
+				if ( $article != null ) {
+					$meta = $metadataProvider->get($result->getTitle());
+					if( $meta ) {
+						$estimate = $estimator->estimate( new ArticleInformation( $article ), ( $meta ) );
+						$estimate = round( $estimate, 2 );
+						$singleVideoData['title'] = $estimate . " " . $singleVideoData['title'];
+					}
+				} else {
+					$singleVideoData['title'] = "- " . $singleVideoData['title'];
+				}
+			} catch ( Catchable $e ) {
+
 			}
 
 			if ( !empty( $singleVideoData['thumbnail'] ) && count( $data ) < $svSize  ) {

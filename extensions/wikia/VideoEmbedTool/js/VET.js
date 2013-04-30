@@ -1000,6 +1000,7 @@
 					method: 'search',
 					type: 'get',
 					data: {
+						articleId: window.wgArticleId,
 						svStart: svStart,
 						svSize: svSize,
 						phrase: phrase,
