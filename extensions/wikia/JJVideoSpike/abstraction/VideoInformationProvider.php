@@ -31,7 +31,6 @@ class VideoInformationProvider {
 			if ( isset($meta['genres']) ) {
 				$resultMeta['genres'] = $meta['genres'];
 			}
-			return $resultMeta;
 			return new VideoInformation( $resultMeta );
 		} else {
 			return false;

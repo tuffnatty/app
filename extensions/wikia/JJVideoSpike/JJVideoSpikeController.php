@@ -210,7 +210,7 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 	}
 
 	public function whyICantHandleAllThisCokes() {
-		$cokeProvider = new JJVideoMetadataProvider();
+		$cokeProvider = new VideoInformationProvider();
 
 //		$cokeProvider->getExpanded( 'A Muppets Christmas Letters to Santa (2,008) - Featurette Miss Piggy' );
 //		$cokeProvider->getExpanded( 'Ace_Attorney_5_-_Japanese_TGS_2012_Trailer' );
