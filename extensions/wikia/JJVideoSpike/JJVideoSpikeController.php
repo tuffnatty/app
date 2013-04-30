@@ -427,7 +427,7 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		}
 
 		if ( isset( $subjects[0][0] ) ) {
-			$this->setVal( 'subject', $subjects[0][0] );
+			$this->setVal( 'subject', $suggestions->getLastQuery() );
 		} else {
 			$this->setVal( 'subject', 'unknown' );
 		}

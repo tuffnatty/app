@@ -11,6 +11,8 @@ class ArticleVideoSuggestion {
 	protected $articleSubject;
 	protected $wikiSubject;
 
+	protected $lastQuery;
+
 	public function __construct( $articleId ) {
 
 		$this->articleId = $articleId;
@@ -20,8 +22,19 @@ class ArticleVideoSuggestion {
 		$this->articleSubject->setAllSubjectList( $this->wikiSubject->get() );
 	}
 
+	public function setLastQuery( $lastQuery ) {
+		$this->lastQuery = $lastQuery;
+	}
+
+	public function getLastQuery() {
+		return $this->lastQuery;
+	}
+
+
 	public function makeQuery( $queryString, $start=0, $length=10 ) {
 
+
+		$this->setLastQuery( $queryString );
 
 		$wikiaSearchConfig = new Wikia\Search\Config();
 		$wikiaSearchConfig  ->setStart( $start )
@@ -43,6 +56,7 @@ class ArticleVideoSuggestion {
 
 		return $response;
 	}
+
 
 	public function getSubject() {
 		$articleSubject = $this->articleSubject->getPrioritizedList();
@@ -75,12 +89,6 @@ class ArticleVideoSuggestion {
 		$query =  $articleTitle . ' ' . $wikiTitleSansWiki;
 
 		return $this->makeQuery( $query );
-	}
-
-
-	public function getByEstimators() {
-
-
 	}
 
 
