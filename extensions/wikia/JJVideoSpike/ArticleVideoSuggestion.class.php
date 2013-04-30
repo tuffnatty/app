@@ -113,7 +113,6 @@ class ArticleVideoSuggestion {
 		if ( $forceQuery ) {
 			$query = $forceQuery;
 		}
-
 		$this->setLastQuery( $query );
 
 		$elastic = new ElasticSearchQuery('testing','test');
@@ -131,21 +130,22 @@ class ArticleVideoSuggestion {
 				);
 			}
 		}
-
 		return $data;
 
 	}
 
 	public function getMergedElastic() {
-		$articleSubject = new ArticleSubject( $this->articleId );
-		$prioritizedSubjects = $articleSubject->getPrioritizedList(5);
-		$articleTitle = Title::newFromID( $this->articleId )->getBaseText();
+		$articleTitle = (string) $this->article->getTitle();
+		$prioritizedSubjects = $this->articleSubject->getPrioritizedList();
+		// var_dump($prioritizedSubjects);
 		$relevancyService = new RelevancyEstimatorService();
 
-		$resultSets[] = $this->getFromElasticSearch($articleTitle);
+		$resultSets[] = $this->getFromElasticSearch( $articleTitle );
 		foreach ( $prioritizedSubjects as $i => $subject ) {
-			$resultSets[] = $this->getFromElasticSearch( $subject );
+			//var_dump($subject[0]);
+			$resultSets[] = $this->getFromElasticSearch( $subject[0] );
 		}
+		//print_r($resultSets);
 		$result = $relevancyService->mergeResults(
 			$articleTitle
 			, $resultSets );

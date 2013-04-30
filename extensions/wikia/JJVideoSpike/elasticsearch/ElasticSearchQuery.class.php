@@ -34,7 +34,7 @@ class ElasticSearchQuery {
 	}
 
 	public function search( $phrase, $exactMatch=true, $field=false ) {
-
+		$phrase = urlencode($phrase);
 		$phrase = trim( trim( $phrase ), '"' );
 		if ( $exactMatch ) {
 			$phrase = '"' . $phrase . '"';

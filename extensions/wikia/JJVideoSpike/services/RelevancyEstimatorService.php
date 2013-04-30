@@ -36,8 +36,8 @@ class RelevancyEstimatorService {
 				$items[] = $res;
 			}
 		}
-		$items = $this->unique( $items );
 		usort( $items, function( $a, $b ) { return $a["_pos"] < $b["_pos"]; } );
+		$items = $this->unique( $items );
 		$threshold = $this->binarySearch( 0, 100, $items, $expectedResults );
 		$items = $this->filterResults( $items, $threshold );
 		return array(
