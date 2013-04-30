@@ -53,18 +53,35 @@ class ArticleVideoSuggestion {
 
 
 		$wikiSubject = $this->wikiSubject->get();
-
 		$articleSubject = $this->articleSubject->getPrioritizedList();
-
 		$result = array();
 
 		if ( count( $articleSubject ) > 0 ) {
-
-
 			$result = $this->makeQuery( $articleSubject[0][0] );
-
 		}
 
 		return $result;
 	}
+
+	public function getDefaultSuggestions() {
+
+		$app = F::app();
+
+		$articleId = $this->articleId;
+		$article           = ( $articleId > 0 ) ? F::build( 'Article', array( $articleId ), 'newFromId' ) : null;
+		$articleTitle      = ( $article !== null ) ? $article->getTitle() : '';
+		$wikiTitleSansWiki = preg_replace( '/\bwiki\b/i', '', $app->wg->Sitename );
+
+		$query =  $articleTitle . ' ' . $wikiTitleSansWiki;
+
+		return $this->makeQuery( $query );
+	}
+
+
+	public function getByEstimators() {
+
+
+	}
+
+
 }

@@ -33,4 +33,11 @@ class ElasticSearchQuery {
 		return false;
 	}
 
+	public function search( $phrase, $exactMatch=true, $field=null ) {
+
+
+
+	}
+
+
 }

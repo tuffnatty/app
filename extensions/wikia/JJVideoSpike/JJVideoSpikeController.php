@@ -400,24 +400,40 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 	public function testSuggestions() {
 
 		$articleId = $this->getArticleId();
+
+		$mode = $this->getVal('mode', 'default');
+
+
 		if ( !$articleId ) {
 			die("ARTICLE NOT FOUND");
 		}
 
 		$suggestions = new ArticleVideoSuggestion( $articleId );
-
-		$result = $suggestions->getBySubject();
-
 		$subjects = $suggestions->getSubject();
 
-		$this->setVal( 'subject', $subjects[0][0] );
+
+		if ( $mode == 'default') {
+
+			$result = $suggestions->getDefaultSuggestions();
+
+		} elseif ( $mode == 'subject' ) {
+
+			if ( isset($subjects[0][0] ) ) {
+				$result = $suggestions->getBySubject();
+			}
+		} elseif ( $mode == 'elastic' ) {
+
+
+		}
+
+		if ( isset( $subjects[0][0] ) ) {
+			$this->setVal( 'subject', $subjects[0][0] );
+		} else {
+			$this->setVal( 'subject', 'unknown' );
+		}
 
 		$this->inflateWithVideoData( $result );
-
-
 		$this->setVal( 'results' , $result );
-
-
 	}
 
 	private function inflateWithVideoData( &$result ) {
