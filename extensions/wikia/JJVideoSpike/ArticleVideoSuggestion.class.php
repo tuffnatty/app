@@ -123,7 +123,7 @@ class ArticleVideoSuggestion {
 		$data = array();
 		$data['items'] = array();
 
-		if ( $result->hits->total > 0 ) {
+		if ( $result && $result->hits->total > 0 ) {
 
 			foreach ( $result->hits->hits as $hit ) {
 				$data['items'][] = array(
