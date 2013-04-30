@@ -44,7 +44,7 @@ class FuzzyMatchFullTokensEstimator implements IRelevancyEstimator {
 
 	private function fuzyFindTag( $content, $tagToken ) {
 		$tokens = $this->splitTagTokenizer->tokenize($tagToken);
-		if ( sizeof( $tokens ) == 0 ) return false;
+		if ( sizeof( $tokens ) < 2 ) return false;
 		$token = $tokens[0];
 		$offset = 0;
 		while( ( $offset = strpos( $content, $token, $offset ) ) != false ) {

@@ -369,6 +369,22 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		return false;
 	}
 
+	public function topics() {
+		$serviceFactory = new WikiPageCategoryServiceFactory();
+		$service = $serviceFactory->get();
+
+		$games = $service->getArticleTitlesByCategory("game");
+		$this->setVal("games", $games);
+
+		$movie = $service->getArticleTitlesByCategory("movie");
+		$this->setVal("movie", $movie);
+
+		$book = $service->getArticleTitlesByCategory("book");
+		$this->setVal("book", $book);
+
+		$this->getResponse()->setFormat("json");
+	}
+
 	public function rel() {
 		$videoTitle = $this->getVal( "video" );
 		if ( $videoTitle == null ) {

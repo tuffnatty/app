@@ -37,11 +37,15 @@ $app->registerClass('TitleRelevancyEstimator',            $dir.'relevancy/TitleR
 $app->registerClass('SubjectRelevancyEstimator',          $dir.'relevancy/SubjectRelevancyEstimator.php');
 $app->registerClass('SubjectRelevancyEstimator2',         $dir.'relevancy/SubjectRelevancyEstimator2.php');
 
-//normalization
+// normalization
 $app->registerClass('CompositeNormalizingFunction', $dir.'normalizingFunctions/CompositeNormalizingFunction.php');
 $app->registerClass('INormalizingFunction',         $dir.'normalizingFunctions/INormalizingFunction.php');
 $app->registerClass('LinearNormalizingFunction',    $dir.'normalizingFunctions/LinearNormalizingFunction.php');
 $app->registerClass('SigmoidNormalizingFunction',   $dir.'normalizingFunctions/SigmoidNormalizingFunction.php');
+
+// services
+$app->registerClass('WikiPageCategoryService',         $dir.'services/WikiPageCategoryService.php');
+$app->registerClass('WikiPageCategoryServiceFactory',  $dir.'services/WikiPageCategoryServiceFactory.php');
 
 $app->registerClass('ArticleInformation', $dir.'ArticleInformation.php');
 $app->registerClass('VideoInformation', $dir.'VideoInformation.php');
