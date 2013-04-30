@@ -29,7 +29,7 @@ class MatchAllRelevancyEstimator implements IRelevancyEstimator {
 				$offset = 0;
 				$countForToken = 0;
 				while ( ($offset = strpos( strtolower( $content ), strtolower( $tagToken), $offset )) != false ) {
-					// echo "Found: " . $tagToken . "\n";
+					//echo "Found: " . $tagToken . "\n";
 					$count += 1;
 					$offset += 1;
 					$countForToken += 1;

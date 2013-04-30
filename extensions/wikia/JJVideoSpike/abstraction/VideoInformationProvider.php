@@ -5,10 +5,9 @@
  * Time: 16:18
  */
 
-class JJVideoMetadataProvider {
+class VideoInformationProvider {
 
 	public function get( $title ) {
-
 		$title = Title::newFromText( $title, NS_FILE );
 		$file = wfFindFile($title);
 		if( !$file ) return false;
@@ -33,6 +32,7 @@ class JJVideoMetadataProvider {
 				$resultMeta['genres'] = $meta['genres'];
 			}
 			return $resultMeta;
+			return new VideoInformation( $resultMeta );
 		} else {
 			return false;
 		}

@@ -13,19 +13,19 @@ class CompositeRelevancyEstimatorFactory {
 				new StopWordsTokenizerFilter(
 					new ToLowerTokenizerFilter(
 						new Tokenizer())))),
-			$this->buildNormalizer( 0, 20, 1 )
+			$this->buildNormalizer( 0, 20, 0.8 )
 		);
-		$estimator->addEstimator( "MatchAllEstimator", new MatchAllRelevancyEstimator(), $this->buildNormalizer( 0, 20, 1.3 ) );
+		$estimator->addEstimator( "MatchAllEstimator", new MatchAllRelevancyEstimator(), $this->buildNormalizer( 0, 20, 1 ) );
 
 		$matchAllCountAll = new MatchAllRelevancyEstimator();
 		$matchAllCountAll->setMaxMatchesPerToken(1000);
 		$estimator->addEstimator( "MatchAllEstimator (allow multiple matches)", $matchAllCountAll, $this->buildNormalizer( 0, 1000, 0.2 ) );
-		$estimator->addEstimator( "MatchFullTokensEstimator", new MatchFullTokensEstimator(), $this->buildNormalizer( 0, 2, 0.4 ));
-		$estimator->addEstimator( "FuzzyMatchFullTokensEstimator", new FuzzyMatchFullTokensEstimator(), $this->buildNormalizer( 0, 5, 1.5 ));
-		$estimator->addEstimator( "TitleRelevancyEstimator", new TitleRelevancyEstimator(), $this->buildNormalizer( 0, 1, 1 ));
-		$estimator->addEstimator( "TitleRelevancyEstimator (all meta)", new TitleRelevancyEstimator( array( "keywords", "tags", "description", "category", "title" ) ), $this->buildNormalizer( 0, 1, 1 ));
-		$estimator->addEstimator( "SubjectRelevancyEstimator", new SubjectRelevancyEstimator(), $this->buildNormalizer( 0, 2, 1 ) );
-		$estimator->addEstimator( "SubjectRelevancyEstimator2", new SubjectRelevancyEstimator2(), $this->buildNormalizer( 0, 2, 3 ) );
+		$estimator->addEstimator( "MatchFullTokensEstimator"                  , new MatchFullTokensEstimator(), $this->buildNormalizer( 0, 2, 0.4 ));
+		$estimator->addEstimator( "FuzzyMatchFullTokensEstimator"             , new FuzzyMatchFullTokensEstimator(), $this->buildNormalizer( 0, 5, 1.5 ));
+		$estimator->addEstimator( "TitleRelevancyEstimator"                   , new TitleRelevancyEstimator(), $this->buildNormalizer( 0, 1, 1 ));
+		$estimator->addEstimator( "TitleRelevancyEstimator (all meta)"        , new TitleRelevancyEstimator( array( "keywords", "tags", "description", "category", "title" ) ), $this->buildNormalizer( 0, 1, 1 ));
+		$estimator->addEstimator( "SubjectRelevancyEstimator"                 , new SubjectRelevancyEstimator(), $this->buildNormalizer( 0, 2, 1 ) );
+		$estimator->addEstimator( "SubjectRelevancyEstimator2"                , new SubjectRelevancyEstimator2(), $this->buildNormalizer( 0, 5, 5 ) );
 
 		return $estimator;
 	}

@@ -19,7 +19,7 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 
 		// parent SpecialPage constructor call MUST be done
 		parent::__construct( 'JJVideoSpike', '', false );
-		$this->videoMetadataProvider = new JJVideoMetadataProvider();
+		$this->videoMetadataProvider = new VideoInformationProvider();
 		$estimatorFactory = new CompositeRelevancyEstimatorFactory();
 		$this->relevancyEstimator = $estimatorFactory->get();
 		$this->fbClient = new FreebaseClient();
@@ -27,33 +27,6 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 
 
 	public function index() {
-
-		$videoTitle = $this->getVal( "video" );
-		if ( $videoTitle == null ) {
-			$videoTitle = "Scarface_-_This_is_paradise";
-		}
-		$videMetadata = $this->videoMetadataProvider->get( $videoTitle );
-		$title = $this->getVal( "articleTitle" );
-		if( $title ) {
-			$titleObject = Title::newFromText( $title );
-		} else {
-			$id = $this->getVal( "articleId" );
-			if( !$id ) {
-				$id = 15;
-			} else {
-				$id = intval( $id );
-			}
-			$titleObject = Title::newFromID( $id );
-		}
-		$article = false;
-		if ( !empty( $titleObject ) && $titleObject->exists() ) {
-			$article = new Article( $titleObject );
-		}
-		var_dump($article);
-		$estimate = $this->relevancyEstimator->compositeEstimate( $article, $videMetadata );
-		//var_dump($estimate);
-		$this->setVal("estimates:", $estimate);
-		$this->getResponse()->setFormat("json");
 		die("AAAA");
 
 	}
@@ -409,11 +382,19 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		}
 		$estimate = $this->relevancyEstimator->compositeEstimate(
 			new ArticleInformation( $article ),
-			new VideoInformation( $videMetadata ) );
+			$videMetadata );
 		//var_dump($estimate);
 		$this->setVal("estimates", $estimate);
 		$this->getResponse()->setFormat("json");
 		//die();
+	}
+
+	public function rel2() {
+		$video   = $this->getVal( "video" );
+		$article = $this->getVal( "article" );
+		$relevancyService = new RelevancyEstimatorService();
+		$this->setVal("estimates", $relevancyService->getRelevancy( $video, $article ));
+		$this->getResponse()->setFormat("json");
 	}
 
 	public function testSuggestions() {

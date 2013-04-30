@@ -12,7 +12,6 @@ $app = F::app();
 $app->registerClass('JJVideoSpikeController', $dir . 'JJVideoSpikeController.php');
 $app->registerClass('ArticleSubject', $dir.'ArticleSubject.class.php');
 $app->registerClass('WikiSubjects', $dir.'WikiSubjects.class.php');
-$app->registerClass('JJVideoMetadataProvider', $dir.'JJVideoMetadataProvider.class.php');
 
 
 $app->registerClass('ITokenizer', $dir.'util/ITokenizer.php');
@@ -44,11 +43,14 @@ $app->registerClass('LinearNormalizingFunction',    $dir.'normalizingFunctions/L
 $app->registerClass('SigmoidNormalizingFunction',   $dir.'normalizingFunctions/SigmoidNormalizingFunction.php');
 
 // services
-$app->registerClass('WikiPageCategoryService',         $dir.'services/WikiPageCategoryService.php');
-$app->registerClass('WikiPageCategoryServiceFactory',  $dir.'services/WikiPageCategoryServiceFactory.php');
+$app->registerClass('WikiPageCategoryService',        $dir.'services/WikiPageCategoryService.php');
+$app->registerClass('WikiPageCategoryServiceFactory', $dir.'services/WikiPageCategoryServiceFactory.php');
+$app->registerClass('RelevancyEstimatorService',      $dir.'services/RelevancyEstimatorService.php');
 
-$app->registerClass('ArticleInformation', $dir.'ArticleInformation.php');
-$app->registerClass('VideoInformation', $dir.'VideoInformation.php');
+// abstraction
+$app->registerClass('ArticleInformation',       $dir.'abstraction/ArticleInformation.php');
+$app->registerClass('VideoInformation',         $dir.'abstraction/VideoInformation.php');
+$app->registerClass('VideoInformationProvider', $dir.'abstraction/VideoInformationProvider.php');
 
 
 $app->registerSpecialPage('JJVideoSpike', 'JJVideoSpikeController');

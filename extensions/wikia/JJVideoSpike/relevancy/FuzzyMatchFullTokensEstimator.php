@@ -34,7 +34,7 @@ class FuzzyMatchFullTokensEstimator implements IRelevancyEstimator {
 		foreach ( $metatags->getMetadata() as $tagType => $tagString ) {
 			$tagTokens = $this->splitTagsTokenizer->tokenize( $tagString );
 			foreach ( $tagTokens as $i => $tagToken ) {
-				if ( $this->fuzyFindTag( $content, $tagToken ) ) {
+				if ( $this->fuzzyFindTag( $content, $tagToken ) ) {
 					$count += 1;
 				}
 			}
@@ -42,7 +42,7 @@ class FuzzyMatchFullTokensEstimator implements IRelevancyEstimator {
 		return $count;
 	}
 
-	private function fuzyFindTag( $content, $tagToken ) {
+	private function fuzzyFindTag( $content, $tagToken ) {
 		$tokens = $this->splitTagTokenizer->tokenize($tagToken);
 		if ( sizeof( $tokens ) < 2 ) return false;
 		$token = $tokens[0];
