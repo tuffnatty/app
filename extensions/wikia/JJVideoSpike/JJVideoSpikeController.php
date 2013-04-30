@@ -12,6 +12,7 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 
 	private $videoMetadataProvider;
 	private $relevancyEstimator;
+	private $relevancyService;
 
 	private $fbClient;
 
@@ -22,6 +23,7 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		$this->videoMetadataProvider = new VideoInformationProvider();
 		$estimatorFactory = new CompositeRelevancyEstimatorFactory();
 		$this->relevancyEstimator = $estimatorFactory->get();
+		$this->relevancyService = new RelevancyEstimatorService();
 		$this->fbClient = new FreebaseClient();
 	}
 
@@ -34,18 +36,22 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 	private function getArticleId( $param = 'art' ) {
 
 		$title = $this->request->getVal( $param, '' );
-		$art = false;
+		$artId = false;
 
 		if ( !empty( $title ) ) {
 
 			$titleObj = Title::newFromText( $title );
 			if ( !empty( $titleObj ) && $titleObj->exists() ) {
-
-				$art = $titleObj->getArticleID();
+				$artId = $titleObj->getArticleID();
+				if( $titleObj->isRedirect() ) {
+					$art = new Article( $titleObj );
+					$titleObj = Title::newFromRedirectRecurse( $art->getContent() );
+					$artId = $titleObj->getArticleID();
+				}
 			}
 		}
 
-		return $art;
+		return $artId;
 	}
 
 	public function test() {
@@ -61,6 +67,7 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		$subjectsObject = new WikiSubjects();
 		$art->setAllSubjectList( $subjectsObject->get() );
 
+		//var_dump( $subjectsObject->get() );
 		$subjects = $art->getSubjects();
 		var_dump( $subjects );
 
@@ -410,14 +417,12 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 
 		$mode = $this->getVal('mode', 'default');
 
-
 		if ( !$articleId ) {
 			die("ARTICLE NOT FOUND");
 		}
 
 		$suggestions = new ArticleVideoSuggestion( $articleId );
 		$subjects = $suggestions->getSubject();
-
 
 		if ( $mode == 'default') {
 
@@ -432,6 +437,21 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 
 			$result = $suggestions->getFromElasticSearch();
 
+		} elseif ( $mode == 'merge' ) {
+			$resultSets[] = $suggestions->getDefaultSuggestions();
+			if ( isset($subjects[0][0] ) ) {
+				$resultSets[] = $suggestions->getBySubject();
+			}
+			if ( isset($subjects[1][0] ) ) {
+				$resultSets[] = $suggestions->getBySubject(1);
+			}
+			if ( isset($subjects[2][0] ) ) {
+				$resultSets[] = $suggestions->getBySubject(2);
+			}
+
+			$result = $this->relevancyService->mergeResults(
+				Title::newFromID( $articleId )->getBaseText()
+				, $resultSets );
 		}
 
 		if ( isset( $subjects[0][0] ) ) {

@@ -81,14 +81,15 @@ class ArticleSubject {
 		$normalizedBody = $this->normalizeText( $this->articleBody );
 
 		$articleLinks = array();
-		preg_match_all( '/\[\[.*?(\]\]|\|)/', $this->articleBody, $articleLinks );
+		preg_match_all( '/\[\[([\w\-\. +&@#\/%=~_]+)?(\]\]|\|)/i', $this->articleBody, $articleLinks );
 
 
-		foreach ( $articleLinks[0] as $i => $link ) {
-			$articleLinks[0][$i] = $this->normalizeText( $link );
+		foreach ( $articleLinks[1] as $i => $link ) {
+			$articleLinks[1][$i] = $this->normalizeText( $link );
 		}
 
-		$articleLinks = $articleLinks[0];
+
+		$articleLinks = $articleLinks[1];
 
 		foreach ( $this->allSubjectList as $subject ) {
 

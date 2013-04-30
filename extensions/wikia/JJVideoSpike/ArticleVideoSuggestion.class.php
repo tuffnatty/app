@@ -63,15 +63,13 @@ class ArticleVideoSuggestion {
 		return $articleSubject;
 	}
 
-	public function getBySubject() {
-
-
+	public function getBySubject( $subjectNo = 0 ) {
 		$wikiSubject = $this->wikiSubject->get();
 		$articleSubject = $this->articleSubject->getPrioritizedList();
 		$result = array();
 
-		if ( count( $articleSubject ) > 0 ) {
-			$result = $this->makeQuery( $articleSubject[0][0] );
+		if ( count( $articleSubject ) > $subjectNo ) {
+			$result = $this->makeQuery( $articleSubject[$subjectNo][0] );
 		}
 
 		return $result;

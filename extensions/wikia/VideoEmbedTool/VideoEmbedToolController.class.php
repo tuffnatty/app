@@ -181,6 +181,7 @@ class VideoEmbedToolController extends WikiaController {
 			if ( $trimTitle > 0 ) {
 				$singleVideoData['title'] = mb_substr( $singleVideoData['title'], 0, $trimTitle );
 			}
+			/*
 			try {
 				if ( $article != null ) {
 					$meta = $metadataProvider->get($result->getTitle());
@@ -195,7 +196,7 @@ class VideoEmbedToolController extends WikiaController {
 			} catch ( Catchable $e ) {
 
 			}
-
+			*/
 			if ( !empty( $singleVideoData['thumbnail'] ) && count( $data ) < $svSize  ) {
 				$data[] = $singleVideoData;
 			}

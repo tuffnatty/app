@@ -23,30 +23,48 @@ class RelevancyEstimatorService {
 	}
 
 	public function mergeResults( $articleTitle, $resultSets, $expectedResults = 5 ) {
-		$articleInfo = $this->getArticle( $articleTitle );
+		$articleInfo = $this->getArticleInfo( $articleTitle );
 		$items = array();
 		foreach ( $resultSets as $i => $resultSet ) {
 			foreach( $resultSet["items"] as $j => $result ) {
 				$videoTitle = $result["title"];
 				$videoInfo = $this->getVideoInfo( $videoTitle );
 				$score = $this->getRelevancyInternal( $videoInfo, $articleInfo );
-				$res = clone $result;
+				$res = $result;
 				$res["_score"] = $score;
 				$res["_pos"] = $j;
 				$items[] = $res;
 			}
 		}
+		$items = $this->unique( $items );
 		usort( $items, function( $a, $b ) { return $a["_pos"] < $b["_pos"]; } );
 		$threshold = $this->binarySearch( 0, 100, $items, $expectedResults );
-		return $this->filterResults( $items, $threshold );
+		$items = $this->filterResults( $items, $threshold );
+		return array(
+			"items" => $items
+		);
 	}
 
-	public function binarySearch ( $a, $b, $items, $expectedCount ) {
+	protected  function unique( $items ) {
+		$resultArray = array();
+		$unique_array = array();
+		foreach( $items as $item ) {
+			$hash = $item["title"];
+			if ( !isset($unique_array[$hash]) ) {
+                $unique_array[$hash] = $item;
+				$resultArray[] = $item;
+			}
+		}
+		return $resultArray;
+	}
+
+	protected function binarySearch ( $a, $b, $items, $expectedCount ) {
 		if ( $b - $a <= 0.01 ) {
-			return $b;
+			return $a;
 		}
 		$pivot = ($a + $b) / 2;
 		$count = count( $this->filterResults( $items, $pivot ) );
+		//echo "$pivot $count <br/>";
 		if ( $count < $expectedCount ) {
 			return $this->binarySearch( $a, $pivot, $items, $expectedCount );
 		} else if ( $count > $expectedCount ) {
@@ -56,7 +74,7 @@ class RelevancyEstimatorService {
 		}
 	}
 
-	public function  filterResults( $items, $score ) {
+	protected function  filterResults( $items, $score ) {
 		$resultItems = array();
 		foreach ( $items as $i => $v ) {
 			if ( $v["_score"] >= $score ) {
@@ -85,8 +103,9 @@ class RelevancyEstimatorService {
 	protected  function getVideoInfo( $videoTitle ) {
 		$videoMetadata = $this->videoInformationProvider->get( $videoTitle );
 		if ( $videoMetadata == null ) {
-			throw new Exception("No such video title.");
+			throw new Exception("No such video title ($videoTitle).");
 		}
+		return $videoMetadata;
 	}
 
 	protected function getRelevancyInternal( $videoMetadata, $article ) {
