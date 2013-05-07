@@ -8,7 +8,6 @@
  */
 abstract class WikiaSuperFactory {
 	protected static $constructors = array();
-	protected static $setters = array();
 	protected static $reflections = array();
 	const APP_OBJECT = 'App';
 
@@ -67,15 +66,6 @@ abstract class WikiaSuperFactory {
 	}
 
 	/**
-	 * set class setter methods to be called while building an object
-	 * @param string $className class name
-	 * @param array $setters array of setter methods ( setter name => value )
-	 */
-	public static function setClassSetters($className, Array $setters) {
-		self::$setters[$className] = $setters;
-	}
-
-	/**
 	 * build object
 	 * @param string $className class name
 	 * @param array $params array of parameters for constructor or factory method ( param name => value )
@@ -83,9 +73,7 @@ abstract class WikiaSuperFactory {
 	 * @return JSMessages|JSSnippets|Title|User|Article|Category|AssetsManager|WikiaRequest|WikiaResponse|object|Wikia
 	 */
 	public static function build($className, Array $params = array(), $constructorMethod = '__construct') {
-		wfProfileIn(__METHOD__);
 		if(isset(self::$constructors[$className]) && array_key_exists('INSTANCE', self::$constructors[$className])) {
-			wfProfileOut(__METHOD__);
 			return self::$constructors[$className]['INSTANCE'];
 		}
 
@@ -94,7 +82,6 @@ abstract class WikiaSuperFactory {
 				$method = new ReflectionMethod($className, $constructorMethod);
 			}
 			catch(ReflectionException $e) {
-				wfProfileOut(__METHOD__);
 				throw new WikiaException("WikiaFactory: Unknown constructor ($constructorMethod) for class: $className");
 			}
 			self::addClassConstructor($className, array(), $constructorMethod);
@@ -111,28 +98,16 @@ abstract class WikiaSuperFactory {
 				self::$reflections[$className] = new ReflectionClass($className);
 			}
 			if(!empty($buildParams)) {
-				wfProfileIn(__METHOD__ . '-constructor');
 				$object = self::$reflections[$className]->newInstanceArgs($buildParams);
-				wfProfileOut(__METHOD__ . '-constructor');
 			}
 			else {
-				wfProfileIn(__METHOD__ . '-constructor');
 				$object = self::$reflections[$className]->newInstanceArgs();
-				wfProfileOut(__METHOD__ . '-constructor');
 			}
 		}
 		else {
-			wfProfileIn(__METHOD__ . '-constructor');
 			$object = call_user_func_array(array($className, $constructorMethod), $buildParams);
-			wfProfileOut(__METHOD__ . '-constructor');
 		}
 
-		if(isset(self::$setters[$className])) {
-			foreach(self::$setters[$className] as $setterName => $value) {
-				call_user_func(array($object, $setterName), $value);
-			}
-		}
-		wfProfileOut(__METHOD__);
 		return $object;
 	}
 
@@ -143,12 +118,10 @@ abstract class WikiaSuperFactory {
 	public static function reset($className = null) {
 		if(!empty($className)) {
 			unset(self::$constructors[$className]);
-			unset(self::$setters[$className]);
 		}
 		else {
 			// @codeCoverageIgnoreStart
 			self::$constructors = array();
-			self::$setters = array();
 			// @codeCoverageIgnoreEnd
 		}
 	}
@@ -163,10 +136,9 @@ abstract class WikiaSuperFactory {
 }
 
 /**
- * WikiaFactory class aliases
+ * WikiaFactory class alias
  * @author ADi
  *
  */
-abstract class WF extends WikiaSuperFactory { }
 abstract class F extends WikiaSuperFactory { }
 
