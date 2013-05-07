@@ -20,9 +20,9 @@ class FreebaseClient {
 	);
 
 	protected $personTypes = array(
-		'actor' => 'actor',
+//		'actor' => 'actor',
 		'/fictional_universe/fictional_character' => 'character',
-		'/m/02hrh1q' => 'actor', //actor id in freebase
+//		'/m/02hrh1q' => 'actor', //actor id in freebase
 	);
 
 	protected $creativeWorkTypes = array(
@@ -86,7 +86,12 @@ class FreebaseClient {
 
 	public function queryWithTypeDomainFilter( $query, $types, $domain, $limit = 5 ) {
 		if ( !is_array( $types ) ) {
-			$types = array( $types );
+			//types can be also a string containg a method name, which should be used for getting types list
+			if ( method_exists( $this, $types ) ) {
+				$types = array_keys( $this->{$types}() );
+			} else {
+				return null;
+			}
 		}
 		return $this->call( $query, $types, $domain, $limit );
 	}
@@ -97,10 +102,6 @@ class FreebaseClient {
 			'limit' => $limit,
 			'query' => trim( $query ),
 		);
-		$cacheUrl = static::FREEBASE_URL . '?' . http_build_query( $q );
-		//get key for call
-		$q[ 'key' ] = static::getApiKey();
-
 		$filterDomain = ( $domain !== null ) ? "(all domain:\"{$domain}\"))" : null;
 		$filterTypes = ( $type !== null ) ? '(any type:'.implode( ' type:', $type ).')' : null;
 
@@ -108,15 +109,19 @@ class FreebaseClient {
 		if ( $filterDomain !== null || $filterTypes !== null ) {
 			$q[ 'filter' ] = "(all {$filterDomain} {$filterTypes})";
 		}
+		$cacheUrl = static::FREEBASE_URL . '?' . http_build_query( $q );
+		//get key for call
+		$q[ 'key' ] = static::getApiKey();
 
 		$url = static::FREEBASE_URL . '?' . http_build_query( $q );
-//		print_r( 'Proccessing: ' . $url . "\n" );
+		print_r( 'Proccessing: ' . $url . "\n" );
 
 		$key = $this->generateMemKey( __METHOD__, md5( $cacheUrl ) );
+		var_dump( $key );
 		$content = $this->getFromCache( $key );
 
 		if ( empty( $content ) ) {
-//			print_r( 'Connecting: ' . $url . "\n" );
+			print_r( 'Connecting: ' . $url . "\n" );
 			$fb = MWHttpRequest::factory( $url );
 			$fb->execute();
 			$content = $fb->getContent();

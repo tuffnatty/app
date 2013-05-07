@@ -104,7 +104,7 @@ class VideoInformationProvider {
 		$exclude = $this->getMostUsedTerms();
 
 		$this->getExpandedFormTitleMatches( $metadata );
-//		$this->getExpandedFromTitle( $metadata, $exclude );
+		$this->getExpandedFromTitle( $metadata, $exclude );
 		$this->getExpandedMetadata( $metadata, $exclude );
 
 		$metadata[ 'expanded' ] = $this->extended;
@@ -217,7 +217,7 @@ class VideoInformationProvider {
 			foreach ( $freebaseResult->result as $res ) {
 				if ( isset( $res->notable ) ) {
 					$type = $fbClient->getTypeMapping( $res->notable->id );
-					if ( $type !== null && $res->score > $score && strtolower( trim( $res->name ) ) === strtolower( trim ( $keyword ) ) ) {
+					if ( $type !== null && $res->score > $score ) {
 						$about[ $keyword ][] = array( 'title' => $res->name, 'type' => $type, 'score' => $res->score );
 						continue;
 					}

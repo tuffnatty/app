@@ -99,17 +99,17 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		$score = $this->getVal( 'score', 0 );
 
 		$types = array(
-			'actor',
+//			'actor',
 			'/fictional_universe/fictional_character',
-			'/film/film',
-			'/film/film_series',
-			'/tv/tv_program',
-			'/tv/tv_series_season',
-			'/cvg/game_series',
-			'/cvg/computer_videogame',
-			'/book/literary_series',
-			'/book/book_edition',
-			'/book/book',
+//			'/film/film',
+//			'/film/film_series',
+//			'/tv/tv_program',
+//			'/tv/tv_series_season',
+//			'/cvg/game_series',
+//			'/cvg/computer_videogame',
+//			'/book/literary_series',
+//			'/book/book_edition',
+//			'/book/book',
 		);
 
 		$typesMapping = array(
@@ -127,7 +127,7 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 			'/book/book' => 'book'
 		);
 
-		$json = $this->fbClient->queryWithDomain( $q, $d );
+		$json = $this->fbClient->queryWithTypeDomainFilter( $q, 'getPersonTypes', $d );
 		print_r( $json );
 		$resultTypes = array();
 //		$maxScore = $json->result[0]->score;
@@ -224,12 +224,14 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 //		$cokeProvider->getExpanded( 'Age_of_Empires_Online_Video' );
 //		$cokeProvider->getExpanded( 'Assassin\'s_Creed_3_The_Tyranny_of_King_Washington_The_Redemption_Walkthrough_(Part_1)' );
 //		$cokeProvider->getExpanded( 'Aliens_Colonial_Marines_PC_Commentary' );
-//		$cokeProvider->getExpanded( 'Astro_Boy_The_Video_Game_Nintendo_Wii_Trailer_-_GC_2009_VO_Talent_Kristen_Bell_and_Freddie_Highmore' );
+//		$md = $cokeProvider->getExpanded( 'Astro_Boy_The_Video_Game_Nintendo_Wii_Trailer_-_GC_2009_VO_Talent_Kristen_Bell_and_Freddie_Highmore' );
 //		$cokeProvider->getExpanded( 'Afghan_Luke_(2011)_-_Home_Video_Trailer_for_Afghan_Luke' );
 //		$cokeProvider->getExpanded( 'Africa_Unite_(2007)_-_Clip_UNICEF_participants,_Rita_Marley_and_Danny_Glover_discuss_the_mission_of_Africa_Unite' );
 //		$cokeProvider->getExpanded( 'African_Cats_(2011)_-_Clip_Sita_Has_a_Secret' );
-		$md = $cokeProvider->getExpanded( 'After_Dark,_My_Sweet_(1990)_-_Open-ended_Trailer_(e22821)' );
+//		$md = $cokeProvider->getExpanded( 'Harry_Potter_and_the_Chamber_of_Secrets_(2002)_-_Home_Video_Trailer_(e17229)' );
 //		$md = $cokeProvider->getExpanded( 'After.Life_(2009)_-_Clip_Please_let_me_go' );
+//		$md = $cokeProvider->getExpanded( '007_Legends_(_(2012)_-_Opening_Credit_Cinematic_trailer' );
+		$md = $cokeProvider->getExpanded( '10_Things_I_Hate_About_You_10th_Anniversary_Edition_(1999)_-_Clip_Tell_me_something_true' );
 		print_r( '<pre>' );
 		print_r( $md );
 		die;
