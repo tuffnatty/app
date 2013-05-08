@@ -108,6 +108,7 @@ $app->wg->set( 'wgResourceModules', array(
 //$app->registerHook( 'WikiaMobileAssetsPackages', 'AbTesting', 'onWikiaMobileAssetsPackages' );
 
 $app->registerSpecialPage('AbTesting', 'SpecialAbTestingController');
+$app->registerSpecialPage('AbTesting2', 'SpecialAbTesting2Controller');
 
 
 /*
