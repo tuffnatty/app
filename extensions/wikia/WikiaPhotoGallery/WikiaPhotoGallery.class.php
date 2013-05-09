@@ -1959,7 +1959,10 @@ class WikiaPhotoGallery extends ImageGallery {
 			$result = F::app()->sendRequest(
 				'WikiaMobileMediaService',
 				'renderMediaGroup',
-				array( 'items' => $media ),
+				[
+					'items' => $media,
+					'parser' => $this->mParser
+				],
 				true
 			)->toString();
 		}
