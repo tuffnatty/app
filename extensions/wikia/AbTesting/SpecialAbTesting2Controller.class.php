@@ -24,9 +24,18 @@ class SpecialAbTesting2Controller extends WikiaSpecialPageController {
 		foreach ($experiments as &$exp) {
 			$exp['actions'] = array();
 			// add "Edit experiment" button
+			if ( $exp['status'] == AbTesting::STATUS_ACTIVE ) {
+				$exp['actions'][] = array(
+					'cmd' => 'stop-experiment',
+					'class' => 'secondary',
+					'spriteclass' => '',
+					'text' => $this->wf->msg('abtesting-stop-button'),
+				);
+			}
 			$exp['actions'][] = array(
 				'cmd' => 'edit-experiment',
-				'class' => 'edit-pencil sprite',
+				'class' => '',
+				'spriteclass' => 'edit-pencil sprite',
 				'text' => $this->wf->msg('abtesting-edit-button'),
 			);
 		}

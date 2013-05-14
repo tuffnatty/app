@@ -2,7 +2,7 @@
 /** @var $abTesting AbTesting */
 $active = $experiment[ 'status' ] == AbTesting::STATUS_ACTIVE;
 $has_next = $active ? $experiment[ 'next_deactivate' ] !== null : $experiment[ 'next_activate' ] !== null;
-$classList = array('collapsed', 'exp');
+$classList = array('exp');
 if ($active) {
 	$status = wfMessage('abtesting-status-active')->text();
 	$timeAgo = $experiment[ 'next_deactivate' ] ? wfTimestamp(TS_ISO_8601, $experiment[ 'next_deactivate' ] ) : '';
@@ -28,25 +28,23 @@ $class = implode(' ', $classList);
 			Starts <span class="timeago" title="<?= $timeAgo ?>"><?= $timeString ?> </span>
 		<? endif; ?>
 	</td>
-
-</tr>
-<?
-$classList[] = 'details';
-$class = implode(' ', $classList);
-?>
-
-<tr class="<?= $class ?>" data-row="1" data-id="<?= $experiment[ 'id' ] ?>">
-	<td></td>
-	<td><?= wfMsg( 'abtesting-heading-description' ) ?></td>
-	<td colspan="3"><?= htmlspecialchars( $experiment[ 'description' ] ) ?></td>
-
-</tr>
-<tr class="<?= $class ?>" data-row="2" data-id="<?= $experiment[ 'id' ] ?>">
-	<td></td>
-	<td><?= wfMsg( 'abtesting-heading-actions' ) ?></td>
-	<td colspan="3" class="actions">
-		<? foreach( $experiment[ 'actions' ] as $action ): ?>
-			<button data-command="<?= $action[ 'cmd' ] ?>"><?= $action[ 'text' ] ?></button>
-		<? endforeach ?>
+	<td style="display:none" class="details">
+		<table>
+			<tr>
+				<td><?= wfMsg( 'abtesting-heading-description' ) ?></td>
+				<td><?= htmlspecialchars( $experiment[ 'description' ] ) ?></td>
+			</tr>
+		</table>
+		<div class="actions">
+			<? foreach( $experiment[ 'actions' ] as $action ): ?>
+				<button data-command="<?= $action[ 'cmd' ] ?>" class="<?= $action[ 'class' ] ?>">
+					<?= $action[ 'text' ] ?>
+					<? if (!empty($action['spriteclass'])): ?>
+						<span class="<?= $action[ 'spriteclass' ] ?>">&nbsp;</span>
+					<? endif; ?>
+				</button>
+			<? endforeach ?>
+		</div>
 	</td>
+
 </tr>

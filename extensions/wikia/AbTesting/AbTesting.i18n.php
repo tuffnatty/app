@@ -38,6 +38,7 @@ $messages['en'] = array(
 	'abtesting-edit-experiment-title' => 'Edit Experiment',
 	'abtesting-add-treatment-group' => 'Add Treatment Group',
 
+	'abtesting-stop-button' => 'Stop experiment',
 	'abtesting-edit-button' => 'Edit',
 	'abtesting-save-button' => 'Save',
 
