@@ -13,6 +13,14 @@ class VideoSuggestTestHooksHelper {
 			return true;
 		}
 
+		if ( F::app()->wg->User->isAnon() ) {
+			return true;
+		}
+
+		if ( !F::app()->wg->User->isAllowed('VideoSuggestTest') ) {
+			return true;
+		}
+
 		$articleName = F::app()->wg->Title->getPrefixedText();
 
 		$config = new Wikia\Search\Config;
