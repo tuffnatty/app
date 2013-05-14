@@ -24,6 +24,9 @@ class PageHeaderController extends WikiaController {
 		$this->displaytitle = $skinVars['displaytitle']; // if true - don't encode HTML
 		$this->title = $skinVars['title'];
 		$this->subtitle = $skinVars['subtitle'];
+
+		$this->showSuggestVideo = true;
+		$this->suggestedVideos = '';
 	}
 
 	/**
@@ -382,6 +385,10 @@ class PageHeaderController extends WikiaController {
 
 		// force AjaxLogin popup for "Add a page" button (moved from the template)
 		$this->loginClass = !empty($this->wg->DisableAnonymousEditing) ? ' require-login' : '';
+
+		wfRunHooks('PageHeaderVideoSuggest', array(&$this, $ns));
+		$this->showSuggestVideo = true;
+		$this->suggestedVideos = '';
 
 		wfProfileOut(__METHOD__);
 	}
