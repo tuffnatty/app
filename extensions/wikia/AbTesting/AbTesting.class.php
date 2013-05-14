@@ -1,5 +1,10 @@
 <?php
 /**
+ *
+ * This is internal AB testing class.
+ * For API for quering for running server-side
+ * tests please see AbTests.class.php
+ *
  * @author Sean Colombo
  * @author Kyle Florence
  * @author Władysław Bodzek
