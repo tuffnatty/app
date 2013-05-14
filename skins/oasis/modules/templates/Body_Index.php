@@ -86,7 +86,7 @@
 				<? if($displayAdminDashboardChromedArticle) { ?>
 					<?= (string)$app->sendRequest( 'AdminDashboardSpecialPage', 'chromedArticleHeader', array('headerText' => $wg->Title->getText() )) ?>
 				<? } ?>
-				
+
 				<div class="home-top-right-ads">
 				<?php
 					if (!$wg->EnableWikiaHomePageExt && WikiaPageType::isMainPage()) {
@@ -101,6 +101,7 @@
 					echo $app->renderView('ArticleInfoBox', 'Index');
 				} ?>
 
+				<?= $suggestedVideos ?>
 				<?= $bodytext ?>
 
 			</div>

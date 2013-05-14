@@ -51,13 +51,6 @@
 	?>
 </header>
 <?php
-// render suggested video test
-if ($showSuggestVideo) {
-?>
-	<b>Suggested Videos</b><br/>
-	<?= $suggestedVideos ?>
-<?php
-}
 
 // render search box
 if ($showSearchBox) {

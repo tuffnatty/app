@@ -453,6 +453,10 @@ class BodyController extends WikiaController {
 			}
 		}
 
+		$suggestedVideos = '';
+		wfRunHooks( 'PageHeaderVideoSuggest', array( &$suggestedVideos ) );
+		$this->suggestedVideos = $suggestedVideos;
+
 		// bugid-70243: optionally hide navigation h1s for SEO
 		$this->setVal( 'displayHeader', !$this->wg->HideNavigationHeaders );
 
