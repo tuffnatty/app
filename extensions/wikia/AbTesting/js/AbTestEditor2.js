@@ -2,11 +2,14 @@ $( function() {
 	var $editor = $('#AbTestEditor');
 	var $details = $('#AbTestDetails');
 	var $window = $(window);
+	var $document = $(document);
 
 	var doSizing = function() {
 		var current = $window.scrollTop();
+		if (current < 0) current = 0;
+		if (current > $document.height() - $window.height() ) current = $document.height() - $window.height();
 		var min_top = $editor.offset().top - current;
-		var max_top = $editor.offset().top + $editor.height() - $details.height() - 34;
+		var max_top = $editor.offset().top + $editor.height() - $details.height();
 		if (min_top < 10) min_top = 10;
 		if (current > max_top ) min_top = max_top - current;
 		$details.css('top', min_top);

@@ -5,6 +5,7 @@
 $abTesting-color-hover: mix($color-page, $color-text, 80);
 $abTesting-color-selected: mix($color-page, $color-buttons, 90);
 $abTesting-color-details: mix($color-page, $color-buttons, 95);
+$abTesting-color-border: mix($color-page-border, $color-page, 50%);
 
 body {
 	background: black !important;
@@ -30,27 +31,53 @@ body {
 			&.selected, &.selected td {
 				background: $abTesting-color-selected;
 			}
+			td { border-bottom: none; }
 		}
 	}
 }
 
 #AbTestDetails {
-	@include border-radius(10px);
+	@include border-radius-ne(10px);
+	@include border-radius-se(10px);
 	//border: 1px solid $color-borders;
 	position: fixed;
 	width: 400px;
-	height: 300px;
+	max-height: 600px;
+	overflow-y: scroll;
 	background: $abTesting-color-details;
 	display: none;
+	.title {
+		font-weight: bold;
+		font-size: 2em;
+		text-align: center;
+		padding-top: 10px;
+		padding-bottom: 5px;
+		border-bottom: 1px solid $abTesting-color-border;
+	}
+	.content {
+		padding: 5px 20px;
+	}
 	.actions {
-		position: absolute;
-		right: 10px;
-		bottom: 10px;
+		text-align: right;
+		padding: 10px;
 		.sprite {
 			position: relative;
 			display: inline-block;
 			left: 4px;
 			top: 2px;
 		}
+	}
+	th {
+		color: $color-alternate-text;
+		text-align: right;
+		font-weight: normal;
+		vertical-align: top;
+	}
+	th:after {
+		display: inline;
+		content: ': ';
+	}
+	td {
+		font-weight: 150;
 	}
 }

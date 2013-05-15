@@ -29,6 +29,8 @@ $messages['en'] = array(
 	'abtesting-heading-long-flag-forced_ga_tracking_on_load' => 'Force GA track on window.onload',
 	'abtesting-heading-long-flag-limit_to_special_wikis' => 'Limit to SpecialWikis',
 	'abtesting-heading-group' => 'Group',
+	'abtesting-heading-groups' => 'Groups',
+	'abtesting-heading-versions' => 'Versions',
 	'abtesting-heading-control-group' => 'Control Group',
 	'abtesting-heading-ranges' => 'Ranges (0-99)',
 	'abtesting-heading-treatment-groups' => 'Treatment Groups',
@@ -38,7 +40,7 @@ $messages['en'] = array(
 	'abtesting-edit-experiment-title' => 'Edit Experiment',
 	'abtesting-add-treatment-group' => 'Add Treatment Group',
 
-	'abtesting-stop-button' => 'Stop experiment',
+	'abtesting-cancel-button' => 'Cancel experiment',
 	'abtesting-edit-button' => 'Edit',
 	'abtesting-save-button' => 'Save',
 

@@ -29,12 +29,37 @@ $class = implode(' ', $classList);
 		<? endif; ?>
 	</td>
 	<td style="display:none" class="details">
-		<table>
-			<tr>
-				<td><?= wfMsg( 'abtesting-heading-description' ) ?></td>
-				<td><?= htmlspecialchars( $experiment[ 'description' ] ) ?></td>
-			</tr>
-		</table>
+		<div class="title">
+			<?= htmlspecialchars( AbTesting::normalizeName($experiment[ 'name' ] ) ) ?>
+		</div>
+		<div class="content">
+			<table>
+				<tr>
+					<th><?= wfMsg( 'abtesting-heading-id' ) ?></th>
+					<td><?= $experiment[ 'id' ] ?></td>
+				</tr>
+				<tr>
+					<th><?= wfMsg( 'abtesting-heading-description' ) ?></th>
+					<td><?= htmlspecialchars( $experiment[ 'description' ] ) ?></td>
+				</tr>
+				<tr>
+					<th><?= wfMsg( 'abtesting-heading-groups' ) ?></th>
+					<td>
+						<? foreach($experiment[ 'groups' ] as $g ): ?>
+							<?= $g['id'] ?> &rarr; <?= AbTesting::normalizeName($g['name']) ?><br />
+						<? endforeach; ?>
+					</td>
+				</tr>
+				<tr>
+					<th><?= wfMsg( 'abtesting-heading-versions' ) ?></th>
+					<td>
+						<? foreach($experiment[ 'versions' ] as $v ): ?>
+							<?= $v['start_time'] ?> &mdash; <?= $v['end_time'] ?> <br />
+						<? endforeach; ?>
+					</td>
+				</tr>
+			</table>
+		</div>
 		<div class="actions">
 			<? foreach( $experiment[ 'actions' ] as $action ): ?>
 				<button data-command="<?= $action[ 'cmd' ] ?>" class="<?= $action[ 'class' ] ?>">

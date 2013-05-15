@@ -245,7 +245,7 @@ class AbTesting extends WikiaObject {
 	 * Normalizes the names of experiments and treatment groups into an
 	 * uppercased string with spaces replaced by underscores.
 	 */
-	public function normalizeName( $name ) {
+	static public function normalizeName( $name ) {
 		$name = str_replace( ' ', '_', $name );
 		$name = strtoupper( preg_replace( '/[^a-z0-9_]/i', '', $name ) );
 
