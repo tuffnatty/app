@@ -13,12 +13,13 @@ $( function() {
 		if (min_top < 10) min_top = 10;
 		if (current > max_top ) min_top = max_top - current;
 		$details.css('top', min_top);
-		$details.css('left', $editor.offset().left + $editor.width() );
+		var scroll_left = $document.scrollLeft();
+		if (scroll_left<0) scroll_left = 0;
+		$details.css('left', $editor.offset().left + $editor.width() - scroll_left );
 	}
 
-	$window.on('scroll', $.proxy(function(ev) {
-		doSizing();
-	}, this));
+	$window.on('scroll', doSizing);
+	$window.resize( doSizing );
 
 	$('td.timeago').timeago();
 	$editor.on('click','tr.exp', $.proxy(function(ev) {
