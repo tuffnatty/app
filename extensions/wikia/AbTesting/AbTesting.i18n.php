@@ -30,7 +30,7 @@ $messages['en'] = array(
 	'abtesting-heading-long-flag-limit_to_special_wikis' => 'Limit to SpecialWikis',
 	'abtesting-heading-group' => 'Group',
 	'abtesting-heading-groups' => 'Groups',
-	'abtesting-heading-versions' => 'Versions',
+	'abtesting-heading-schedule' => 'Schedule',
 	'abtesting-heading-control-group' => 'Control Group',
 	'abtesting-heading-ranges' => 'Ranges (0-99)',
 	'abtesting-heading-treatment-groups' => 'Treatment Groups',
@@ -48,6 +48,7 @@ $messages['en'] = array(
 
 	'abtesting-status-active' => 'Active',
 	'abtesting-status-inactive' => 'Inactive',
+	'abtesting-status-planned' => 'Planned',
 
 	'abtesting-ranges-info' => '(0-99)',
 	'action-abtestpanel' => 'configure A/B tests',

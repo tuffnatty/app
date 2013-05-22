@@ -9,7 +9,7 @@ if ($active) {
 	$timeString = $experiment[ 'next_deactivate' ] ? $wg->Lang->timeanddate($experiment[ 'next_deactivate' ] ) : '';
 	$classList[] = 'status-active';
 } else {
-	$status = wfMessage('abtesting-status-inactive')->text();
+	$status = $experiment[ 'next_activate' ] ? wfMessage('abtesting-status-planned')->text() : wfMessage('abtesting-status-inactive')->text();
 	$timeAgo = $experiment[ 'next_activate' ] ? wfTimestamp(TS_ISO_8601, $experiment[ 'next_activate' ] ) : '';
 	$timeString = $experiment[ 'next_activate' ] ? $wg->Lang->timeanddate($experiment[ 'next_activate' ] ) : '';
 	$classList[] = 'status-inactive';
@@ -51,10 +51,12 @@ $class = implode(' ', $classList);
 					</td>
 				</tr>
 				<tr>
-					<th><?= wfMsg( 'abtesting-heading-versions' ) ?></th>
+					<th><?= wfMsg( 'abtesting-heading-schedule' ) ?></th>
 					<td>
 						<? foreach($experiment[ 'versions' ] as $v ): ?>
-							<?= $v['start_time'] ?> &mdash; <?= $v['end_time'] ?> <br />
+							<?= substr($v['start_time'],0,10) ?> <span class="subtle"><?= substr($v['start_time'],11) ?></span>
+							&mdash;
+							<?= substr($v['end_time'],0,10) ?> <span class="subtle"><?= substr($v['end_time'],11) ?></span>
 						<? endforeach; ?>
 					</td>
 				</tr>

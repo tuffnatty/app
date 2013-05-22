@@ -32,7 +32,8 @@ $( function() {
 		} else {
 			$('tr.selected', $editor).removeClass('selected');
 			tr.addClass('selected');
-			$details.html( $('.details', tr).html() );
+			var html = $('.details', tr).html();
+			$details.html( linkify(html) );
 			$details.show();
 			$editor.css('margin-right', $details.width() );
 			doSizing();

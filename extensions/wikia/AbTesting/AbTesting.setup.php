@@ -94,6 +94,7 @@ $app->wg->set( 'wgResourceModules', array(
 $app->wg->set( 'wgResourceModules', array(
 	 'scripts' => array(
 		 'extensions/wikia/AbTesting/js/AbTestEditor2.js',
+		 'extensions/wikia/AbTesting/js/ba-linkify.js',
 	 ),
 ), 'wikia.ext.abtesting.edit2' );
 
