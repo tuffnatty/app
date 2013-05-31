@@ -87,7 +87,13 @@ class ConfigTest extends BaseTest {
 		$mockArticleMatch = $this->getMockBuilder( 'Wikia\Search\Match\Article' )
 		                         ->disableOriginalConstructor()
 		                         ->getMock();
-		$config = new \Wikia\Search\Config();
+		$config = $this->getMock( 'Wikia\Search\Config', [ 'articleMatchPassesFilters' ] );
+		$config
+		    ->expects( $this->any() )
+		    ->method ( 'articleMatchPassesFilters' )
+		    ->with   ( $mockArticleMatch )
+		    ->will   ( $this->returnValue( true ) )
+		;
 
 		$this->assertFalse(
 				$config->hasArticleMatch(),
@@ -114,6 +120,91 @@ class ConfigTest extends BaseTest {
 				$mockArticleMatch,
 				$config->getMatch(),
 				'\Wikia\Search\Config::getMatch should return either article or wiki match.'
+		);
+	}
+	
+	/**
+	 * @covers \Wikia\Search\Config::hasArticleMatch
+	 * @covers \Wikia\Search\Config::setArticleMatch
+	 * @covers \Wikia\Search\Config::getArticleMatch
+	 * @covers \Wikia\Search\Config::hasMatch
+	 * @covers \Wikia\Search\Config::getMatch
+	 */
+	public function testArticleMatchingFailingFilters() {
+		$mockArticleMatch = $this->getMockBuilder( 'Wikia\Search\Match\Article' )
+		                         ->disableOriginalConstructor()
+		                         ->getMock();
+		$config = $this->getMock( 'Wikia\Search\Config', [ 'articleMatchPassesFilters' ] );
+		$config
+		    ->expects( $this->any() )
+		    ->method ( 'articleMatchPassesFilters' )
+		    ->with   ( $mockArticleMatch )
+		    ->will   ( $this->returnValue( false ) )
+		;
+
+		$this->assertFalse(
+				$config->hasArticleMatch(),
+				'\Wikia\Search\Config should not have an article match by default.'
+		);
+		$this->assertNull(
+				$config->getArticleMatch(),
+				'\Wikia\Search\Config should return null when getting an uninitialized article match'
+		);
+		$this->assertEquals(
+				$config,
+				$config->setArticleMatch( $mockArticleMatch ),
+				'\Wikia\Search\Config::setArticleMatch should provide a fluent interface.'
+		);
+		$this->assertNull(
+				$config->getArticleMatch(),
+				'\Wikia\Search\Config::getArticleMatch should not be set if it does not pass filters'
+		);
+		$this->assertFalse(
+				$config->hasMatch()
+		);
+		$this->assertNull(
+				$config->getMatch()
+		);
+	}
+	
+	/**
+	 * @covers Wikia\Search\Config::articleMatchPassesFilters
+	 */
+	public function testArticleMatchPassesFiltersImageInVideoFilter() {
+		$config = $this->getMockBuilder( 'Wikia\Search\Config' )
+		               ->disableOriginalConstructor()
+		               ->setMethods( [ 'getPublicFilterKeys', 'getService' ] )
+		               ->getMock();
+		$match = $this->getMockBuilder( 'Wikia\Search\Match\Article' )
+		              ->disableOriginalConstructor()
+		              ->setMethods( [ 'getResult' ] )
+		              ->getMock();
+		$service = $this->getMock( 'Wikia\Search\MediaWikiService', [ 'pageIdIsVideoFile' ] );
+		$config
+		    ->expects( $this->once() )
+		    ->method ( 'getPublicFilterKeys' )
+		    ->will   ( $this->returnValue( [ \Wikia\Search\Config::FILTER_IMAGE ] ) )
+		;
+		$config
+		    ->expects( $this->once() )
+		    ->method ( 'getService' )
+		    ->will   ( $this->returnValue( $service ) )
+		;
+		$service
+		    ->expects( $this->once() )
+		    ->method ( 'pageIdIsVideoFile' )
+		    ->with   ( 123 )
+		    ->will   ( $this->returnValue( true ) )
+		;
+		$match
+		    ->expects( $this->once() )
+		    ->method ( 'getResult' )
+		    ->will   ( $this->returnValue( [ 'pageid' => 123, 'ns' => NS_FILE ] ) )
+		;
+		$method = new \ReflectionMethod( 'Wikia\Search\Config', 'articleMatchPassesFilters' );
+		$method->setAccessible( true );
+		$this->assertFalse(
+				$method->invoke( $config, $match )
 		);
 	}
 	
@@ -834,6 +925,102 @@ class ConfigTest extends BaseTest {
 		$this->assertInstanceOf(
 				'Wikia\Search\Query\Select',
 				$config->getQuery()
+		);
+	}
+	
+	/**
+	 * @covers Wikia\Search\Config::getWikiId
+	 */
+	public function testGetWikiIdDefault() {
+		$config = $this->getMockBuilder( 'Wikia\Search\Config' )
+		               ->disableOriginalConstructor()
+		               ->setMethods( [ 'getService' ] )
+		               ->getMock();
+		$service = $this->getMockBuilder( 'Wikia\Search\MediaWikiService' )
+		                ->setMethods( [ 'getWikiId' ] )
+		                ->getMock();
+		$this->assertAttributeEmpty(
+				'wikiId',
+				$config
+		);
+		$config
+		    ->expects( $this->once() )
+		    ->method ( 'getService' )
+		    ->will   ( $this->returnValue( $service ) )
+		;
+		$service
+		    ->expects( $this->once() )
+		    ->method ( 'getWikiId' )
+		    ->will   ( $this->returnValue( 123 ) )
+		;
+		$this->assertEquals(
+				123,
+				$config->getWikiId(),
+				'Wikia\Search\Config should default to ID of current wiki if the wiki ID has not been set'
+		);
+		$this->assertAttributeEquals(
+				123,
+				'wikiId',
+				$config,
+				'Calling Wikia\Search\Config::getWikiID on a config whose ID has not been set should store the current wiki in the wikiId attribute'
+		);
+	}
+	
+	/**
+	 * @covers Wikia\Search\Config::setWikiId
+	 * @covers Wikia\Search\Config::getWikiId
+	 */
+	public function testSetAndGetWikiId() {
+		$config = new Config;
+		$this->assertAttributeEmpty(
+				'wikiId',
+				$config
+		);
+		$config->setWikiId( 123 );
+		$this->assertAttributeEquals(
+				123,
+				'wikiId',
+				$config
+		);
+		$this->assertEquals(
+				123,
+				$config->getWikiId()
+		);
+	}
+	
+	/**
+	 * @covers Wikia\Search\Config::setLimit
+	 * @covers Wikia\Search\Config::getLimit
+	 */
+	public function testSetGetLimit() {
+		$config = new Config;
+		$this->assertAttributeEquals(
+				\Wikia\Search\Config::RESULTS_PER_PAGE,
+				'limit',
+				$config
+		);
+		$this->assertEquals(
+				$config,
+				$config->setLimit( 123 )
+		);
+		$this->assertAttributeEquals(
+				123,
+				'limit',
+				$config
+		);
+		$this->assertEquals(
+				$config,
+				$config->setLimit( 500 )
+		);
+		$this->assertAttributeEquals(
+				200,
+				'limit',
+				$config,
+				'We restrict the number of results in a search to 200'
+		);
+		$this->assertEquals(
+				200,
+				$config->getLimit()
 		);
 	}
 }

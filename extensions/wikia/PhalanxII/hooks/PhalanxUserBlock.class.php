@@ -27,7 +27,7 @@ class PhalanxUserBlock extends WikiaObject {
 			if ( $ret === false ) {
 				$this->typeBlock = 'email';
 			}
-		} 
+		}
 		
 		if ( $ret === false ) {
 			$user = $phalanxModel->userBlock( $user->isAnon() ? 'ip' : 'exact' )->getUser();
@@ -47,7 +47,8 @@ class PhalanxUserBlock extends WikiaObject {
 		$ret = $this->blockCheck( $user );
 
 		if ( $ret === false ) {
-			$abortError = $this->wf->Msg( ( $this->typeBlock == 'email' ) ? 'phalanx-email-block-new-account' : 'phalanx-user-block-new-account' );
+			$abortError = $this->wf->Msg( ( $this->typeBlock == 'email' ) ? 'phalanx-email-block-new-account' :
+																	 'phalanx-user-block-new-account' );
 		}
 
 		wfProfileOut( __METHOD__ );

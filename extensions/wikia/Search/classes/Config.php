@@ -201,8 +201,8 @@ class Config
 	 * @var array
 	 */
 	protected $filterCodes = [
-			self::FILTER_VIDEO => 'is_video:true',
-			self::FILTER_IMAGE => 'is_image:true',
+			self::FILTER_VIDEO => '(is_video:true AND -is_image:true)',
+			self::FILTER_IMAGE => '(is_image:true AND -is_video:true)',
 			self::FILTER_HD    => 'video_hd_b:true',
 	];
 	
@@ -328,6 +328,7 @@ class Config
 	 * @return Wikia\Search\Config provides fluent interface
 	 */
 	public function setLimit( $limit ) {
+		$limit = $limit < 200 ? $limit : 200;
 		$this->limit = $limit;
 		return $this;
 	}
@@ -449,13 +450,44 @@ class Config
 	}
 	
 	/**
-	 * Overloading __set to type hint
+	 * Stores the current article match ONLY IF IT PASSES OUR ESTABLISHED FILTERS
 	 * @param  \Wikia\Search\Match\Article $articleMatch
 	 * @return \Wikia\Search\Config provides fluent interface
 	 */
 	public function setArticleMatch( Match\Article $articleMatch ) {
-		$this->articleMatch = $articleMatch;
+		if ( $this->articleMatchPassesFilters( $articleMatch ) ) {
+			$this->articleMatch = $articleMatch;
+		}
 		return $this;
+	}
+	
+	/**
+	 * Here, we're checking for conditions that should preclude a match, given our current environment settings.
+	 * We're using DeMorgan's theorem here. So write FOR the condition you're trying to filter out.
+	 * @param \Wikia\Search\Match\Article $match
+	 * @return boolean
+	 */
+	protected function articleMatchPassesFilters( \Wikia\Search\Match\Article $match ) {
+		$result = $match->getResult();
+		$filterKeys = $this->getPublicFilterKeys();
+		$isVideoFile = $this->getService()->pageIdIsVideoFile( $result['pageid'] );
+		return ! (
+				( // We have a file that is video, but we only want images.
+						$result['ns'] == NS_FILE
+						&& 
+						in_array( \Wikia\Search\Config::FILTER_IMAGE, $filterKeys )
+						&&
+						$isVideoFile
+				) 
+				||
+				( // We have a file that is not a video, but we only want videos.
+						$result['ns'] == NS_FILE
+						&& 
+						in_array( \Wikia\Search\Config::FILTER_VIDEO, $filterKeys )
+						&&
+						!isVideoFile
+				)
+		);
 	}
 	
 	/**
@@ -817,7 +849,7 @@ class Config
 	 * @return int
 	 */
 	public function getWikiId() {
-		if ( empty( $this->wikId ) ) {
+		if ( empty( $this->wikiId ) ) {
 			$this->wikiId = $this->getService()->getWikiId();
 		}
 		return $this->wikiId;

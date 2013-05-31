@@ -67,7 +67,7 @@ class WikiaSearchController extends WikiaSpecialPageController {
 		$this->setPageTitle( $searchConfig );
 		$this->setResponseValuesFromConfig( $searchConfig );
 	}
-	
+
 	/**
 	 * Deprecated functionality for indexing.
 	 */
@@ -228,7 +228,8 @@ class WikiaSearchController extends WikiaSpecialPageController {
 		}
 		$tabsArgs = array(
 				'config'		=> $searchConfig,
-				'by_category'	=> $this->getVal( 'by_category', false )
+				'by_category'	=> $this->getVal( 'by_category', false ),
+				'filters'       => $this->getVal( 'filters', array() ),
 				);
 		$this->setVal( 'results',               $searchConfig->getResults() );
 		$this->setVal( 'resultsFound',          $searchConfig->getResultsFound() );
@@ -248,6 +249,47 @@ class WikiaSearchController extends WikiaSpecialPageController {
 		$this->setVal( 'isMonobook',            ( $this->wg->User->getSkin() instanceof SkinMonobook ) );
 		$this->setVal( 'isCorporateWiki',       $this->isCorporateWiki() );
 		$this->setVal( 'wgExtensionsPath',      $wgExtensionsPath);
+		
+		if ( $this->wg->OnWikiSearchIncludesWikiMatch && $searchConfig->hasWikiMatch() ) {
+			$this->registerWikiMatch( $searchConfig );
+		}
+	}
+	
+	/**
+	 * Sets wiki match view script variable in view
+	 * @param Wikia\Search\Config $searchConfig
+	 */
+	protected function registerWikiMatch( Wikia\Search\Config $searchConfig ) {
+		//check if corporate wiki or community wiki
+		if ( !$this->isCorporateWiki() && $this->wg->CityId != 177 ) {
+			return;
+		}
+
+		$resultSet = new Wikia\Search\ResultSet\MatchGrouping( new Wikia\Search\ResultSet\DependencyContainer( ['config' => $searchConfig, 'wikiMatch' => $searchConfig->getWikiMatch() ] ) );
+
+		$image = $resultSet->getHeader( 'image' );
+		$imageUrl = empty( $image ) ? $this->wg->ExtensionsPath . '/wikia/Search/images/wiki_image_placeholder.png' : (new \WikiaHomePageHelper)->getImageUrl( $image, 180, 120 );
+		$thumbTracking = 'class="wiki-thumb-tracking" data-pos="-1" data-event="search_click_wiki-';
+		$thumbTracking .= empty( $image ) ? 'no-thumb"' : 'thumb"';
+
+		//use default exacteResult template
+		$template = 'exactResult';
+		if ( $this->isCorporateWiki() ) {
+			$template = 'CrossWiki_exactResult';
+		}
+		$this->setVal(
+				'wikiMatch',
+				$this->getApp()->getView( 'WikiaSearch', $template,
+						[ 'pos' => -1, 
+						'resultSet' => $resultSet, 
+						'pagesMsg' => $resultSet->getArticlesCountMsg(), 
+						'imgMsg' => $resultSet->getImagesCountMsg(), 
+						'videoMsg' => $resultSet->getVideosCountMsg(), 
+						'imageURL' => $imageUrl,
+						'thumbTracking' => $thumbTracking
+						]
+						) 
+				);
 	}
 	
 	/**
@@ -391,7 +433,7 @@ class WikiaSearchController extends WikiaSpecialPageController {
 			);
 
 		// Set video wiki to display only videos by default
-		if( $is_video_wiki && $form['no_filter'] == 1 ) {
+		if( $is_video_wiki && $form['no_filter'] == 1 && !in_array( 'no_filter', $this->getVal( 'filters', array() ) ) ) {
 			$form['is_video'] = 1;
 			$form['no_filter'] = 0;
 		}
