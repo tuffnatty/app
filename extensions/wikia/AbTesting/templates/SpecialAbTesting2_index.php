@@ -1,3 +1,4 @@
+<? $app = F::app(); ?>
 <div id="AbTestEditor">
 	<table class="WikiaTable">
 		<thead>
@@ -10,7 +11,7 @@
 		</thead>
 		<tbody>
 		<? foreach( $experiments as $experiment ): ?>
-			<?= F::app()->renderPartial( 'SpecialAbTesting2', 'experiment', array( 'experiment' => $experiment ) ) ?>
+			<?= $app->renderPartial( 'SpecialAbTesting2', 'experiment', array( 'experiment' => $experiment ) ) ?>
 		<? endforeach ?>
 		<tr class="exp-add">
 			<td colspan="5">
