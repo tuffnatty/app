@@ -20,6 +20,7 @@ $app = F::app();
 $dir = dirname(__FILE__).'/';
 
 $app->registerClass('VideoEmbedTool', $dir . 'VideoEmbedTool_body.php');
+$app->registerClass('VideoEmbedToolSearchService', $dir . 'VideoEmbedToolSearchService.class.php');
 $app->registerController('VideoEmbedToolController',	$dir . '/VideoEmbedToolController.class.php' );
 
 define( 'VIDEO_PREVIEW', 350 );
@@ -62,6 +63,7 @@ if ( !function_exists( 'extAddSpecialPage' ) ) {
 }
 
 $wgExtensionMessagesFiles['WikiaVideoAdd'] = dirname(__FILE__) . '/WikiaVideoAdd.i18n.php';
+$wgExtensionMessagesFiles['WikiaVideoAddAliases'] = dirname(__FILE__) . '/WikiaVideoAdd.alias.php';
 extAddSpecialPage( dirname(__FILE__) . '/WikiaVideoAdd_body.php', 'WikiaVideoAdd', 'WikiaVideoAddForm' );
 
 $wgExtensionMessagesFiles['VideoEmbedTool'] = $dir.'/VideoEmbedTool.i18n.php';

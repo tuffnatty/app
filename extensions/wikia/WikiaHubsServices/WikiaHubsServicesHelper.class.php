@@ -5,6 +5,8 @@ class WikiaHubsServicesHelper
 	const HUBSV2_IMAGES_MEMC_KEY_VER = '1.03';
 	const HUBSV2_IMAGES_MEMC_KEY_PREFIX = 'hubv2images';
 
+	private $corporateModel = null;
+
 	/**
 	 * Get memcache key for hub images on WikiaHomepage
 	 *
@@ -28,8 +30,8 @@ class WikiaHubsServicesHelper
 	 *
 	 * @throws Exception
 	 */
-	public static function purgeHomePageVarnish($lang) {
-		$wikiId = static::getCorporateWikiIdByLang($lang);
+	public function purgeHomePageVarnish($lang) {
+		$wikiId = $this->getCorporateModel()->getCorporateWikiIdByLang($lang);
 
 		$mainPageName = static::getMainPageNameByWikiId($wikiId);
 		$mainPageTitle = static::getGlobalTitleFromText($mainPageName, $wikiId);
@@ -42,10 +44,19 @@ class WikiaHubsServicesHelper
 	 * @param $lang
 	 * @param $verticalId
 	 */
-	public static function purgeHubVarnish($lang, $verticalId) {
-		$wikiId = static::getCorporateWikiIdByLang($lang);
+	public function purgeHubVarnish($lang, $verticalId) {
+		$wikiId = $this->getCorporateModel()->getCorporateWikiIdByLang($lang);
+
 		$hubTitle = static::getGlobalTitleFromText(static::getHubName($wikiId, $verticalId), $wikiId);
 		$hubTitle->purgeSquid();
+	}
+
+	protected function getCorporateModel() {
+		if(empty($this->corporateModel)) {
+			$this->corporateModel = new WikiaCorporateModel();
+		}
+
+		return $this->corporateModel;
 	}
 
 	/**
@@ -65,25 +76,6 @@ class WikiaHubsServicesHelper
 		}
 		return $hubsV2Pages[$verticalId];
 	}
-
-	/**
-	 * Get corporate wikiId by content lang
-	 *
-	 * @param $lang
-	 *
-	 * @return int
-	 *
-	 * @throws Exception
-	 */
-	public static function getCorporateWikiIdByLang($lang) {
-		$visualizationData = static::getVisualizationData();
-		if (!isset($visualizationData[$lang]['wikiId'])) {
-			throw new Exception('Corporate Wiki not defined for this lang');
-		}
-		return $visualizationData[$lang]['wikiId'];
-	}
-
-
 
 	/**
 	 * Get global title
@@ -125,15 +117,6 @@ class WikiaHubsServicesHelper
 	}
 
 	/**
-	 * get data about corporate wikis
-	 * @return array
-	 */
-	protected static function getVisualizationData() {
-		$visualizationModel = new CityVisualization();
-		return $visualizationModel->getVisualizationWikisData();
-	}
-
-	/**
 	 * get hubsV2Pages for selected wiki
 	 *
 	 * @param $wikiId
@@ -142,5 +125,44 @@ class WikiaHubsServicesHelper
 	 */
 	protected static function getHubsV2Pages($wikiId) {
 		return WikiFactory::getVarValueByName('wgWikiaHubsV2Pages', $wikiId);
+	}
+
+	/**
+	 * get hubs v2 wikis
+	 * @return array $wikis
+	 */
+	public static function getHubsV2Wikis() {
+		$wikis = array();
+		$var = WikiFactory::getVarByName( 'wgEnableWikiaHubsV2Ext', F::app()->wg->CityId );
+		if ( !empty( $var ) ) {
+			$wikis = WikiFactory::getListOfWikisWithVar( $var->cv_id, 'bool', '=' , true, true );
+		}
+
+		return $wikis;
+	}
+
+	/**
+	 * add video to hubs v2 wikis
+	 * @param MarketingToolboxModuleService $module
+	 * @param array $data
+	 * @return array|false $result
+	 */
+	public static function addVideoToHubsV2Wikis( $module, $data ) {
+		$result = false;
+
+		// get list of videos
+		$videoData = $module->getVideoData( $data );
+
+		// add video to hub v2 wikis
+		foreach( $videoData as $videoUrl ) {
+			if ( !empty($videoUrl) ) {
+				$hubsV2Wikis = self::getHubsV2Wikis();
+
+				$videoService = new VideoService();
+				$result = $videoService->addVideoAcrossWikis( $videoUrl, $hubsV2Wikis );
+			}
+		}
+
+		return $result;
 	}
 }
