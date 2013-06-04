@@ -6,7 +6,8 @@
 
 class FreebaseClient {
 
-	const FREEBASE_URL = 'https://www.googleapis.com/freebase/v1/search';
+	const FREEBASE_SEARCH_URL = 'https://www.googleapis.com/freebase/v1/search';
+	const FREEBASE_TOPIC_URL = 'https://www.googleapis.com/freebase/v1/topic';
 	const CACHE_DURATION = 86400; //1 day
 //	const FREEBASE_API_KEY = 'AIzaSyCcxUdb9z4-7Y2oIX6Tq7lSQ7QMbU0XPfQ';
 
@@ -109,11 +110,11 @@ class FreebaseClient {
 		if ( $filterDomain !== null || $filterTypes !== null ) {
 			$q[ 'filter' ] = "(all {$filterDomain} {$filterTypes})";
 		}
-		$cacheUrl = static::FREEBASE_URL . '?' . http_build_query( $q );
+		$cacheUrl = static::FREEBASE_SEARCH_URL . '?' . http_build_query( $q );
 		//get key for call
 		$q[ 'key' ] = static::getApiKey();
 
-		$url = static::FREEBASE_URL . '?' . http_build_query( $q );
+		$url = static::FREEBASE_SEARCH_URL . '?' . http_build_query( $q );
 		print_r( 'Proccessing: ' . $url . "\n" );
 
 		$key = $this->generateMemKey( __METHOD__, md5( $cacheUrl ) );
@@ -129,6 +130,36 @@ class FreebaseClient {
 		}
 
 		return json_decode( $content );
+	}
+
+	public function getTopicByName( $name, $lang = 'en' ) {
+		return $this->topic_call( "/{$lang}/{$name}" );
+	}
+
+	public function getTopicById ( $id ) {
+		return $this->topic_call( "/m/{$id}" );
+	}
+
+	public function topic_call( $topic ) {
+		$params = [ 'limit' => 20 ];
+		$url = static::FREEBASE_TOPIC_URL . $topic . '?' . http_build_query( $params );
+		$key = $this->generateMemKey( __METHOD__, $url );
+		$content = $this->getFromCache( $key );
+		if ( empty( $content ) ) {
+			var_dump( 'Connecting: '. $url );
+			$fb = MWHttpRequest::factory( $url );
+			$fb->execute();
+			$content = $fb->getContent();
+			$this->saveToCache( $key, $content );
+		} else {
+			var_dump( 'Cache hit: ' . $url );
+		}
+
+		if ( !empty( $content ) ) {
+			return json_decode( $content );
+		} else {
+			return $url;
+		}
 	}
 
 	protected function generateMemKey( $method, $url ) {
