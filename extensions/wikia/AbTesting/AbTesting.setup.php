@@ -3,7 +3,6 @@
  * @author Sean Colombo
  * @author Piotr Bablok
  * @author Władysław Bodzek
- * @date 20120501
  *
  * Extension which helps with running A/B tests or Split Tests (can actually be a/b/c/d/etc. as needed).
  *
@@ -47,6 +46,8 @@ $app->registerClass('ResourceLoaderAbTestingModule',"{$dir}/ResourceLoaderAbTest
 $app->registerClass('SpecialAbTestingController',"{$dir}/SpecialAbTestingController.class.php");
 $app->registerClass('SpecialAbTesting2Controller',"{$dir}/SpecialAbTesting2Controller.class.php");
 $app->registerClass('AbTestingController',"{$dir}/AbTestingController.class.php");
+$app->registerClass('AbTestingHooks',"{$dir}/AbTestingHooks.class.php");
+$app->registerClass('AbTestingConfig',"{$dir}/AbTestingConfig.class.php");
 
 /**
  * message files
@@ -54,9 +55,9 @@ $app->registerClass('AbTestingController',"{$dir}/AbTestingController.class.php"
 $app->wg->set( 'wgExtensionMessagesFiles', "{$dir}/AbTesting.i18n.php", 'AbTesting' );
 
 // Embed the experiment/treatment config in the head scripts.
-$app->registerHook( 'WikiaSkinTopScripts', 'AbTesting', 'onWikiaSkinTopScripts' );
+$app->registerHook( 'WikiaSkinTopScripts', 'AbTestingHooks', 'onWikiaSkinTopScripts' );
 // Add js code in Oasis
-$app->registerHook( 'OasisSkinAssetGroupsBlocking', 'AbTesting', 'onOasisSkinAssetGroupsBlocking' );
+$app->registerHook( 'OasisSkinAssetGroupsBlocking', 'AbTestingHooks', 'onOasisSkinAssetGroupsBlocking' );
 
 // Register Resource Loader module
 $app->wg->set( 'wgResourceModules', array(
@@ -104,9 +105,6 @@ $app->wg->set( 'wgResourceModules', array(
 	 ),
 ), 'wikia.ext.abtesting.edit2.styles' );
 
-
-//AbTesting is an Oasis-only experiment for now
-//$app->registerHook( 'WikiaMobileAssetsPackages', 'AbTesting', 'onWikiaMobileAssetsPackages' );
 
 $app->registerSpecialPage('AbTesting', 'SpecialAbTestingController');
 $app->registerSpecialPage('AbTesting2', 'SpecialAbTesting2Controller');

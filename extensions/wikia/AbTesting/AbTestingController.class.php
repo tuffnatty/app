@@ -6,37 +6,29 @@ class AbTestingController extends WikiaController {
 	protected $externalData;
 	protected $externalDataLoaded = false;
 
-	/**
-	 * @return AbTesting
-	 */
-	protected function getAbTesting() {
-		if ( !$this->abTesting ) {
-			$this->abTesting = new AbTesting();
-		}
-		return $this->abTesting;
-	}
-
-	protected function getExternalData() {
-		if ( !$this->externalDataLoaded ) {
-			$this->externalDataLoaded = true;
-			$this->externalData = $this->getAbTesting()->getConfigExternalData();
-		}
-		return $this->externalData;
-	}
-
 	public function externalData() {
+		// parse GET request
 		$request = $this->getVal('ids');
 		$request = !empty($request) && is_string($request) ? explode(',',$request) : array();
+
+		// prepare request to config provider
+		$dataRequests = array();
 		foreach ($request as $groupSpec) {
 			$parts = explode('.',$groupSpec);
 			if ( count($parts) != 3 ) {
 				continue;
 			}
-			list( $expName, $versionId, $groupId ) = $parts;
-			$data = $this->getGroupData( $expName, $versionId, $groupId );
-			if ( $data ) {
-				$this->setVal($groupSpec,$data);
-			}
+			$dataRequests[$groupSpec] = $parts;
+		}
+
+		// fetch external data from config provider
+		$config = AbTestingConfig::getInstance();
+		$external = $config->getExternalData( $dataRequests );
+
+		// pass the data
+		foreach ($external as $groupSpec => $data) {
+			$data = $this->processData($data);
+			$this->setVal($groupSpec,$data);
 		}
 
 		// force output format to be JSONP
@@ -44,18 +36,9 @@ class AbTestingController extends WikiaController {
 		$response->setFormat(WikiaResponse::FORMAT_JSONP);
 
 		// set appropriate cache TTL
-		$cacheTTL = $this->getCacheTTL();
+		$cacheTTL = AbTesting::getCacheTTL();
 		$response->setCacheValidity(null,$cacheTTL['client'],array(WikiaResponse::CACHE_TARGET_BROWSER));
 		$response->setCacheValidity(null,$cacheTTL['server'],array(WikiaResponse::CACHE_TARGET_VARNISH));
-	}
-
-	protected function getGroupData( $expName, $versionId, $groupId ) {
-		$externalData = $this->getExternalData();
-		if ( !isset( $externalData[$expName][$versionId][$groupId] ) ) {
-			return false;
-		}
-		$data = $externalData[$expName][$versionId][$groupId];
-		return $this->processData($data);
 	}
 
 	protected function processData( $input ) {
@@ -82,10 +65,6 @@ class AbTestingController extends WikiaController {
 			$result['scripts'] = $input['scripts'];
 		}
 		return $result;
-	}
-
-	protected function getCacheTTL() {
-		return $this->wg->ResourceLoaderMaxage['unversioned'];
 	}
 
 }

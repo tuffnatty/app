@@ -6,28 +6,16 @@
  */
 class ResourceLoaderAbTestingModule extends ResourceLoaderModule {
 
-	protected $abTesting = null;
-
-	protected function getAbTesting() {
-		if ( empty( $this->abTesting ) ) {
-			$this->abTesting = new AbTesting();
-		}
-		return $this->abTesting;
-	}
-
 	public function getScript(ResourceLoaderContext $context) {
-		return $this->getAbTesting()->getConfigScript();
+		return AbTestingConfig::getInstance()->getScript();
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function supportsURLLoading() {
 		return false;
 	}
 
 	public function getModifiedTime( ResourceLoaderContext $context ) {
-		$modifiedTime = $this->getAbTesting()->getConfigModifiedTime();
+		$modifiedTime = AbTestingConfig::getInstance()->getModifiedTime();
 		if ( empty($modifiedTime) ) {
 			$modifiedTime = 1;
 		}

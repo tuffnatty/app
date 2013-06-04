@@ -1,6 +1,4 @@
 <?
-	/** @var $abTesting AbTesting */
-	$abTesting = F::build('AbTesting');
 	$yes = wfMsg('abtesting-flag-set-short');
 ?>
 <tr class="exp<?= empty( $showDetails ) ? ' collapsed' : '' ?>" data-id="<?= $experiment[ 'id' ] ?>">
@@ -36,7 +34,7 @@
 			            <td><?= htmlspecialchars( $ver[ 'ga_slot' ] ) ?></td>
 						<? foreach( AbTesting::$flags as $flag => $name ): ?>
 							<?
-								$state = $abTesting->getFlagState($ver['flags'],$flag)
+								$state = AbTesting::getFlagState($ver['flags'],$flag)
 							?>
 							<td><?= $state ? $yes : '' ?></td>
 						<? endforeach ?>

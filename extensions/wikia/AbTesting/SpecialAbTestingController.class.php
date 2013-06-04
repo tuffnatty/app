@@ -5,7 +5,6 @@ class SpecialAbTestingController extends WikiaSpecialPageController {
 	const FLAG_FIELD_PREFIX = 'flag_';
 
 	protected $abData;
-	protected $abTesting;
 
 	public function __construct() {
 		parent::__construct('AbTesting', 'abtestpanel', false);
@@ -39,8 +38,6 @@ class SpecialAbTestingController extends WikiaSpecialPageController {
 
 	public function modal() {
 		$this->checkPermissions();
-
-		$abTesting = $this->getAbTesting();
 
 		$id = $this->getVal('id',0);
 		$type = $this->getVal('type','add');
@@ -114,7 +111,7 @@ class SpecialAbTestingController extends WikiaSpecialPageController {
 				'name' => self::FLAG_FIELD_PREFIX.$name,
 				'label' => $this->wf->msg('abtesting-heading-long-flag-'.$name),
 			);
-			if ( $abTesting->getFlagState($lastFlags,$flag) ) {
+			if ( AbTesting::getFlagState($lastFlags,$flag) ) {
 				$flagFieldConf['attributes']['checked'] = 'checked';
 			}
 			$fields[self::FLAG_FIELD_PREFIX.$name] = $flagFieldConf;
@@ -460,16 +457,6 @@ class SpecialAbTestingController extends WikiaSpecialPageController {
 			$this->abData = new AbTestingData();
 		}
 		return $this->abData;
-	}
-
-	/**
-	 * @return AbTesting
-	 */
-	protected function getAbTesting() {
-		if ( !$this->abTesting ) {
-			$this->abTesting = new AbTesting();
-		}
-		return $this->abTesting;
 	}
 
 	protected function getExperiment( $id, $createIfEmpty = false ) {

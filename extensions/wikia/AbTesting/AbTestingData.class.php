@@ -30,8 +30,6 @@ class AbTestingData extends WikiaObject {
 		return $this->wf->GetDB( $db_type, array(), $this->wg->ExternalDatawareDB );
 	}
 
-
-
 	/* READ METHODS */
 
 	public function getModifiedTime() {
@@ -162,11 +160,11 @@ class AbTestingData extends WikiaObject {
 		return $this->loadFromRows($res);
 	}
 
-	public function getCurrent() {
+	public function getCurrent( $use_master = false ) {
 		return $this->loadFromDb(array(
 			'v.start_time <= current_timestamp + interval 2 hour', // 2 hours margin
 			'v.end_time >= current_timestamp'
-		));
+		), $use_master);
 	}
 
 	public function getAll() {
