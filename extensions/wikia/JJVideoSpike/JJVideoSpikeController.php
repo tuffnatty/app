@@ -91,6 +91,21 @@ class JJVideoSpikeController extends WikiaSpecialPageController {
 		die("<hr>");
 	}
 
+	public function moarTopics() {
+		print_r( '<pre>' );
+		$id = $this->getVal( 'id', null );
+		$n = $this->getVal( 'name', null );
+		$l = $this->getVal( 'lang', 'en' );
+
+		if ( $id !== null ) {
+			$result = $this->fbClient->getTopicById( $id );
+		} elseif ( $n !== null ) {
+			$result = $this->fbClient->getTopicByName( $n, $l );
+		}
+		print_r( $result );
+		die;
+	}
+
 	public function moar() {
 
 		print_r( '<pre>' );
