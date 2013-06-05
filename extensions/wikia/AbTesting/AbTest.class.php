@@ -1,9 +1,9 @@
 <?php
 /**
- * @author: pbablok@wikia-inc.com
+ * @author pbablok@wikia-inc.com
  * @author Władysław Bodzek <wladek@wikia-inc.com>
  */
-class AbTests {
+class AbTest {
 
 	/** @var array */
 	protected static $activeExperiments = null;
@@ -15,10 +15,11 @@ class AbTests {
 	 * @return array
 	 */
 	protected static function getVariantExperiments() {
-		$exps = $_SERVER['HTTP_X_PAGE_VARIANT'];
-		$exps = explode(',',$exps);
+		$list = !empty( $_SERVER['HTTP_X_PAGE_VARIANT'] ) ? $_SERVER['HTTP_X_PAGE_VARIANT'] : '';
+		$list = urldecode($list);
+		$list = explode(',',$list);
 		$res = array();
-		foreach ( $exps as $exp ) {
+		foreach ( $list as $exp ) {
 			$expSpec = explode('=',$exp);
 			if ( count($expSpec) == 2 && !empty($expSpec[0]) && !empty($expSpec[1]) ) {
 				$res[ $expSpec[0] ] = $expSpec[1];
@@ -62,18 +63,20 @@ class AbTests {
 		self::$activeExperiments = $activeExperiments;
 	}
 
-	/*
+	/**
 	 * Get list of active experiments as an array
-	 * array(
-	 *   experimentName => groupName
-	 * )
+	 *   array(
+	 *     experimentName => groupName
+	 *   )
+	 *
+	 * @return array
 	 */
 	public static function getExperiments() {
 		self::load();
 		return self::$activeExperiments;
 	}
 
-	/*
+	/**
 	 * Get a group the currently executed request should stick for the specified experiment.
 	 * Returns null if no group is selected.
 	 *
@@ -86,6 +89,5 @@ class AbTests {
 			? self::$activeExperiments[$exp]
 			: null;
 	}
-
 
 }

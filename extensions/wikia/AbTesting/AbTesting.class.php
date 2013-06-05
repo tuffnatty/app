@@ -17,6 +17,7 @@ class AbTesting {
 	const FLAG_DW_TRACKING = 2;
 	const FLAG_FORCED_GA_TRACKING_ON_LOAD = 4;
 	const FLAG_LIMIT_TO_SPECIAL_WIKIS = 8;
+	const FLAG_IS_SERVER_SIDE = 16;
 	const DEFAULT_FLAGS = 3;
 
 	const STATUS_ACTIVE = 0;
@@ -27,6 +28,7 @@ class AbTesting {
 		self::FLAG_DW_TRACKING => 'dw_tracking',
 		self::FLAG_FORCED_GA_TRACKING_ON_LOAD => 'forced_ga_tracking_on_load',
 		self::FLAG_LIMIT_TO_SPECIAL_WIKIS => 'limit_to_special_wikis',
+		self::FLAG_IS_SERVER_SIDE => 'server_side',
 	);
 
 	protected function __construct() {}

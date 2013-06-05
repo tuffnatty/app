@@ -257,7 +257,6 @@ class SpecialAbTestingController extends WikiaSpecialPageController {
 	}
 
 	protected function doSave( &$exp, $data ) {
-		$abTesting = $this->getAbTesting();
 		$status = Status::newGood();
 		$info = $this->getExperimentInfo($exp);
 		$nowPlusCache = $info['nowPlusCache'];
@@ -274,7 +273,7 @@ class SpecialAbTestingController extends WikiaSpecialPageController {
 		// create index of existing groups (normalized name => id)
 		$existingGroups = array();
 		foreach ($exp['groups'] as $grp) {
-			$normalizedName = $abTesting->normalizeName($grp['name']);
+			$normalizedName = AbTesting::normalizeName($grp['name']);
 			$existingGroups[$normalizedName] = $grp['id'];
 		}
 
@@ -312,7 +311,7 @@ class SpecialAbTestingController extends WikiaSpecialPageController {
 			}
 
 			// check if the normalized name collides with any other group name
-			$normalizedName = $abTesting->normalizeName($groupName);
+			$normalizedName = AbTesting::normalizeName($groupName);
 			if ( isset( $groups[$normalizedName] ) ) {
 				$prevGroupName = $groups[$normalizedName]['name'];
 				$status->error("These group names resolve to the same identifier: \"{$prevGroupName}\", \"{$groupName}\"");
@@ -322,7 +321,7 @@ class SpecialAbTestingController extends WikiaSpecialPageController {
 			$groups[$normalizedName]['name'] = $groupName;
 
 			// check if provided ranges can be parsed
-			if ( $abTesting->parseRanges($ranges, true) === false ) {
+			if ( AbTesting::parseRanges($ranges, true) === false ) {
 				$status->error("Range for group \"{$groupName}\" is invalid");
 			}
 
@@ -355,8 +354,8 @@ class SpecialAbTestingController extends WikiaSpecialPageController {
 		$startTime = null;
 		$endTime = null;
 		if ( $versionChanged ) {
-			$startTime = $abTesting->getTimestampForUTCDate($data['start_time']);
-			$endTime = $abTesting->getTimestampForUTCDate($data['end_time']);
+			$startTime = AbTesting::getTimestampForUTCDate($data['start_time']);
+			$endTime = AbTesting::getTimestampForUTCDate($data['end_time']);
 
 			if ( $startTime < $nowPlusCache ) {
 				$status->error("Start time must be at least 15 minutes in the future");
@@ -403,7 +402,7 @@ class SpecialAbTestingController extends WikiaSpecialPageController {
 				}
 				// adjust end_time of the previous group
 				if ( !empty($previous) ) {
-					$prevEndTime = $abTesting->getTimestampForUTCDate($previous['end_time']);
+					$prevEndTime = AbTesting::getTimestampForUTCDate($previous['end_time']);
 					// cannot edit group that end within the cache time
 					if ( $prevEndTime > $nowPlusCache ) {
 						// experiment must have existed so no need to set experiment_id
@@ -437,7 +436,7 @@ class SpecialAbTestingController extends WikiaSpecialPageController {
 					$abData->saveGroupRange($grn);
 				}
 				$abData->updateModifiedTime();
-				$abTesting->invalidateCache();
+				AbTestingConfig::getInstance()->invalidateCache();
 			}
 		}
 
@@ -471,7 +470,7 @@ class SpecialAbTestingController extends WikiaSpecialPageController {
 
 	protected function getExperimentInfo( $exp ) {
 		$now = time();
-		$nowPlusCache = $now + AbTesting::VARNISH_CACHE_TIME;
+		$nowPlusCache = $now + AbTesting::getMaxStaleCache();
 
 		$info = array(
 			'hasStarted' => false,

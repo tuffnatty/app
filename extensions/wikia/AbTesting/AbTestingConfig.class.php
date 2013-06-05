@@ -7,8 +7,9 @@
  */
 class AbTestingConfig {
 
+	const VERSION = 5;
+
 	const MAX_MEMCACHED_TTL = 300;
-	const VERSION = 4;
 
 	const PROP_MODIFIED_TIME = 'modifiedTime';
 	const PROP_SCRIPT = 'script';
@@ -55,12 +56,6 @@ class AbTestingConfig {
 		return wfSharedMemcKey('abtesting','config',self::VERSION);
 	}
 
-	protected function getMaxTimeInCache() {
-		$timeInCache = AbTesting::getCacheTTL();
-		$timeInCache *= 3;
-		return $timeInCache;
-	}
-
 	protected function load() {
 		if ( is_null($this->data) ) {
 			$memcKey = $this->getMemcKey();
@@ -91,11 +86,11 @@ class AbTestingConfig {
 			$ttl = max( time(), $nextModification ) + 1;
 		}
 
-		$data = $this->prepareData( $dataSource->getCurrent( /* use_master */ true ), $lastModified );
-		$this->wg->Memc->set($memcKey,$data,$ttl);
+		$this->populateData( $dataSource->getCurrent( /* use_master */ true ), $lastModified );
+		$this->wg->Memc->set($memcKey,$this->data,$ttl);
 	}
 
-	protected function prepareData( $rawData, $lastModified ) {
+	protected function populateData( $rawData, $lastModified ) {
 		$config = array();
 		$external = array();
 
@@ -148,7 +143,7 @@ class AbTestingConfig {
 			))
 		);
 
-		return array(
+		$this->data = array(
 			self::PROP_MODIFIED_TIME => $lastModified,
 			self::PROP_SCRIPT => $script,
 			self::PROP_EXTERNAL_DATA => $external,

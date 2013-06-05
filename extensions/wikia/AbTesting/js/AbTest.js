@@ -304,6 +304,36 @@
 		}
 	})( AbTest.experiments );
 
+	// Check if page_variant cookie matches list of active experiments, set the cookie properly and reload the page
+	(function( experiments ) {
+		var desiredVariant = [], cookieVariant,
+			exp, expName, expireDate;
+
+		// find which active experiments are server-side
+		for ( expName in experiments ) {
+			exp = experiments[expName];
+			if ( exp.group && exp.flags.server_side ) {
+				desiredVariant.push(expName+'='+exp.group.name);
+			}
+		}
+		desiredVariant = desiredVariant.join(',');
+
+		// get variant from cookie
+		cookieVariant = /( |^)page_variant=([^;]*)(;|$)/.exec(document.cookie);
+		cookieVariant = cookieVariant ? decodeURIComponent(cookieVariant[2]) : '';
+
+		// if it doesn't match
+		if ( desiredVariant != cookieVariant ) {
+			// set cookie
+			expireDate = new Date();
+			expireDate.setDate(expireDate.getDate() + 365);
+			document.cookie = 'page_variant=' + encodeURIComponent(desiredVariant) +
+				'; path=/; expires=' + expireDate.toUTCString();
+			// and refresh the page
+			window.location.reload();
+		}
+	})( AbTest.experiments );
+
 	// Track active experiments
 	(function( experiments ) {
 		var expName, exp;

@@ -48,6 +48,7 @@ $app->registerClass('SpecialAbTesting2Controller',"{$dir}/SpecialAbTesting2Contr
 $app->registerClass('AbTestingController',"{$dir}/AbTestingController.class.php");
 $app->registerClass('AbTestingHooks',"{$dir}/AbTestingHooks.class.php");
 $app->registerClass('AbTestingConfig',"{$dir}/AbTestingConfig.class.php");
+$app->registerClass('AbTest',"{$dir}/AbTest.class.php");
 
 /**
  * message files
