@@ -358,6 +358,10 @@ class DPLMain {
 		$aParams = explode( "\n", $input );
 		$bIncludeUncat = false; // to check if pseudo-category of Uncategorized pages is included
 
+		# <Wikia>
+		$bFirstEdit = false;
+		# </Wikia>
+
 		// version 0.9:
 		// we do not parse parameters recursively when reading them in.
 		// we rather leave them unchanged, produce the complete output and then finally
@@ -2003,7 +2007,11 @@ class DPLMain {
 		$sRCTable = $dbr->tableName( 'recentchanges' );
 		$sRevisionTable = $dbr->tableName( 'revision' );
 		$sSqlRevisionTable = '';
+		$sSqlJoinRevisionTable = '';
 		$sSqlRev_timestamp = '';
+		# <Wikia>
+		$sSqlPage_id = '';
+		# </Wikia>
 		$sSqlRev_id = '';
 		$sSqlRev_user = '';
 		$sSqlCond_page_rev = '';
@@ -2041,11 +2049,21 @@ class DPLMain {
 						$sSqlWhere .= ' AND NOT (cl_head.cl_to IN (' . $dbr->makeList( $aCatNotHeadings ) . '))';
 					}
 					break;
-				case 'firstedit':
+				case 'firstedit':					
+					# <Wikia>
+					/*
 					$sSqlRevisionTable = $sRevisionTable . ' AS rev, ';
 					$sSqlRev_timestamp = ', rev_timestamp';
 					// deleted because of conflict with revsion-parameters
 					$sSqlCond_page_rev = ' AND ' . $sPageTable . '.page_id=rev.rev_page AND rev.rev_timestamp=( SELECT MIN(rev_aux.rev_timestamp) FROM ' . $sRevisionTable . ' AS rev_aux WHERE rev_aux.rev_page=rev.rev_page )';
+					*/
+					$sSqlRev_timestamp = ", rev.rev_timestamp";
+					$sSqlRevisionTable = sprintf( " INNER JOIN %s AS rev ON rev.rev_page = page.page_id ", $sRevisionTable );
+					$sSqlRevisionTable .= sprintf( " LEFT JOIN %s AS rev_aux on rev_aux.rev_page = rev.rev_page AND rev_aux.rev_id < rev.rev_id ", $sRevisionTable );
+					$sSqlCond_page_rev = " AND rev2.rev_page is null ";
+					$sSqlPage_id = " rev.rev_page ";
+					$bFirstEdit = true;
+					# </Wikia>
 					break;
 				case 'pagetouched':
 					$sSqlPage_touched = ", $sPageTable.page_touched AS page_touched";
@@ -2054,10 +2072,18 @@ class DPLMain {
 					if ( ExtDynamicPageList::$behavingLikeIntersection ) {
 						$sSqlPage_touched = ", $sPageTable.page_touched AS page_touched";
 					} else {
+						#<Wikia>
+						/*
 						$sSqlRevisionTable = $sRevisionTable . ' AS rev, ';
 						$sSqlRev_timestamp = ', rev_timestamp';
 						// deleted because of conflict with revision-parameters
 						$sSqlCond_page_rev = ' AND ' . $sPageTable . '.page_id=rev.rev_page AND rev.rev_timestamp=( SELECT MAX(rev_aux.rev_timestamp) FROM ' . $sRevisionTable . ' AS rev_aux WHERE rev_aux.rev_page=rev.rev_page )';
+						*/
+						$sSqlRev_timestamp = ", rev.rev_timestamp";
+						$sSqlRevisionTable = sprintf( " INNER JOIN %s AS rev ON rev.rev_page = page.page_id ", $sRevisionTable );
+						$sSqlPage_id = " rev.rev_page ";
+						$sSqlCond_page_rev = sprintf( " AND %s.page_id = rev.rev_page AND rev.rev_id = %s.page_latest ", $sPageTable, $sPageTable );
+						#</Wikia>
 					}
 					break;
 				case 'sortkey':
@@ -2115,8 +2141,15 @@ class DPLMain {
 					}
 					break;
 				case 'user':
+					# <Wikia>
+					/*
 					$sSqlRevisionTable = $sRevisionTable . ', ';
 					$sSqlRev_user = ', rev_user, rev_user_text, rev_comment';
+					*/
+					$sSqlRev_timestamp = ", rev.rev_user, rev.rev_user_text, rev.rev_comment";
+					$sSqlRevisionTable = sprintf( " INNER JOIN %s AS rev ON rev.rev_page = page.page_id ", $sRevisionTable );
+					$sSqlPage_id = " rev.rev_page ";
+					# </Wikia>
 					break;
 				case 'none':
 					break;
@@ -2460,16 +2493,31 @@ class DPLMain {
 		}
 
 		if ( $bAddAuthor && $sSqlRevisionTable == '' ) {
-			$sSqlRevisionTable = $sRevisionTable . ' AS rev, ';
-			$sSqlCond_page_rev .= ' AND ' . $sPageTable . '.page_id=rev.rev_page AND rev.rev_timestamp=( SELECT MIN(rev_aux_min.rev_timestamp) FROM ' . $sRevisionTable . ' AS rev_aux_min WHERE rev_aux_min.rev_page=rev.rev_page )';
+			# <Wikia>
+			#$sSqlRevisionTable = $sRevisionTable . ' AS rev, ';
+			#$sSqlCond_page_rev .= ' AND ' . $sPageTable . '.page_id=rev.rev_page AND rev.rev_timestamp=( SELECT MIN(rev_aux_min.rev_timestamp) FROM ' . $sRevisionTable . ' AS rev_aux_min WHERE rev_aux_min.rev_page=rev.rev_page )';
+			$sSqlRevisionTable = sprintf( " INNER JOIN %s AS rev ON rev.rev_page = page.page_id ", $sRevisionTable );
+			$sSqlRevisionTable .= sprintf( " LEFT JOIN %s AS rev_aux on rev_aux.rev_page = rev.rev_page AND rev_aux.rev_id < rev.rev_id ", $sRevisionTable );
+			$sSqlCond_page_rev = " AND rev2.rev_page is null ";
+			$sSqlPage_id = " rev.rev_page ";
+			$bFirstEdit = true;
+			# </Wikia>
 		}
 		if ( $bAddLastEditor && $sSqlRevisionTable == '' ) {
-			$sSqlRevisionTable = $sRevisionTable . ' AS rev, ';
-			$sSqlCond_page_rev .= ' AND ' . $sPageTable . '.page_id=rev.rev_page AND rev.rev_timestamp=( SELECT MAX(rev_aux_max.rev_timestamp) FROM ' . $sRevisionTable . ' AS rev_aux_max WHERE rev_aux_max.rev_page=rev.rev_page )';
+			# <Wikia>
+			#$sSqlRevisionTable = $sRevisionTable . ' AS rev, ';
+			#$sSqlCond_page_rev .= ' AND ' . $sPageTable . '.page_id=rev.rev_page AND rev.rev_timestamp=( SELECT MAX(rev_aux_max.rev_timestamp) FROM ' . $sRevisionTable . ' AS rev_aux_max WHERE rev_aux_max.rev_page=rev.rev_page )';
+
+			$sSqlRevisionTable = sprintf( " INNER JOIN %s AS rev ON rev.rev_page = page.page_id ", $sRevisionTable );
+			$sSqlPage_id = " rev.rev_page ";
+			$sSqlCond_page_rev = sprintf( " AND %s.page_id = rev.rev_page AND rev.rev_id = %s.page_latest ", $sPageTable, $sPageTable );
+			#</Wikia>		
 		}
 
 		if ( $sLastRevisionBefore . $sAllRevisionsBefore . $sFirstRevisionSince . $sAllRevisionsSince != '' ) {
 
+			# <Wikia>
+			/*
 			$sSqlRevisionTable = $sRevisionTable . ' AS rev, ';
 			$sSqlRev_timestamp = ', rev_timestamp';
 			$sSqlRev_id = ', rev_id';
@@ -2485,6 +2533,14 @@ class DPLMain {
 			if ( $sAllRevisionsSince != '' ) {
 				$sSqlCond_page_rev .= ' AND ' . $sPageTable . '.page_id=rev.rev_page AND rev.rev_timestamp >= ' . $sAllRevisionsSince;
 			}
+			*/
+			
+			if ( $bFirstEdit === false ) {
+				$sSqlRevisionTable .= sprintf( " LEFT JOIN %s AS rev_aux on rev_aux.rev_page = rev.rev_page AND rev_aux.rev_id < rev.rev_id ", $sRevisionTable );
+				$sSqlCond_page_rev = " AND rev2.rev_page is null ";
+				$sSqlPage_id = " rev.rev_page ";
+			}
+			# </Wikia>
 		}
 
 		if ( isset( $aCatMinMax[0] ) && $aCatMinMax[0] != '' ) {
@@ -2876,6 +2932,7 @@ class DPLMain {
 
 		// ###### PROCESS SQL QUERY ######
 		try {
+			error_log( $sSqlSelectFrom . $sSqlWhere . " \n", 3, "/tmp/moli.log" );
 			$res = $dbr->query( $sSqlSelectFrom . $sSqlWhere, __METHOD__ );
 		} catch ( Exception $e ) {
 			$result = "The DPL extension (version " . ExtDynamicPageList::$DPLVersion . ") produced a SQL statement which lead to a Database error.<br />\n"
