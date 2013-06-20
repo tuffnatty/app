@@ -358,10 +358,6 @@ class DPLMain {
 		$aParams = explode( "\n", $input );
 		$bIncludeUncat = false; // to check if pseudo-category of Uncategorized pages is included
 
-		# <Wikia>
-		$bFirstEdit = false;
-		# </Wikia>
-
 		// version 0.9:
 		// we do not parse parameters recursively when reading them in.
 		// we rather leave them unchanged, produce the complete output and then finally
@@ -2010,7 +2006,7 @@ class DPLMain {
 		$sSqlJoinRevisionTable = '';
 		$sSqlRev_timestamp = '';
 		# <Wikia>
-		$sSqlPage_id = '';
+		$sSqlPage_id = $sPageTable . '.page_id';
 		# </Wikia>
 		$sSqlRev_id = '';
 		$sSqlRev_user = '';
@@ -2062,7 +2058,7 @@ class DPLMain {
 					$sSqlRevisionTable .= sprintf( " LEFT JOIN %s AS rev_aux on rev_aux.rev_page = rev.rev_page AND rev_aux.rev_id < rev.rev_id ", $sRevisionTable );
 					$sSqlCond_page_rev = " AND rev2.rev_page is null ";
 					$sSqlPage_id = " rev.rev_page ";
-					$bFirstEdit = true;
+					$sDistinctResultSet = 'false';
 					# </Wikia>
 					break;
 				case 'pagetouched':
@@ -2083,6 +2079,7 @@ class DPLMain {
 						$sSqlRevisionTable = sprintf( " INNER JOIN %s AS rev ON rev.rev_page = page.page_id ", $sRevisionTable );
 						$sSqlPage_id = " rev.rev_page ";
 						$sSqlCond_page_rev = sprintf( " AND %s.page_id = rev.rev_page AND rev.rev_id = %s.page_latest ", $sPageTable, $sPageTable );
+						$sDistinctResultSet = 'false';
 						#</Wikia>
 					}
 					break;
@@ -2390,6 +2387,7 @@ class DPLMain {
 
 		// uses
 		if ( count( $aUses ) > 0 ) {
+			/* <Wikia>
 			$sSqlPageLinksTable .= ' ' . $sTemplateLinksTable . ' AS tl, ';
 			$sSqlCond_page_pl .= ' AND ' . $sPageTable . '.page_id=tl.tl_from  AND (';
 			$n = 0;
@@ -2406,10 +2404,49 @@ class DPLMain {
 				$n++;
 			}
 			$sSqlCond_page_pl .= ')';
+			*/
+
+			$cond = "";
+			$n = 0;
+			foreach ( $aUses as $link ) {
+				if ( $n > 0 ) {
+					$cond .= ' OR ';
+				}
+				$cond .= '(tl.tl_namespace=' . intval( $link->getNamespace() );
+				if ( $bIgnoreCase ) {
+					$cond .= ' AND LOWER(tl.tl_title)=LOWER(' . $dbr->addQuotes( $link->getDBkey() ) . '))';
+				} else {
+					$cond .= " AND	   tl.tl_title=" . $dbr->addQuotes( $link->getDBkey() ) . ')';
+				}
+				$n++;
+			}
+			$cond .= ')';
+			if ( $cond ) {
+				$cond = " AND ( " . $cond . " ) ";
+			}
+			$sSqlPageLinksTable .= sprintf( " INNER JOIN %s AS tl ON %s=tl.tl_from %s ", $sTemplateLinksTable, $sSqlPage_id, $cond );
+			# </Wikia>
 		}
 
 		// notuses
 		if ( count( $aNotUses ) > 0 ) {
+			# <Wikia>
+			/*$sSqlCond_page_pl .= ' AND ' . $sPageTable . '.page_id NOT IN (SELECT ' . $sTemplateLinksTable . '.tl_from FROM ' . $sTemplateLinksTable . ' WHERE (';
+			$n = 0;
+			foreach ( $aNotUses as $link ) {
+				if ( $n > 0 ) {
+					$sSqlCond_page_pl .= ' OR ';
+				}
+				$sSqlCond_page_pl .= '(' . $sTemplateLinksTable . '.tl_namespace=' . intval( $link->getNamespace() );
+				if ( $bIgnoreCase ) {
+					$sSqlCond_page_pl .= ' AND LOWER(' . $sTemplateLinksTable . '.tl_title)=LOWER(' . $dbr->addQuotes( $link->getDBkey() ) . '))';
+				} else {
+					$sSqlCond_page_pl .= ' AND ' . $sTemplateLinksTable . '.tl_title=' . $dbr->addQuotes( $link->getDBkey() ) . ')';
+				}
+				$n++;
+			}
+			$sSqlCond_page_pl .= ') )';
+			*/
 			$sSqlCond_page_pl .= ' AND ' . $sPageTable . '.page_id NOT IN (SELECT ' . $sTemplateLinksTable . '.tl_from FROM ' . $sTemplateLinksTable . ' WHERE (';
 			$n = 0;
 			foreach ( $aNotUses as $link ) {
@@ -2425,6 +2462,7 @@ class DPLMain {
 				$n++;
 			}
 			$sSqlCond_page_pl .= ') )';
+			# </Wikia>
 		}
 
 		// usedby
@@ -2500,7 +2538,7 @@ class DPLMain {
 			$sSqlRevisionTable .= sprintf( " LEFT JOIN %s AS rev_aux on rev_aux.rev_page = rev.rev_page AND rev_aux.rev_id < rev.rev_id ", $sRevisionTable );
 			$sSqlCond_page_rev = " AND rev2.rev_page is null ";
 			$sSqlPage_id = " rev.rev_page ";
-			$bFirstEdit = true;
+			$sDistinctResultSet = 'false';
 			# </Wikia>
 		}
 		if ( $bAddLastEditor && $sSqlRevisionTable == '' ) {
@@ -2511,6 +2549,7 @@ class DPLMain {
 			$sSqlRevisionTable = sprintf( " INNER JOIN %s AS rev ON rev.rev_page = page.page_id ", $sRevisionTable );
 			$sSqlPage_id = " rev.rev_page ";
 			$sSqlCond_page_rev = sprintf( " AND %s.page_id = rev.rev_page AND rev.rev_id = %s.page_latest ", $sPageTable, $sPageTable );
+			$sDistinctResultSet = 'false';
 			#</Wikia>		
 		}
 
@@ -2535,10 +2574,31 @@ class DPLMain {
 			}
 			*/
 			
-			if ( $bFirstEdit === false ) {
-				$sSqlRevisionTable .= sprintf( " LEFT JOIN %s AS rev_aux on rev_aux.rev_page = rev.rev_page AND rev_aux.rev_id < rev.rev_id ", $sRevisionTable );
-				$sSqlCond_page_rev = " AND rev2.rev_page is null ";
+			$sSqlRevisionTable = sprintf( " INNER JOIN %s AS rev ON rev.rev_page = page.page_id ", $sRevisionTable );
+			$sSqlRev_timestamp = ", rev_timestamp";
+			$sSqlRev_id = ", rev_id";
+			$sSqlPage_id = " rev.rev_page ";
+			#$sSqlCond_page_rev = sprintf( " AND %s.page_id = rev.rev_page AND rev.rev_id = %s.page_latest ", $sPageTable, $sPageTable );
+			
+			if ( $sLastRevisionBefore != '' ) {
+				$sSqlRevisionTable .= sprintf( " LEFT JOIN %s AS rev_aux_bef on rev_aux_bef.rev_page = rev.rev_page AND rev_aux_bef.rev_id > rev.rev_id ", $sRevisionTable );
+				$sSqlCond_page_rev = " AND rev_aux_bef.rev_page is null ";
 				$sSqlPage_id = " rev.rev_page ";
+				$sSqlCond_page_rev .= sprintf(" AND rev_aux_bef.rev_timestamp < '%s' ", $sLastRevisionBefore );
+				$sDistinctResultSet = 'false';
+			}
+			if ( $sAllRevisionsBefore != '' ) {
+				$sSqlCond_page_rev .= ' AND rev.rev_timestamp < ' . $sAllRevisionsBefore;
+			}
+			if ( $sFirstRevisionSince != '' ) {
+				$sSqlRevisionTable .= sprintf( " LEFT JOIN %s AS rev_aux on rev_aux.rev_page = rev.rev_page AND rev_aux.rev_id < rev.rev_id ", $sRevisionTable );
+				$sSqlCond_page_rev .= " AND rev2.rev_page is null ";
+				$sSqlPage_id = " rev.rev_page ";
+				$sSqlCond_page_rev .= sprintf( " AND rev.rev_timestamp >= %s ", $sFirstRevisionSince );
+				$sDistinctResultSet = 'false';
+			}
+			if ( $sAllRevisionsSince != '' ) {
+				$sSqlCond_page_rev .= sprintf( " AND rev.rev_timestamp >= %s ", $sAllRevisionsSince );
 			}
 			# </Wikia>
 		}
@@ -2590,11 +2650,17 @@ class DPLMain {
 				$sSqlSelectFrom = "SELECT $sSqlCalcFoundRows $sSqlDistinct " . $sSqlCl_to . 'pl_namespace, pl_title' . $sSqlSelPage . $sSqlSortkey . ' FROM ' . $sPageLinksTable;
 			}
 		} else {
-			$sSqlSelectFrom = "SELECT $sSqlCalcFoundRows $sSqlDistinct " . $sSqlCl_to . $sPageTable . '.page_namespace as page_namespace,' .
-								$sPageTable . '.page_title as page_title,' . $sPageTable . '.page_id as page_id' . $sSqlSelPage . $sSqlSortkey . $sSqlPage_counter .
-								$sSqlPage_size . $sSqlPage_touched . $sSqlRev_user .
-								$sSqlRev_timestamp . $sSqlRev_id . $sSqlCats . $sSqlCl_timestamp .
-								' FROM ' . $sSqlRevisionTable . $sSqlRCTable . $sSqlPageLinksTable . $sSqlExternalLinksTable . $sPageTable;
+			# <Wikia>
+			#$sSqlSelectFrom = "SELECT $sSqlCalcFoundRows $sSqlDistinct " . $sSqlCl_to . $sPageTable . '.page_namespace as page_namespace,' .
+			#					$sPageTable . '.page_title as page_title,' . $sPageTable . '.page_id as page_id' . $sSqlSelPage . $sSqlSortkey . $sSqlPage_counter .
+			#					$sSqlPage_size . $sSqlPage_touched . $sSqlRev_user .
+			#					$sSqlRev_timestamp . $sSqlRev_id . $sSqlCats . $sSqlCl_timestamp .
+			#					' FROM ' . $sSqlRevisionTable . $sSqlRCTable . $sSqlPageLinksTable . $sSqlExternalLinksTable . $sPageTable;
+			# </Wikia>					
+			$sSqlSelectFrom  = "SELECT {$sSqlCalcFoundRows} {$sSqlDistinct} {$sSqlCl_to} {$sPageTable}.page_namespace as page_namespace, ";
+			$sSqlSelectFrom .= "{$sPageTable}.page_title as page_title, {$sPageTable}.page_id as page_id {$sSqlSelPage} {$sSqlSortkey} {$sSqlPage_counter} ";
+			$sSqlSelectFrom .= "{$sSqlPage_size} {$sSqlPage_touched} {$sSqlRev_user} {$sSqlRev_timestamp} {$sSqlRev_id} {$sSqlCats} {$sSqlCl_timestamp} ";
+			$sSqlSelectFrom .= " FROM {$sPageTable} {$sSqlRevisionTable} {$sSqlRCTable} {$sSqlPageLinksTable} {$sSqlExternalLinksTable} ";
 		}
 
 		// JOIN ...
@@ -2607,13 +2673,30 @@ class DPLMain {
 		$iClTable = 0;
 		for ( $i = 0; $i < $iIncludeCatCount; $i++ ) {
 			// If we want the Uncategorized
-			$sSqlSelectFrom .= ' INNER JOIN ' . ( in_array( '', $aIncludeCategories[$i] ) ? $sDplClView : $sCategorylinksTable ) .
-							   ' AS cl' . $iClTable . ' ON ' . $sPageTable . '.page_id=cl' . $iClTable . '.cl_from AND (cl' . $iClTable . '.cl_to' .
-							   $sCategoryComparisonMode . $dbr->addQuotes( str_replace( ' ', '_', $aIncludeCategories[$i][0] ) );
+			# <Wikia>
+			#$sSqlSelectFrom .= ' INNER JOIN ' . ( in_array( '', $aIncludeCategories[$i] ) ? $sDplClView : $sCategorylinksTable ) .
+			#				   ' AS cl' . $iClTable . ' ON ' . $sPageTable . '.page_id=cl' . $iClTable . '.cl_from AND (cl' . $iClTable . '.cl_to' .
+			#				   $sCategoryComparisonMode . $dbr->addQuotes( str_replace( ' ', '_', $aIncludeCategories[$i][0] ) );
+			#for ( $j = 1; $j < count( $aIncludeCategories[$i] ); $j++ ) {
+			#	$sSqlSelectFrom .= ' OR cl' . $iClTable . '.cl_to' . $sCategoryComparisonMode . $dbr->addQuotes( str_replace( ' ', '_', $aIncludeCategories[$i][$j] ) );
+			#}
+			#$sSqlSelectFrom .= ') ';
+			
+			$sSqlSelectFrom .= sprintf( " INNER JOIN %s AS cl%s ON %s = cl%s.cl_from AND (cl%s.cl_to %s %s ", 
+				 ( in_array( '', $aIncludeCategories[$i] ) ? $sDplClView : $sCategorylinksTable ),
+				 $iClTable,
+				 $sSqlPage_id,
+				 $iClTable,
+				 $iClTable,
+				 $sCategoryComparisonMode,
+				 $dbr->addQuotes( str_replace( ' ', '_', $aIncludeCategories[$i][0] ) )
+			);
+			 
 			for ( $j = 1; $j < count( $aIncludeCategories[$i] ); $j++ ) {
 				$sSqlSelectFrom .= ' OR cl' . $iClTable . '.cl_to' . $sCategoryComparisonMode . $dbr->addQuotes( str_replace( ' ', '_', $aIncludeCategories[$i][$j] ) );
 			}
 			$sSqlSelectFrom .= ') ';
+			# </Wikia>
 			$iClTable++;
 		}
 
