@@ -5,17 +5,30 @@
  *
  * @author Władysław Bodzek <wladek@wikia-inc.com>
  */
-class AbTestingHooks extends WikiaObject {
+class AbTestingHooks {
 
-	public function onOasisSkinAssetGroupsBlocking( &$jsAssetGroups ) {
+	public static function onWikiaMobileAssetsPackages( Array &$jsHeadPackages, Array &$jsBodyPackages, Array &$scssPackages ) {
+		array_unshift( $jsBodyPackages, 'abtesting' );
+		return true;
+	}
+	public static function onOasisSkinAssetGroupsBlocking( &$jsAssetGroups ) {
 		array_unshift( $jsAssetGroups, 'abtesting' );
 		return true;
 	}
 
-	public function onWikiaSkinTopScripts( &$vars, &$scripts, $skin ) {
-		if ( $this->app->checkSkin( 'oasis', $skin ) ) {
-			$scripts .= ResourceLoader::makeCustomLink($this->wg->out, array( 'wikia.ext.abtesting' ), 'scripts') . "\n";
+	public static function onWikiaSkinTopScripts( &$vars, &$scripts, $skin ) {
+		$app = F::app();
+		$wg = $app->wg;
+		if ( $app->checkSkin( 'wikiamobile', $skin ) ) {
+			//Add this mock as wikia.ext.abtesting relies on it and on WikiaMobile there is no mw object
+			//This will need some treatment if we add more abtesting to WikiaMobile
+			$scripts .= '<script>var mw = {loader: {state: function(){}}}</script>';
 		}
+
+		if ( $app->checkSkin( ['oasis', 'wikiamobile'], $skin ) ) {
+			$scripts .= ResourceLoader::makeCustomLink( $wg->out, array( 'wikia.ext.abtesting' ), 'scripts' ) . "\n";
+		}
+
 		return true;
 	}
 
