@@ -14,14 +14,12 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	exit( 1 );
 }
 
-$app = F::app();
 $dir = dirname( __FILE__ );
 
 /**
  * info
  */
-$app->wg->append(
-	'wgExtensionCredits',
+$wgExtensionCredits['other'][] =
 	array(
 		'name' => 'A/B Testing',
 		'author' => array(
@@ -32,40 +30,39 @@ $app->wg->append(
 		),
 		'descriptionmsg' => 'abtesting-desc',
 		'version' => '1.0',
-	),
-	'other'
-);
+	);
 
 /**
  * classes
  */
-$app->registerClass('AbTesting',"{$dir}/AbTesting.class.php");
-$app->registerClass('AbExperiment',"{$dir}/AbTesting.class.php");
-$app->registerClass('AbTestingData',"{$dir}/AbTestingData.class.php");
-$app->registerClass('ResourceLoaderAbTestingModule',"{$dir}/ResourceLoaderAbTestingModule.class.php");
-$app->registerClass('SpecialAbTestingController',"{$dir}/SpecialAbTestingController.class.php");
-$app->registerClass('SpecialAbTesting2Controller',"{$dir}/SpecialAbTesting2Controller.class.php");
-$app->registerClass('AbTestingController',"{$dir}/AbTestingController.class.php");
-$app->registerClass('AbTestingHooks',"{$dir}/AbTestingHooks.class.php");
-$app->registerClass('AbTestingConfig',"{$dir}/AbTestingConfig.class.php");
-$app->registerClass('AbTest',"{$dir}/AbTest.class.php");
+$wgAutoloadClasses['AbTesting'] = "{$dir}/AbTesting.class.php";
+$wgAutoloadClasses['AbExperiment'] = "{$dir}/AbTesting.class.php";
+$wgAutoloadClasses['AbTestingData'] = "{$dir}/AbTestingData.class.php";
+$wgAutoloadClasses['ResourceLoaderAbTestingModule'] = "{$dir}/ResourceLoaderAbTestingModule.class.php";
+$wgAutoloadClasses['SpecialAbTestingController'] = "{$dir}/SpecialAbTestingController.class.php";
+$wgAutoloadClasses['SpecialAbTesting2Controller'] = "{$dir}/SpecialAbTesting2Controller.class.php";
+$wgAutoloadClasses['AbTestingController'] = "{$dir}/AbTestingController.class.php";
+$wgAutoloadClasses['AbTestingHooks'] = "{$dir}/AbTestingHooks.class.php";
+$wgAutoloadClasses['AbTestingConfig'] = "{$dir}/AbTestingConfig.class.php";
+$wgAutoloadClasses['AbTest'] = "{$dir}/AbTest.class.php";
 
 /**
  * message files
  */
-$app->wg->set( 'wgExtensionMessagesFiles', "{$dir}/AbTesting.i18n.php", 'AbTesting' );
+$wgExtensionMessagesFiles['AbTesting'] = "{$dir}/AbTesting.i18n.php";
 
 // Embed the experiment/treatment config in the head scripts.
-$app->registerHook( 'WikiaSkinTopScripts', 'AbTestingHooks', 'onWikiaSkinTopScripts' );
+$wgHooks['WikiaSkinTopScripts'][] =  'AbTestingHooks::onWikiaSkinTopScripts';
+$wgHooks['WikiaMobileAssetsPackages'][] = 'AbTestingHooks::onWikiaMobileAssetsPackages';
 // Add js code in Oasis
-$app->registerHook( 'OasisSkinAssetGroupsBlocking', 'AbTestingHooks', 'onOasisSkinAssetGroupsBlocking' );
+$wgHooks['OasisSkinAssetGroupsBlocking'][] = 'AbTestingHooks::onOasisSkinAssetGroupsBlocking';
 
 // Register Resource Loader module
-$app->wg->set( 'wgResourceModules', array(
+$wgResourceModules['wikia.ext.abtesting'] = array(
 	'class' => 'ResourceLoaderAbTestingModule',
-), 'wikia.ext.abtesting' );
+);
 
-$app->wg->set( 'wgResourceModules', array(
+$wgResourceModules['wikia.ext.abtesting.edit.styles'] = array(
 	'styles' => array(
 		'extensions/wikia/AbTesting/css/AbTestEditor.scss',
 		'resources/jquery.ui/themes/default/jquery.ui.core.css',
@@ -74,9 +71,9 @@ $app->wg->set( 'wgResourceModules', array(
 		'resources/jquery.ui/themes/default/jquery.ui.theme.css',
 		'resources/wikia/libraries/jquery-ui/themes/default/jquery.ui.timepicker.css',
 	),
-), 'wikia.ext.abtesting.edit.styles' );
+);
 
-$app->wg->set( 'wgResourceModules', array(
+$wgResourceModules['wikia.ext.abtesting.edit'] = array(
 	'scripts' => array(
 		'extensions/wikia/AbTesting/js/AbTestEditor.js',
 		'resources/jquery.ui/jquery.ui.core.js',
@@ -90,25 +87,25 @@ $app->wg->set( 'wgResourceModules', array(
 		'abtesting-add-experiment-title',
 		'abtesting-edit-experiment-title'
 	)
-), 'wikia.ext.abtesting.edit' );
+);
 
 
-$app->wg->set( 'wgResourceModules', array(
+$wgResourceModules['wikia.ext.abtesting.edit2'] = array(
 	 'scripts' => array(
 		 'extensions/wikia/AbTesting/js/AbTestEditor2.js',
 		 'extensions/wikia/AbTesting/js/ba-linkify.js',
 	 ),
-), 'wikia.ext.abtesting.edit2' );
+);
 
-$app->wg->set( 'wgResourceModules', array(
+$wgResourceModules['wikia.ext.abtesting.edit2.styles'] = array(
 	 'styles' => array(
 		 'extensions/wikia/AbTesting/css/AbTestEditor2.scss',
 	 ),
-), 'wikia.ext.abtesting.edit2.styles' );
+);
 
 
-$app->registerSpecialPage('AbTesting', 'SpecialAbTestingController');
-$app->registerSpecialPage('AbTesting2', 'SpecialAbTesting2Controller');
+$wgSpecialPages['AbTesting'] = 'SpecialAbTestingController';
+$wgSpecialPages['AbTesting2'] = 'SpecialAbTesting2Controller';
 
 
 /*
