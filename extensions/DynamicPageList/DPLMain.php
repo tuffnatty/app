@@ -2156,7 +2156,8 @@ class DPLMain {
 
 		// linksto
 		if ( count( $aLinksTo ) > 0 ) {
-			$sSqlPageLinksTable .= $sPageLinksTable . ' AS pl, ';
+			# <Wikia>
+			/*$sSqlPageLinksTable .= $sPageLinksTable . ' AS pl, ';
 			$sSqlCond_page_pl .= ' AND ' . $sPageTable . '.page_id=pl.pl_from AND ';
 			$sSqlSelPage = ', pl.pl_title AS sel_title, pl.pl_namespace AS sel_ns';
 			$n = 0;
@@ -2183,8 +2184,41 @@ class DPLMain {
 					}
 				}
 				$sSqlCond_page_pl .= ')';
+			}*/
+
+			$sSqlSelPage = ', pl.pl_title AS sel_title, pl.pl_namespace AS sel_ns';
+			$cond = '';
+			$n = 0;
+			foreach ( $aLinksTo as $linkGroup ) {
+				if ( ++$n > 1 ) {
+					break;
+				}
+				$cond .= '( ';
+				$m = 0;
+				foreach ( $linkGroup as $link ) {
+					if ( ++$m > 1 ) {
+						$cond .= ' OR ';
+					}
+					$cond .= '(pl.pl_namespace=' . intval( $link->getNamespace() );
+					if ( strpos( $link->getDBkey(), '%' ) >= 0 ) {
+						$operator = ' LIKE ';
+					} else {
+						$operator = '=';
+					}
+					if ( $bIgnoreCase ) {
+						$cond .= ' AND LOWER(pl.pl_title)' . $operator . 'LOWER(' . $dbr->addQuotes( $link->getDBkey() ) . '))';
+					} else {
+						$cond .= ' AND pl.pl_title' . $operator . $dbr->addQuotes( $link->getDBkey() ) . ')';
+					}
+				}
+				$cond .= ')';
+				
+				$sSqlSelPage = ', pl.pl_title AS sel_title, pl.pl_namespace AS sel_ns';
+				$sSqlPageLinksTable .= sprintf( " INNER JOIN %s ON %s = pl.pl_from %s ", $sPageLinksTable, $sSqlPage_id, $cond );
 			}
+			# </Wikia>
 		}
+		/* NOT NEEDED ANYMORE
 		if ( count( $aLinksTo ) > 1 ) {
 			$n = 0;
 			foreach ( $aLinksTo as $linkGroup ) {
@@ -2212,10 +2246,13 @@ class DPLMain {
 				}
 				$sSqlCond_page_pl .= ')))';
 			}
-		}
+		}*/
+		# </Wikia>
 
 		// notlinksto
 		if ( count( $aNotLinksTo ) > 0 ) {
+			# <Wikia>
+			/*
 			$sSqlCond_page_pl .= ' AND ' . $sPageTable . '.page_id NOT IN (SELECT ' . $sPageLinksTable . '.pl_from FROM ' . $sPageLinksTable . ' WHERE (';
 			$n = 0;
 			foreach ( $aNotLinksTo as $links ) {
@@ -2238,6 +2275,34 @@ class DPLMain {
 				}
 			}
 			$sSqlCond_page_pl .= ') )';
+			*/
+			
+			$cond = '';
+			$n = 0;
+			foreach ( $aNotLinksTo as $links ) {
+				foreach ( $links as $link ) {
+					if ( $n > 0 ) {
+						$cond .= ' OR ';
+					}
+					$cond .= '( plt.pl_namespace=' . intval( $link->getNamespace() );
+					if ( strpos( $link->getDBkey(), '%' ) >= 0 ) {
+						$operator = ' LIKE ';
+					} else {
+						$operator = '=';
+					}
+					if ( $bIgnoreCase ) {
+						$cond .= ' AND LOWER(plt.pl_title)' . $operator . 'LOWER(' . $dbr->addQuotes( $link->getDBkey() ) . '))';
+					} else {
+						$cond .= ' AND plt.pl_title' . $operator . $dbr->addQuotes( $link->getDBkey() ) . ')';
+					}
+					$n++;
+				}
+			}
+			$cond .= ') )';
+		
+			$sSqlPageLinksTable .= sprintf( " LEFT JOIN %s ON %s = plt.pl_from %s ", $sPageLinksTable, $sSqlPage_id, $cond );
+			$sSqlCond_page_pl .= " AND {$sPageTable}.page_id IS NULL ";
+			#</Wikia>
 		}
 
 		// linksfrom
@@ -2514,13 +2579,22 @@ class DPLMain {
 
 		// recent changes  =============================
 		if ( $bAddContribution ) {
-			$sSqlRCTable = $sRCTable . ' AS rc, ';
+			# <Wikia>
+			#$sSqlRCTable = $sRCTable . ' AS rc, ';
+			#$sSqlSelPage .= ', SUM( ABS( rc.rc_new_len - rc.rc_old_len ) ) AS contribution, rc.rc_user_text as contributor';
+			#$sSqlWhere .= ' AND page.page_id=rc.rc_cur_id';
+			#if ( $sSqlGroupBy != '' ) {
+			#	$sSqlGroupBy .= ', ';
+			#}
+			#$sSqlGroupBy .= 'rc.rc_cur_id';
+			
+			$sSqlRCTable = sprintf( " INNER JOIN %s AS rc ON %s=rc.rc_cur_id ", $sRCTable, $sSqlPage_id );
 			$sSqlSelPage .= ', SUM( ABS( rc.rc_new_len - rc.rc_old_len ) ) AS contribution, rc.rc_user_text as contributor';
-			$sSqlWhere .= ' AND page.page_id=rc.rc_cur_id';
 			if ( $sSqlGroupBy != '' ) {
 				$sSqlGroupBy .= ', ';
 			}
 			$sSqlGroupBy .= 'rc.rc_cur_id';
+			# </Wikia>
 		}
 
 		// Revisions ==================================
