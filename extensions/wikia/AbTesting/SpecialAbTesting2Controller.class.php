@@ -23,20 +23,30 @@ class SpecialAbTesting2Controller extends WikiaSpecialPageController {
 		$experiments = $abData->getAll();
 		foreach ($experiments as &$exp) {
 			$exp['actions'] = array();
-			// add "Edit experiment" button
+			$exp['actions'][] = array(
+				'cmd' => 'delete-experiment',
+				'class' => 'secondary',
+				'spriteclass' => 'remove sprite',
+				'text' => wfMessage('abtesting-remove-button')->text(),
+			);
+
+			// add "Cancel" button - only for ongoing experiments
+			// does not remove experiment data, only removes it's
+			// active state
 			if ( $exp['status'] == AbTesting::STATUS_ACTIVE ) {
 				$exp['actions'][] = array(
 					'cmd' => 'cancel-experiment',
 					'class' => 'secondary',
 					'spriteclass' => '',
-					'text' => $this->wf->msg('abtesting-cancel-button'),
+					'text' => wfMessage('abtesting-cancel-button')->text(),
 				);
 			}
+			// add "Edit experiment" button
 			$exp['actions'][] = array(
 				'cmd' => 'edit-experiment',
 				'class' => '',
 				'spriteclass' => 'edit-pencil sprite',
-				'text' => $this->wf->msg('abtesting-edit-button'),
+				'text' => wfMessage('abtesting-edit-button')->text(),
 			);
 		}
 		$this->setVal( 'experiments', $experiments );
@@ -45,7 +55,7 @@ class SpecialAbTesting2Controller extends WikiaSpecialPageController {
 		$actions[] = array(
 			'cmd' => 'add-experiment',
 			'class' => 'add sprite-small',
-			'text' => $this->wf->msg('abtesting-create-experiment'),
+			'text' => wfMessage('abtesting-create-experiment')->text(),
 		);
 		$this->setVal( 'actions', $actions );
 

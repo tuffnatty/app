@@ -4,6 +4,8 @@ $( function() {
 	var $window = $(window);
 	var $document = $(document);
 
+	// make sure that details view (on the right side of A/B tests list)
+	// get's properly sized
 	var doSizing = function() {
 		var current = $window.scrollTop();
 		if (current < 0) current = 0;
@@ -38,8 +40,6 @@ $( function() {
 			$editor.css('margin-right', $details.width() );
 			doSizing();
 		}
-		//$('tr.exp').not('tr[data-id="'+id+'"]').addClass('collapsed');
-		//$('tr[data-id="'+id+'"]').removeClass('collapsed');
 	},this));
 
 })

@@ -1,6 +1,6 @@
 <?php
 /**
- * @author pbablok@wikia-inc.com
+ * @author Piotr Bablok pbablok@wikia-inc.com
  * @author Władysław Bodzek <wladek@wikia-inc.com>
  */
 class AbTest {
