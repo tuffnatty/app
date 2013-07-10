@@ -2187,7 +2187,7 @@ class DPLMain {
 			}*/
 
 			$sSqlSelPage = ', pl.pl_title AS sel_title, pl.pl_namespace AS sel_ns';
-			$cond = '';
+			$cond = ' AND ( ';
 			$n = 0;
 			foreach ( $aLinksTo as $linkGroup ) {
 				if ( ++$n > 1 ) {
@@ -2212,10 +2212,11 @@ class DPLMain {
 					}
 				}
 				$cond .= ')';
-				
-				$sSqlSelPage = ', pl.pl_title AS sel_title, pl.pl_namespace AS sel_ns';
-				$sSqlPageLinksTable .= sprintf( " INNER JOIN %s ON %s = pl.pl_from %s ", $sPageLinksTable, $sSqlPage_id, $cond );
 			}
+			$cond .= ' ) ';
+			
+			$sSqlSelPage = ', pl.pl_title AS sel_title, pl.pl_namespace AS sel_ns';
+			$sSqlPageLinksTable .= sprintf( " INNER JOIN %s pl ON %s = pl.pl_from %s ", $sPageLinksTable, $sSqlPage_id, $cond );
 			# </Wikia>
 		}
 		/* NOT NEEDED ANYMORE
@@ -2277,7 +2278,7 @@ class DPLMain {
 			$sSqlCond_page_pl .= ') )';
 			*/
 			
-			$cond = '';
+			$cond = ' AND ( ';
 			$n = 0;
 			foreach ( $aNotLinksTo as $links ) {
 				foreach ( $links as $link ) {
@@ -2298,9 +2299,9 @@ class DPLMain {
 					$n++;
 				}
 			}
-			$cond .= ') )';
+			$cond .= ' ) ';
 		
-			$sSqlPageLinksTable .= sprintf( " LEFT JOIN %s ON %s = plt.pl_from %s ", $sPageLinksTable, $sSqlPage_id, $cond );
+			$sSqlPageLinksTable .= sprintf( " LEFT JOIN %s plt ON %s = plt.pl_from %s ", $sPageLinksTable, $sSqlPage_id, $cond );
 			$sSqlCond_page_pl .= " AND {$sPageTable}.page_id IS NULL ";
 			#</Wikia>
 		}
@@ -2321,6 +2322,8 @@ class DPLMain {
 				}
 				$sSqlCond_page_pl .= ')';
 			} else {
+				#<Wikia>
+				/*
 				$sSqlPageLinksTable .= $sPageLinksTable . ' AS plf, ' . $sPageTable . 'AS pagesrc, ';
 				$sSqlCond_page_pl .= ' AND ' . $sPageTable . '.page_namespace = plf.pl_namespace AND ' . $sPageTable . '.page_title = plf.pl_title  AND pagesrc.page_id=plf.pl_from AND (';
 				$sSqlSelPage = ', pagesrc.page_title AS sel_title, pagesrc.page_namespace AS sel_ns';
@@ -2335,6 +2338,26 @@ class DPLMain {
 					}
 				}
 				$sSqlCond_page_pl .= ')';
+				*/
+				
+				$sSqlSelPage = ', pagesrc.page_title AS sel_title, pagesrc.page_namespace AS sel_ns';
+				$cond = ' AND ( '
+				$n = 0;
+				foreach ( $aLinksFrom as $links ) {
+					foreach ( $links as $link ) {
+						if ( $n > 0 ) {
+							$cond .= ' OR ';
+						}
+						$cond .= '(plf.pl_from=' . $link->getArticleID() . ')';
+						$n++;
+					}
+				}
+				$cond .= ' ) ';
+				
+				$sSqlPageLinksTable .= sprintf( " INNER JOIN %s ON %s.page_namespace = plf.pl_namespace AND %s.page_title = plf.pl_title ", 
+					$sPageLinksTable, $sPageTable, $sPageTable );
+				$sSqlPageLinksTable .= sprintf( " INNER JOIN %s pagesrc ON pagesrc.page_id = plf.pl_from %s ", $sPageTable, $cond );
+				#</Wikia>
 			}
 		}
 
@@ -2354,15 +2377,15 @@ class DPLMain {
 				}
 				$sSqlCond_page_pl .= ')';
 			} else {
-				$sSqlCond_page_pl .= ' AND CONCAT(page_namespace,page_title) NOT IN (SELECT CONCAT(' . $sPageLinksTable . '.pl_namespace,'
-									. $sPageLinksTable . '.pl_title) FROM ' . $sPageLinksTable . ' WHERE (';
+				$sSqlCond_page_pl .= ' AND CONCAT(page_namespace,page_title) NOT IN (';
+				$sSqlCond_page_el .= '  SELECT CONCAT( pl.pl_namespace, pl.pl_title) FROM ' . $sPageLinksTable . ' plnot WHERE (';
 				$n = 0;
 				foreach ( $aNotLinksFrom as $links ) {
 					foreach ( $links as $link ) {
 						if ( $n > 0 ) {
 							$sSqlCond_page_pl .= ' OR ';
 						}
-						$sSqlCond_page_pl .= $sPageLinksTable . '.pl_from=' . $link->getArticleID() . ' ';
+						$sSqlCond_page_pl .= 'plnot.pl_from=' . $link->getArticleID() . ' ';
 						$n++;
 					}
 				}
@@ -2372,6 +2395,8 @@ class DPLMain {
 
 		// linkstoexternal
 		if ( count( $aLinksToExternal ) > 0 ) {
+			# <Wikia>
+			/*
 			$sSqlExternalLinksTable .= $sExternalLinksTable . ' AS el, ';
 			$sSqlCond_page_el .= ' AND ' . $sPageTable . '.page_id=el.el_from AND (';
 			$sSqlSelPage = ', el.el_to AS el_to';
@@ -2389,7 +2414,29 @@ class DPLMain {
 				}
 			}
 			$sSqlCond_page_el .= ')';
+			*/
+
+			$cond = ' AND ( ';
+			$n = 0;
+			foreach ( $aLinksToExternal as $linkGroup ) {
+				if ( ++$n > 1 ) {
+					break;
+				}
+				$m = 0;
+				foreach ( $linkGroup as $link ) {
+					if ( ++$m > 1 ) {
+						$sSqlCond_page_el .= ' OR ';
+					}
+					$sSqlCond_page_el .= '(el.el_to LIKE ' . $dbr->addQuotes( $link ) . ')';
+				}
+			}
+			$cond .= ' ) ';
+
+			$sSqlSelPage = ', el.el_to AS el_to';
+			$sSqlPageLinksTable .= sprintf( " INNER JOIN %s el ON %s = el.el_from %s ", $sExternalLinksTable, $sSqlPage_id, $cond );
+			# </Wikia>
 		}
+		/* NOT NEED ANYMORE 
 		if ( count( $aLinksToExternal ) > 1 ) {
 			$n = 0;
 			foreach ( $aLinksToExternal as $linkGroup ) {
@@ -2406,11 +2453,12 @@ class DPLMain {
 				}
 				$sSqlCond_page_el .= ')))';
 			}
-		}
+		} */
 
 		// imageused
 		if ( count( $aImageUsed ) > 0 ) {
-			$sSqlPageLinksTable .= $sImageLinksTable . ' AS il, ';
+			# <Wikia>
+			/*$sSqlPageLinksTable .= $sImageLinksTable . ' AS il, ';
 			$sSqlCond_page_pl .= ' AND ' . $sPageTable . '.page_id=il.il_from AND (';
 			$sSqlSelPage = ', il.il_to AS image_sel_title';
 			$n = 0;
@@ -2426,10 +2474,31 @@ class DPLMain {
 				$n++;
 			}
 			$sSqlCond_page_pl .= ')';
+			*/
+			
+			$cond = ' AND ( ';
+			$n = 0;
+			foreach ( $aImageUsed as $link ) {
+				if ( $n > 0 ) {
+					$sSqlCond_page_pl .= ' OR ';
+				}
+				if ( $bIgnoreCase ) {
+					$sSqlCond_page_pl .= 'LOWER(il.il_to)=LOWER(' . $dbr->addQuotes( $link->getDBkey() ) . ')';
+				} else {
+					$sSqlCond_page_pl .= 'il.il_to=' . $dbr->addQuotes( $link->getDBkey() );
+				}
+				$n++;
+			}
+			$cond .= ')';
+			$sSqlSelPage = ', il.il_to AS image_sel_title';
+			$sSqlPageLinksTable .= sprintf( " INNER JOIN %s il ON %s = il.il_from %s ", $sImageLinksTable, $sSqlPage_id, $cond );
+			#</Wikia>
 		}
 
 		// imagecontainer
 		if ( count( $aImageContainer ) > 0 ) {
+			#<Wikia>
+			/*
 			$sSqlPageLinksTable .= $sImageLinksTable . ' AS ic, ';
 			if ( $acceptOpenReferences ) {
 				$sSqlCond_page_pl .= ' AND (';
@@ -2449,6 +2518,28 @@ class DPLMain {
 				$n++;
 			}
 			$sSqlCond_page_pl .= ')';
+			*/
+
+			if ( $acceptOpenReferences ) {
+				$sSqlCond_page_pl .= ' AND (';
+			} else {
+				$sSqlCond_page_pl .= ' AND ' . $sPageTable . '.page_namespace=\'6\' AND ' . $sPageTable . '.page_title=ic.il_to AND (';
+			}
+			$n = 0;
+			foreach ( $aImageContainer as $link ) {
+				if ( $n > 0 ) {
+					$sSqlCond_page_pl .= ' OR ';
+				}
+				if ( $bIgnoreCase ) {
+					$sSqlCond_page_pl .= 'LOWER(ic.il_from)=LOWER(' . $dbr->addQuotes( $link->getArticleID() ) . ')';
+				} else {
+					$sSqlCond_page_pl .= 'ic.il_from=' . $dbr->addQuotes( $link->getArticleID() );
+				}
+				$n++;
+			}
+			$sSqlCond_page_pl .= ')';
+			$sSqlPageLinksTable .= sprintf( " INNER JOIN %s ic ON %s = il.il_from %s ", $sImageLinksTable, $sSqlPage_id, $cond );
+			#</Wikia>
 		}
 
 		// uses
