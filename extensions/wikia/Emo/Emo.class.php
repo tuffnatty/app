@@ -37,7 +37,7 @@ class Emo {
 		$app = F::app();
 
 		if ( !isset($params['count']) ) {
-			$params['count']  = 1;
+			$params['count'] = 1;
 		}
 
 		$returnString = str_repeat($input . ' ' , $params['count']);
@@ -52,7 +52,6 @@ class Emo {
 			$html = F::build('Xml',
 				array('div', 
 					array(
-						'id' => $id,
 						'class' => 'emo',
 						'data-message' => $input,
 					), 
