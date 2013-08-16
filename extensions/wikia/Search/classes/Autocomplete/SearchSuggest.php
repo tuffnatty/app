@@ -17,7 +17,7 @@ class SearchSuggest
 	 * This is the top N articles by pageview descending
 	 * @var int
 	 */
-	const MAX_ARTICLES_ANALYZED = 500;
+	const MAX_ARTICLES_ANALYZED = 5000;
 	
 	/**
 	 * This is the max number of suggestions we want to give the user
@@ -29,7 +29,7 @@ class SearchSuggest
 	 * Maximum number of characters we care about, beyond which we just serve the last result
 	 * @var int
 	 */
-	const MAX_AUTOCOMPLETE_LENGTH = 10;
+	const MAX_AUTOCOMPLETE_LENGTH = 15;
 	
 	/**
 	 * Wether to include redirect titles here
@@ -91,14 +91,10 @@ class SearchSuggest
 	protected function createTrieFromTitles( array $pageIds ) {
 		$trie = [];
 		$mediaWikiService = $this->getMediaWikiService();
-		$pageIdsToTitleStrings = $mediaWikiService->getTitleStringsFromPageIds( $pageIds );
-		foreach ( $pageIdsToTitleStrings as $pageId => $titleString ) {
+		$pageIdsToTitleStrings = $mediaWikiService->getTitleStringsFromPageIds( $pageIds, $this->includeRedirects );
+		foreach ( $pageIdsToTitleStrings as $pageId => $titleStrings ) {
 			if ( empty( $pageId ) ) { // sometimes 0 will show up
 				continue;
-			} 
-			$titleStrings = [ $titleString ];
-			if ( $this->includeRedirects ) {
-				$titleStrings = array_merge( $titleStrings, $mediaWikiService->getRedirectTitlesForPageId( $pageId ) ); 
 			}
 			foreach ( $titleStrings as $title ) {
 				// the tokenization part allows us to have partial matches from words within the title

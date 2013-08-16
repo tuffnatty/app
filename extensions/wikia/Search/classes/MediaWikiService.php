@@ -88,11 +88,18 @@ class MediaWikiService
 	 * @param array $pageIds
 	 * @return array
 	 */
-	public function getTitleStringsFromPageIds( $pageIds ) {
+	public function getTitleStringsFromPageIds( $pageIds, $includeRedirects = false ) {
 		$titles = $this->getTitlesFromPageIds( $pageIds );
 		$pageIdsToTitleStrings = array_flip( $pageIds ); // this helps us keep things sorted
 		foreach( $titles as $title ) {
-			$pageIdsToTitleStrings[$title->getArticleId()] = $this->getTitleString( $title );
+			$titleStrings = [ $this->getTitleString( $title ) ];
+			if ( $includeRedirects ) {
+				$redirects = $title->getRedirectsHere();
+				foreach ( $redirects as $redirect ) {
+					$tileStrings[] = $this->getTitleString( $redirect );
+				}
+			}
+			$pageIdsToTitleStrings[$title->getArticleId()] = $titleStrings;
 		}
 		return $pageIdsToTitleStrings;
 	}
