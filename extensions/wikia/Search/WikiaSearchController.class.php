@@ -220,7 +220,7 @@ class WikiaSearchController extends WikiaSpecialPageController {
 	public function getAutocompleteTrie() {
 		global $wgCityId;
 		$key = wfSharedMemcKey( Wikia\Search\Autocomplete\SearchSuggest::CACHE_KEY . $wgCityId );
-		if ( $this->getBool( 'refreshCache', false ) ) {
+		if ( $this->getVal( 'refreshCache', false ) ) {
 			WikiaDataAccess::cachePurge($key);
 		}
 		$results = WikiaDataAccess::cache( 
