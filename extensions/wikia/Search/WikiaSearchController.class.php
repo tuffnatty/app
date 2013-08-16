@@ -219,8 +219,12 @@ class WikiaSearchController extends WikiaSpecialPageController {
 	 */
 	public function getAutocompleteTrie() {
 		global $wgCityId;
+		$key = wfSharedMemcKey( Wikia\Search\Autocomplete\SearchSuggest::CACHE_KEY . $wgCityId );
+		if ( $this->getBool( 'refreshCache', false ) ) {
+			WikiaDataAccess::cachePurge($key);
+		}
 		$results = WikiaDataAccess::cache( 
-				wfSharedMemcKey( Wikia\Search\Autocomplete\SearchSuggest::CACHE_KEY . $wgCityId ), 
+				$key, 
 				86400,
 				function () { return (new Wikia\Search\Autocomplete\SearchSuggest( true ))->getTrie(); }
 				);
@@ -238,11 +242,11 @@ class WikiaSearchController extends WikiaSpecialPageController {
 				function () { return (new Wikia\Search\Autocomplete\SearchSuggest( true ))->getTrie(); }
 				);
 		json_decode( $trie, true );
-		$query = $this->getVal( 'q', '' );
+		$query = strtolower( $this->getVal( 'q', '' ) );
 
 		$response = $this->getResponse();
 		$response->setFormat( 'json' );
-		$repsonse->setData( isset( $trie[$query] ) ? $trie[$query] : [] );
+		$response->setData( isset( $trie[$query] ) ? $trie[$query] : [] );
 		$response->setCacheValidity( 86400, 86400, [ WikiaResponse::CACHE_TARGET_BROWSER, WikiaResponse::CACHE_TARGET_VARNISH ] );
 	}
 
