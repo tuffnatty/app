@@ -221,13 +221,19 @@ class WikiaSearchController extends WikiaSpecialPageController {
 		global $wgCityId;
 		$key = wfSharedMemcKey( Wikia\Search\Autocomplete\SearchSuggest::CACHE_KEY . $wgCityId );
 		if ( $this->getVal( 'refreshCache', false ) ) {
-			WikiaDataAccess::cachePurge($key);
-		}
-		$results = WikiaDataAccess::cache( 
+			$results = WikiaDataAccess::cacheWithLockPurge( 
 				$key, 
 				86400,
 				function () { return (new Wikia\Search\Autocomplete\SearchSuggest( true ))->getTrie(); }
 				);
+		} else {
+			$results = WikiaDataAccess::cacheWithLock( 
+				$key, 
+				86400,
+				function () { return (new Wikia\Search\Autocomplete\SearchSuggest( true ))->getTrie(); }
+				);
+		}
+		
 		$response = $this->getResponse();
 		$response->setFormat( 'json' );
 		$response->setData( $results );
