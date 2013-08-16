@@ -17,13 +17,19 @@ class SearchSuggest
 	 * This is the top N articles by pageview descending
 	 * @var int
 	 */
-	const MAX_ARTICLES_ANALYZED = 5000;
+	const MAX_ARTICLES_ANALYZED = 500;
 	
 	/**
 	 * This is the max number of suggestions we want to give the user
 	 * @var int
 	 */
 	const MAX_AUTOCOMPLETE_SUGGESTIONS = 5;
+	
+	/**
+	 * Wether to include redirect titles here
+	 * @var bool
+	 */
+	protected $includeRedirects = false;
 	
 	/**
 	 * Used to tokenize results, so we can get semi-complete results.
@@ -40,9 +46,10 @@ class SearchSuggest
 	/**
 	 * Constructor method. Sets up dependencies.
 	 */
-	public function __construct() {
+	public function __construct( $includeRedirects = false ) {
 		$this->tokenizer = new WhitespaceTokenizer;
 		$this->mediaWikiService = new MediaWikiService;
+		$this->includeRedirects = $includeRedirects;
 	}
 	
 	/**
@@ -65,7 +72,7 @@ class SearchSuggest
 						null,  // article filter -- unnecessary
 						$mediaWikiService->getDefaultNamespacesFromSearchEngine(), 
 						false, // namespace filter -- unneeded since we're specifying in the param above
-						self::MAX_ARTICLES_ANALYZED // limit to topp N pages for complexity reasons
+						self::MAX_ARTICLES_ANALYZED // limit to top N pages for complexity reasons
 				)
 		);
 	}
@@ -79,10 +86,13 @@ class SearchSuggest
 		$trie = [];
 		$mediaWikiService = $this->getMediaWikiService();
 		foreach ( $pageIds as $pageId ) {
-			$titleStrings = array_merge( 
-					[ $mediaWikiService->getTitleStringFromPageId( $pageId ) ],
-					$mediaWikiService->getRedirectTitlesForPageId( $pageId )
-			);
+			if ( empty( $pageId ) ) { // sometimes 0 will show up
+				continue;
+			} 
+			$titleStrings = [ $mediaWikiService->getTitleStringFromPageId( $pageId ) ];
+			if ( $this->includeRedirects ) {
+				$titleStrings = array_merge( $titleStrings, $mediaWikiService->getRedirectTitlesForPageId( $pageId ) ); 
+			}
 			foreach ( $titleStrings as $title ) {
 				// the tokenization part allows us to have partial matches from words within the title
 				$tokenized = $this->getTokenizer()->tokenize( $title );
@@ -106,8 +116,9 @@ class SearchSuggest
 	 */
 	protected function applyInstanceToTrie( $url, $instance, array &$trie ) {
 		$concat = '';
-		foreach ( $instance as $character ) {
-			$concat .= $character;
+		$length = strlen( $concat );
+		for ( $i = 0; $i < $length; $i++ ) {
+			$concat .= $instance[$i];
 			/**
 			 * Instead of adding the $url value, we could do something like this:
 			 * preg_replace( '/\b({$concat})/', '<strong>$1</strong>', $url )
