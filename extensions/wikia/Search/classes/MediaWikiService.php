@@ -84,6 +84,20 @@ class MediaWikiService
 	}
 	
 	/**
+	 * Allows us to access multiple title strings at once
+	 * @param array $pageIds
+	 * @return array
+	 */
+	public function getTitleStringsFromPageIds( $pageIds ) {
+		$titles = $this->getTitles( $pageIds );
+		$pageIdsToTitleStrings = array_flip( $pageIds ); // this helps us keep things sorted
+		foreach( $titles as $title ) {
+			$pageIdsToTitleStrings[$title->getArticleId()] = $this->getTitleString( $title );
+		}
+		return $pageIdsToTitleStrings;
+	}
+	
+	/**
 	 * Provided a page ID, return the canonical page ID
 	 * @param int $pageId
 	 * @return int
@@ -990,6 +1004,10 @@ class MediaWikiService
 	}
 	
 
+	protected function getTitlesFromPageIds( $pageIds ) {
+		return \Title::newFromIDs( $pageIds );
+	}
+	
 	/**
 	 * Gets a title from a page id
 	 * @param int $pageId

@@ -26,6 +26,12 @@ class SearchSuggest
 	const MAX_AUTOCOMPLETE_SUGGESTIONS = 5;
 	
 	/**
+	 * Maximum number of characters we care about, beyond which we just serve the last result
+	 * @var int
+	 */
+	const MAX_AUTOCOMPLETE_LENGTH = 10;
+	
+	/**
 	 * Wether to include redirect titles here
 	 * @var bool
 	 */
@@ -85,18 +91,19 @@ class SearchSuggest
 	protected function createTrieFromTitles( array $pageIds ) {
 		$trie = [];
 		$mediaWikiService = $this->getMediaWikiService();
-		foreach ( $pageIds as $pageId ) {
+		$pageIdsToTitleStrings = $mediaWikiService->getTitleStringsFromPageIds( $pageIds );
+		foreach ( $pageIdsToTitleStrings as $pageId => $titleString ) {
 			if ( empty( $pageId ) ) { // sometimes 0 will show up
 				continue;
 			} 
-			$titleStrings = [ $mediaWikiService->getTitleStringFromPageId( $pageId ) ];
+			$titleStrings = [ $titleString ];
 			if ( $this->includeRedirects ) {
 				$titleStrings = array_merge( $titleStrings, $mediaWikiService->getRedirectTitlesForPageId( $pageId ) ); 
 			}
 			foreach ( $titleStrings as $title ) {
 				// the tokenization part allows us to have partial matches from words within the title
-				$tokenized = $this->getTokenizer()->tokenize( $title );
-				$candidates = [ $title ];
+				$candidates = [ strtolower( $title ) ];
+				$tokenized = $this->getTokenizer()->tokenize( $candidates[0] );
 				for ( $i = 1; $i < count( $tokenized ); $i++ ) {
 					$candidates[] = implode( ' ', array_slice( $tokenized, $i ) );
 				}
@@ -116,7 +123,7 @@ class SearchSuggest
 	 */
 	protected function applyInstanceToTrie( $url, $instance, array &$trie ) {
 		$concat = '';
-		$length = strlen( $concat );
+		$length = min( [ self::MAX_AUTOCOMPLETE_LENGTH, strlen( $instance ) ] );
 		for ( $i = 0; $i < $length; $i++ ) {
 			$concat .= $instance[$i];
 			/**
