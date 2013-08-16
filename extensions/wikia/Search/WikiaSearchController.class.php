@@ -247,7 +247,7 @@ class WikiaSearchController extends WikiaSpecialPageController {
 				function () { return (new Wikia\Search\Autocomplete\SearchSuggest( true ))->getTrie(); }
 				);
 		json_decode( $trie, true );
-		$query = strtolower( $this->getVal( 'q', '' ) );
+		$query = strtolower( $this->getVal( 'q', $this->getVal( 'query', '' ) ) );
 
 		$response = $this->getResponse();
 		$response->setFormat( 'json' );
