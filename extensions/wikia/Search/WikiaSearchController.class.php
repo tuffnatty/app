@@ -239,6 +239,9 @@ class WikiaSearchController extends WikiaSpecialPageController {
 		$response->setData( $results );
 	}
 	
+	/**
+	 * Proposed replacement for LinkSuggest -- uses the pre-built trie of the top N most popular articles
+	 */
 	public function searchSuggest() {
 		global $wgCityId;
 		$trie = WikiaDataAccess::cacheWithLock( 
