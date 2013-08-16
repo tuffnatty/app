@@ -241,7 +241,7 @@ class WikiaSearchController extends WikiaSpecialPageController {
 	
 	public function searchSuggest() {
 		global $wgCityId;
-		$trie = WikiaDataAccess::cache( 
+		$trie = WikiaDataAccess::cacheWithLock( 
 				wfSharedMemcKey( Wikia\Search\Autocomplete\SearchSuggest::CACHE_KEY . $wgCityId ), 
 				86400,
 				function () { return (new Wikia\Search\Autocomplete\SearchSuggest( true ))->getTrie(); }
