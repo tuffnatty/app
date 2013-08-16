@@ -251,7 +251,7 @@ class WikiaSearchController extends WikiaSpecialPageController {
 
 		$response = $this->getResponse();
 		$response->setFormat( 'json' );
-		$response->setData( isset( $trie[$query] ) ? $trie[$query] : [] );
+		$response->setData( [ 'query' => $query, 'suggestions' => isset( $trie[$query] ) ? $trie[$query] : [] ] );
 		$response->setCacheValidity( 86400, 86400, [ WikiaResponse::CACHE_TARGET_BROWSER, WikiaResponse::CACHE_TARGET_VARNISH ] );
 	}
 
