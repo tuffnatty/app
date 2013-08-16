@@ -133,7 +133,7 @@ class SearchSuggest
 			 * preg_replace( '/\b({$concat})/', '<strong>$1</strong>', $url )
 			 */
 			if (! empty( $trie[$concat] ) ) {
-				if ( count( $trie[$concat] < self::MAX_AUTOCOMPLETE_SUGGESTIONS ) ) {
+				if ( count( $trie[$concat] ) < self::MAX_AUTOCOMPLETE_SUGGESTIONS ) {
 					$trie[$concat][] = $url;
 				}
 			} else {
