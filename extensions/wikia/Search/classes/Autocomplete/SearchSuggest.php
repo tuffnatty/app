@@ -5,13 +5,19 @@
 namespace Wikia\Search\Autocomplete;
 use NlpTools\Tokenizers\WhitespaceTokenizer;
 use Wikia\Search\MediaWikiService;
-use DataMartService;
+use DataMartService, WikiaDataAccess;
 /**
  * Responsible for handling autocomplete use cases
  * @author relwell
  */
 class SearchSuggest
 {
+	/**
+	 * Cache Key
+	 * @var string
+	 */
+	const CACHE_KEY = 'searchsuggestautocomplete';
+	
 	/**
 	 * This helps us reduce complexity by applying a heurstic limit
 	 * This is the top N articles by pageview descending

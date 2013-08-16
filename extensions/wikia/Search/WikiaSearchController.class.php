@@ -218,9 +218,15 @@ class WikiaSearchController extends WikiaSpecialPageController {
 	 * Provides an autocomplete trie as JSON
 	 */
 	public function getAutocompleteTrie() {
+		global $wgCityId;
+		$results = WikiaDataAccess::cache( 
+				wfSharedMemcKey( $suggest::CACHE_KEY . $wgCityId ), 
+				86400,
+				function () { (new Wikia\Search\Autocomplete\SearchSuggest( true ))->getTrie(); }
+				);
 		$response = $this->getResponse();
 		$response->setFormat( 'json' );
-		$response->setData( (new Wikia\Search\Autocomplete\SearchSuggest( true ))->getTrie() );
+		$response->setData( $results );
 		$response->setCacheValidity( 86400, 86400, [ WikiaResponse::CACHE_TARGET_BROWSER, WikiaResponse::CACHE_TARGET_VARNISH ] );
 	}
 	
