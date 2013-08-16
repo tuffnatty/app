@@ -50,14 +50,14 @@ class SearchSuggest
 	 * @return array
 	 */
 	public function getTrie() {
-		return $this->createTrieFromTitles( $this->getTitles() );
+		return $this->createTrieFromTitles( $this->getPageIds() );
 	}
 	
 	/**
-	 * Returns an array of titles
+	 * Returns an array of page IDs
 	 * @return array
 	 */
-	protected function getTitles() {
+	protected function getPageIds() {
 		$mediaWikiService = $this->getMediaWikiService();
 		return array_keys (
 				DataMartService::getTopArticlesByPageview( 
@@ -72,17 +72,24 @@ class SearchSuggest
 	
 	/**
 	 * Builds a trie based on the words of each title and matches for other words too
-	 * @param array $titles
+	 * @param array $pageIds
 	 * @return array
 	 */
-	protected function createTrieFromTitles( array $titles ) {
+	protected function createTrieFromTitles( array $pageIds ) {
 		$trie = [];
-		foreach ( $titles as $title ) {
-			// the tokenization part allows us to have partial matches from words within the title
-			$tokenized = $this->getTokenizer()->tokenize( $title );
-			$candidates = [ $title ];
-			for ( $i = 1; $i < count( $tokenized ); $i++ ) {
-				$candidates[] = implode( ' ', array_slice( $tokenized, $i ) );
+		$mediaWikiService = $this->getMediaWikiService();
+		foreach ( $pageIds as $pageId ) {
+			$titleStrings = array_merge( 
+					[ $mediaWikiService->getTitleStringFromPageId( $pageId ) ],
+					$mediaWikiService->getRedirectTitlesForPageId( $pageId )
+			);
+			foreach ( $titleStrings as $title ) {
+				// the tokenization part allows us to have partial matches from words within the title
+				$tokenized = $this->getTokenizer()->tokenize( $title );
+				$candidates = [ $title ];
+				for ( $i = 1; $i < count( $tokenized ); $i++ ) {
+					$candidates[] = implode( ' ', array_slice( $tokenized, $i ) );
+				}
 			}
 			foreach ( $candidates as $candidate ) {
 				$this->applyInstanceToTrie( $title, $candidate, $trie );
