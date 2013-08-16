@@ -89,7 +89,7 @@ class MediaWikiService
 	 * @return array
 	 */
 	public function getTitleStringsFromPageIds( $pageIds ) {
-		$titles = $this->getTitles( $pageIds );
+		$titles = $this->getTitlesFromPageIds( $pageIds );
 		$pageIdsToTitleStrings = array_flip( $pageIds ); // this helps us keep things sorted
 		foreach( $titles as $title ) {
 			$pageIdsToTitleStrings[$title->getArticleId()] = $this->getTitleString( $title );
