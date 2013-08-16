@@ -213,6 +213,15 @@ class WikiaSearchController extends WikiaSpecialPageController {
 		$response->setFormat( 'json' );
 		$response->setData( $entityResponse );
 	}
+	
+	/**
+	 * Provides an autocomplete trie as JSON
+	 */
+	public function getAutocompleteTrie() {
+		$response = $this->getResponse();
+		$response->setFormat( 'json' );
+		$response->setData( (new Wikia\Search\Autocomplete\SearchSuggest)->getTrie() );
+	}
 
 	/**
 	 * Controller Helper Methods
