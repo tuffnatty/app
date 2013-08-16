@@ -231,7 +231,12 @@ class WikiaSearchController extends WikiaSpecialPageController {
 	}
 	
 	public function searchSuggest() {
-		$trie = $this->sendSelfRequest( 'getAutocompleteTrie' );
+		global $wgCityId;
+		$trie = WikiaDataAccess::cache( 
+				wfSharedMemcKey( Wikia\Search\Autocomplete\SearchSuggest::CACHE_KEY . $wgCityId ), 
+				86400,
+				function () { (new Wikia\Search\Autocomplete\SearchSuggest( true ))->getTrie(); }
+				);
 		json_decode( $trie, true );
 		$query = $this->getVal( 'q', '' );
 
