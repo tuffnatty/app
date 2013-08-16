@@ -220,7 +220,17 @@ class WikiaSearchController extends WikiaSpecialPageController {
 	public function getAutocompleteTrie() {
 		$response = $this->getResponse();
 		$response->setFormat( 'json' );
-		$response->setData( (new Wikia\Search\Autocomplete\SearchSuggest)->getTrie() );
+		$response->setData( (new Wikia\Search\Autocomplete\SearchSuggest( true ))->getTrie() );
+	}
+	
+	public function searchSuggest() {
+		$trie = $this->sendSelfRequest( 'getAutocompleteTrie' );
+		json_decode( $trie, true );
+		$query = $this->getVal( 'q', '' );
+
+		$response = $this->getResponse();
+		$response->setFormat( 'json' );
+		$repsonse->setData( isset( $trie[$query] ) ? $trie[$query] : [] );
 	}
 
 	/**

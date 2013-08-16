@@ -23,7 +23,7 @@ class SearchSuggest
 	 * This is the max number of suggestions we want to give the user
 	 * @var int
 	 */
-	const MAX_AUTOCOMPLETE_SUGGESTIONS = 5;
+	const MAX_AUTOCOMPLETE_SUGGESTIONS = 10;
 	
 	/**
 	 * Maximum number of characters we care about, beyond which we just serve the last result
