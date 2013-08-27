@@ -10,23 +10,26 @@
 ============
 
  - [![Master Build Status](https://secure.travis-ci.org/zircote/swagger-php.png?branch=master)](http://travis-ci.org/zircote/swagger-php) `master`
- - [![0.5.0 Development Build Status](https://secure.travis-ci.org/zircote/swagger-php.png?branch=0.5.0)](http://travis-ci.org/zircote/swagger-php) `0.5.0-dev`
+ - [![0.6.x Development Build Status](https://api.travis-ci.org/zircote/swagger-php.png?branch=0.6)](http://travis-ci.org/zircote/swagger-php) `0.6.*@dev`
 
-[Documentation](http://zircote.com/swagger-php)
-
-Download:
- - http://zircote.com/pear
- - tarball: https://github.com/zircote/swagger-php/downloads
- - Clone Via git: https://github.com/zircote/swagger-php.git
-
-Swagger-PHP is a PHP library that servers as an annotations toolkit to produce [Swagger Doc](http://swagger.wordnik.com)
+Swagger-PHP is a PHP library that serves as an annotations toolkit to produce [Swagger Doc](http://swagger.wordnik.com)
 it makes extensive use of the [Doctine Common library](http://www.doctrine-project.org/projects/common.html) for
 annotations support and caching.
 
- - Documentation http://zircote.com/swagger-php
-    - To submit changes, additions or updates to the documentation or swagger-php itself please fork the project and
-    submit a pull request. Documentation resides within the `gh-pages` branch.
- - To report issues, ask questions please feel free to submit to [Github Isses](https://github.com/zircote/swagger-php/issues)
+To report issues, ask questions please feel free to submit to [Github Isses](https://github.com/zircote/swagger-php/issues)
+
+Download / Installation
+------------------------
+ - pear: http://zircote.com/pear
+ - [composer](http://getcomposer.org/): [zircote/swagger-php](https://packagist.org/packages/zircote/swagger-php)
+ - tarball: https://github.com/zircote/swagger-php/downloads
+ - Clone via git: https://github.com/zircote/swagger-php.git
+
+Documentation
+--------------
+Documentation is available at http://zircote.com/swagger-php
+
+ To submit changes, additions or updates to the documentation or swagger-php itself please fork the project and submit a pull request. Documentation resides within the `gh-pages` branch.
 
 Features
 -------------------
@@ -39,18 +42,15 @@ Features
  More on Swagger:
   * http://swagger.wordnik.com/
   * https://github.com/wordnik/swagger-core/wiki
-  * https://github.com/outeredge/SwaggerModule a ZF2 Module implementing swagger-php
-
-
- </description>
+  * https://github.com/outeredge/SwaggerModule a ZF2 Module implementing swagger-php</description>
  <lead>
   <name>Robert Allen</name>
   <user>zircote</user>
   <email>zircote@gmail.com</email>
   <active>yes</active>
  </lead>
- <date>2013-04-03</date>
- <time>12:45:27</time>
+ <date>2013-08-27</date>
+ <time>13:34:44</time>
  <version>
   <release>0.6.0</release>
   <api>0.6.0</api>
@@ -238,6 +238,10 @@ This is an alpha release, see readme.md for examples.
      </dir> <!-- /tests/SwaggerTests/Fixtures1 -->
      <dir name="Fixtures2">
       <dir name="Models">
+       <file baseinstalldir="/" name="Dog.php" role="test">
+        <tasks:replace from="@name@" to="name" type="package-info" />
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
        <file baseinstalldir="/" name="Pet.php" role="test">
         <tasks:replace from="@name@" to="name" type="package-info" />
         <tasks:replace from="@package_version@" to="version" type="package-info" />
@@ -248,12 +252,20 @@ This is an alpha release, see readme.md for examples.
         <tasks:replace from="@name@" to="name" type="package-info" />
         <tasks:replace from="@package_version@" to="version" type="package-info" />
        </file>
+       <file baseinstalldir="/" name="ResolveController.php" role="test">
+        <tasks:replace from="@name@" to="name" type="package-info" />
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
       </dir> <!-- /tests/SwaggerTests/Fixtures2/Resources -->
       <file baseinstalldir="/" name="multi-op.json" role="test">
        <tasks:replace from="@name@" to="name" type="package-info" />
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
       <file baseinstalldir="/" name="pet.json" role="test">
+       <tasks:replace from="@name@" to="name" type="package-info" />
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file baseinstalldir="/" name="resolve.json" role="test">
        <tasks:replace from="@name@" to="name" type="package-info" />
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
@@ -271,8 +283,7 @@ This is an alpha release, see readme.md for examples.
    <file baseinstalldir="/" name="CHANGELOG" role="doc" />
    <file baseinstalldir="/" name="LICENSE-2.0.txt" role="doc" />
    <file baseinstalldir="/" name="readme.md" role="doc" />
-   <file baseinstalldir="/" name="swagger.phar" role="data" />
-   <file baseinstalldir="/" name="Vagrantfile" role="data" />
+   <file baseinstalldir="/" name="swaggerold.phar" role="data" />
    <file baseinstalldir="/" name="VERSION" role="doc" />
   </dir> <!-- / -->
  </contents>
@@ -328,7 +339,7 @@ This is an alpha release, see readme.md for examples.
     <release>beta</release>
     <api>beta</api>
    </stability>
-   <date>2013-04-03</date>
+   <date>2013-08-27</date>
    <license uri="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0</license>
    <notes>
 This is an alpha release, see readme.md for examples.
