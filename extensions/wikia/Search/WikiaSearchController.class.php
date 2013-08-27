@@ -233,7 +233,6 @@ class WikiaSearchController extends WikiaSpecialPageController {
 				function () { return (new Wikia\Search\Autocomplete\SearchSuggest( true ))->getTrie(); }
 				);
 		}
-		
 		$response = $this->getResponse();
 		$response->setFormat( 'json' );
 		$response->setData( $results );
@@ -254,7 +253,11 @@ class WikiaSearchController extends WikiaSpecialPageController {
 
 		$response = $this->getResponse();
 		$response->setFormat( 'json' );
-		$response->setData( [ 'query' => $query, 'redirects' => [], 'suggestions' => isset( $trie[$query] ) ? $trie[$query] : [] ] );
+		if ( isset( $trie[$query] ) ) {
+			$response->setData( [ 'query' => $query, 'redirects' => [], 'suggestions' => $trie[$query] ] );
+		} else {
+			$response->setData( LinkSuggest::getLinkSuggest( $this->getRequest() ) );
+		}
 		$response->setCacheValidity( 86400, 86400, [ WikiaResponse::CACHE_TARGET_BROWSER, WikiaResponse::CACHE_TARGET_VARNISH ] );
 	}
 
