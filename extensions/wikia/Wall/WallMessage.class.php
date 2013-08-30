@@ -169,6 +169,10 @@ class WallMessage {
 			$class->notifyEveryone();
 		}
 
+		if( $parent === false && $class->getWallOwner()->isAnon() ) {
+			$class->getWallOwner()->setNewtalk( true );
+		}
+
 		$class->addWatch($user);
 
 		wfRunHooks( 'AfterBuildNewMessageAndPost', array(&$class) );
