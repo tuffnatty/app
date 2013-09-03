@@ -1,8 +1,8 @@
 $(function(){
-	require(['wikia.uifactory'], function(uiFactory) {
+	require(['wikia.ui.factory'], function(uiFactory) {
 		uiFactory.init('drawer').then(function(elem){
 			$('#WikiaHeader').append(elem.render({type:"default", vars: {side: 'left', content: 'test content'}}));
-			require(['wikia.uifactory.drawer'], function(drawer){
+			require(['wikia.ui.drawer'], function(drawer){
 				var leftDrawer = drawer.init('left'),
 					browseEntry = $('#BrowseEntry');
 				leftDrawer
@@ -15,10 +15,8 @@ $(function(){
 					});
 				browseEntry.click(function(){
 					if (leftDrawer.isOpen()) {
-						$(this).removeClass('active');
 						leftDrawer.close();
 					} else {
-						$(this).addClass('active');
 						leftDrawer.open();
 					}
 
