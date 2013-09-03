@@ -52,12 +52,12 @@ The following code is a basic example of the custom component JSON configuration
 {
   "templateVars": {
       "type01": {
-          "name-var-msg-key" : "styleguide-component-type01-description-message-key",
+          "name" : "styleguide-component-type01-description-message-key",
           "required": [ "href", "classes", "value" ],
           "optional": [ "label", "target" ]
       },
       "type02": {
-          "name-var-msg-key" : "styleguide-component-type02-description-message-key",
+          "name" : "styleguide-component-type02-description-message-key",
           "required": [ "name", "classes", "value" ],
           "optional": [ "label" ]
       }
@@ -85,7 +85,7 @@ $button = \Wikia\UI\Factory::getInstance()->init( 'button' )->render( $params );
 
 In order to create multiple components (of the same type of different) in the same time following pattern will be used:
 <pre>
-$aParams = [
+$buttonParams = [
     "type" => "link",
     "vars" => [
         "href" => "http://www.wikia.com",
@@ -94,18 +94,18 @@ $aParams = [
     ]
 ];
 
-$bParams = [
-    "type" => "input",
+$inputParams = [
+    "type" => "text",
     "vars" => [
-        "name" => "wikia-home-page-button",
-        "value" => "Wikia Home Page",
-        "classes" => [ "button" ],
+        "name" => "username",
+        "value" => "joe",
+        "classes" => [ "wide" ],
     ]
 ];
 
-$list($a, $b) = \Wikia\UI\Factory::getInstance()->init( ['button', 'button'] );
-$aMarkup = $a->render($aParams);
-$bMarkup = $b->render($bParams);
+$list( $button, $input ) = \Wikia\UI\Factory::getInstance()->init( ['button', 'input'] );
+$buttonMarkup = $button->render( $buttonParams );
+$inputMarkup = $input->render( $inputParams );
 </pre>
 
 WARNING! Notice it IS NOT yet possible to call render() on results of \Wikia\UI\Factory::init() when an array passed as parameter. It causes a PHP Fatal error.
@@ -113,8 +113,8 @@ WARNING! Notice it IS NOT yet possible to call render() on results of \Wikia\UI\
 ## Component's documentation on Special:Styleguide page
 On Special:Styleguide page in "Component" section we're going to present all available components with UI and live preview.
 In order to display your component on this page you have to create [component-name]_doc.json file which is similar to configuration file but more detailed. It contains three main elements:
-* name-msg-templateVar -- which is a component name's message key in example: "styleguide-name-buttons",
-* description-msg-templateVar -- which is a component's description message key in example: "styleguide-description-button",
+* name -- which is a component name's message key in example: "styleguide-name-buttons",
+* description -- which is a component's description message key in example: "styleguide-description-button",
 * types -- different types of a component; keys of the elements here should be the same as keys of elements in `templateVars`
 
 The `types` elements contain message keys for description of a component's type. They also provide information about each template variable: its name, type and message key for description.

@@ -5,12 +5,12 @@ class StyleguideComponents {
 	/**
 	 * @desc Array key name where message key for component's name could be found in documentation array
 	 */
-	const COMPONENT_NAME_MSG_KEY = 'name-msg-templateVar';
+	const COMPONENT_NAME_MSG_KEY = 'name';
 
 	/**
 	 * @desc Array key name where message key for component's description could be found in documentation array
 	 */
-	const COMPONENT_DESC_MSG_KEY = 'description-msg-templateVar';
+	const COMPONENT_DESC_MSG_KEY = 'description';
 
 	/**
 	 * @desc Component's documentation file suffix
@@ -93,10 +93,10 @@ class StyleguideComponents {
 	 */
 	public function getComponentDocumentationFileFullPath( $name ) {
 		return $this->uiFactory->getComponentsDir() .
-		$name .
-		DIRECTORY_SEPARATOR .
-		$name .
-		self::DOCUMENTATION_FILE_SUFFIX;
+			$name .
+			DIRECTORY_SEPARATOR .
+			$name .
+			self::DOCUMENTATION_FILE_SUFFIX;
 	}
 
 	/**
@@ -175,11 +175,11 @@ class StyleguideComponents {
 	 */
 	public static function getComponentMessagesFileFullPath( $name ) {
 		return \Wikia\UI\Factory::getComponentsDir() .
-		$name .
-		DIRECTORY_SEPARATOR .
-		$name .
-		'.' .
-		self::MESSAGES_FILE_SUFFIX;
+			$name .
+			DIRECTORY_SEPARATOR .
+			$name .
+			'.' .
+			self::MESSAGES_FILE_SUFFIX;
 	}
 
 	/**

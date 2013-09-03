@@ -2046,9 +2046,9 @@ class Wikia {
 	 * @example Wikia::addAssetsToOutput('path/to/asset/file/assetName.scss')
 	 * @example Wikia::addAssetsToOutput('assetName')
 	 * (assetName should be set in includes/wikia/AssetsManager/config.php)
-	 * @example	Wikia::addAssetsToOutput([
-	 * 		'path/to/asset/file/assetName.scss',
-	 * 		'path/to/other/asset/file/assetJS.js'
+	 * @example Wikia::addAssetsToOutput([
+	 * 'path/to/asset/file/assetName.scss',
+	 * 'path/to/other/asset/file/assetJS.js'
 	 * ])
 	 */
 	public static function addAssetsToOutput( $assetName, $local = false ) {
@@ -2065,13 +2065,13 @@ class Wikia {
 					$app->wg->Out->addStyle( $src );
 					break;
 				case AssetsManager::TYPE_JS:
-					$app->wg->Out->addScript( "<script type=\"{$app->wg->JsMimeType}\" src=\"{$src}\"></script>" );
+					$app->wg->Out->addScript( "<script src=\"{$src}\"></script>" );
 					break;
 			}
 		}
 	}
 
-	/*
+	/**
 	 * @param $user User
 	 */
 	public static function invalidateUser( $user, $disabled = false, $ajax = false ) {
