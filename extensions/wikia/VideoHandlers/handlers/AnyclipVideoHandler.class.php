@@ -15,6 +15,8 @@ class AnyclipVideoHandler extends VideoHandler {
 	}
 
 	public function getEmbed( $articleId, $width, $autoplay = false, $isAjax = false, $postOnload = false ) {
+		$width = '100%';
+
 		$height =  $this->getHeight( $width );
 		$autoPlayStr = ( $autoplay ) ? 'true' : 'false';
 		$ajaxStr = (bool) $isAjax;
@@ -22,10 +24,12 @@ class AnyclipVideoHandler extends VideoHandler {
 		$playerId = 'AnyClipPlayer-' . $this->videoId . '-' . $ajaxStr;
 		$jsFile = 'http://player.anyclip.com/embed/AnyClipPlayer.js';
 		$sizeString = $this->getSizeString( $width, $height, 'inline' );
-
+lizbug($sizeString);
 		$html = <<<EOT
 <div id="{$playerId}" {$sizeString}></div>
 EOT;
+
+
 
 		return array(
 			'html' => $html,

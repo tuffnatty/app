@@ -11,7 +11,9 @@ class YoutubeVideoHandler extends VideoHandler {
 
 	public function getEmbed($articleId, $width, $autoplay=false, $isAjax=false, $postOnload=false) {
 		// YouTube parameters: http://code.google.com/apis/youtube/player_parameters.html
-		$height =  $this->getHeight( $width );
+		$width = '100%';
+		$height = '100%';
+		//$height =  $this->getHeight( $width );
 		$playerVars = array(
 			'rel' => 0,
 			'wmode' => 'opaque',
