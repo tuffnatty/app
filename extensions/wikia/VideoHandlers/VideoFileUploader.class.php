@@ -98,11 +98,15 @@ class VideoFileUploader {
 
 		$retries = 3;
 
+gbug("\t-- Uploading thumb");
 		for ( $i = 0; $i < $retries; $i++ ) {
+gbug("\t\tTry #".$i);
 			if ( $i > 0 ) sleep( 3 );
 			/* prepare temporary file */
+gbug("\t\tUploading thumb from ".$this->getApiWrapper()->getThumbnailUrl());
 			$upload = $this->tmpUpload( $this->getApiWrapper()->getThumbnailUrl() );
 			$fetchStatus = $upload->fetchFile();
+gbug("\t\tUpload ".($fetchStatus->isGood() ? 'succeeded' : 'FAILED'));
 			if ( $fetchStatus->isGood() ) {
 				$status = $upload->verifyUpload();
 				if ( isset( $status['status'] ) && ( $status['status'] != UploadBase::EMPTY_FILE ) ) {
@@ -112,23 +116,30 @@ class VideoFileUploader {
 		}
 
 		if ( $i == $retries ) {
+gbug("\t\tTOO MANY TRIES -- giving up");
+gbug("\t-- Uploading DEFAULT thumb");
 			for ( $i = 0; $i < $retries; $i++ ) {
+gbug("\t\tDefault try #".$i);
 				if ( $i > 0 ) sleep( 3 );
 				/* prepare temporary file with default thumbnail */
+gbug("\t\tUploading default thumb from ".$this->getApiWrapper()->getThumbnailUrl());
 				$upload = $this->tmpUpload( LegacyVideoApiWrapper::$THUMBNAIL_URL );
 				$fetchStatus = $upload->fetchFile();
+gbug("\t\tDefault upload ".($fetchStatus->isGood() ? 'succeeded' : 'FAILED'));
 				if ( $fetchStatus->isGood() ) {
 					break;
 				}
 			}
 
 			if ( $i == $retries ) {
+gbug("\t\tTOO MANY RETRIES on DEFAULT -- giving up");
 				wfProfileOut(__METHOD__);
 				return Status::newFatal('');
 			}
 
 			$status = $upload->verifyUpload();
 			if ( isset( $status['status'] ) && ( $status['status'] == UploadBase::EMPTY_FILE ) ) {
+gbug("\t\tUpload not verified: ", $status);
 				wfProfileOut(__METHOD__);
 				return Status::newFatal('');
 			};
@@ -173,6 +184,7 @@ class VideoFileUploader {
 			$file->forceMetadata( serialize($meta) );
 		}
 
+gbug("\t-- Starting real upload");
 		/* real upload */
 		$result = $file->upload(
 			$upload->getTempPath(),
@@ -180,6 +192,11 @@ class VideoFileUploader {
 			$this->getDescription(),
 			File::DELETE_SOURCE
 		);
+		if (file_exists($file->getLocalRefPath())) {
+gbug("\tTarget file exists: ".$file->getLocalRefPath());
+		} else {
+gbug("\tTarget file DOES NOT exist: ".$file->getLocalRefPath());
+		}
 
 		wfRunHooks('AfterVideoFileUploaderUpload', array($file, $result));
 

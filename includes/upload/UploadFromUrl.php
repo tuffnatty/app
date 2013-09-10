@@ -143,12 +143,14 @@ class UploadFromUrl extends UploadBase {
 	 */
 	protected function reallyFetchFile() {
 		if ( $this->mTempPath === false ) {
+gbug("\t\t-- tmp-create-error 1");
 			return Status::newFatal( 'tmp-create-error' );
 		}
 
 		// Note the temporary file should already be created by makeTemporaryFile()
 		$this->mTmpHandle = fopen( $this->mTempPath, 'wb' );
 		if ( !$this->mTmpHandle ) {
+gbug("\t\t-- tmp-create-error 2");
 			return Status::newFatal( 'tmp-create-error' );
 		}
 
@@ -166,6 +168,7 @@ class UploadFromUrl extends UploadBase {
 			fclose( $this->mTmpHandle );
 			$this->mTmpHandle = null;
 		} else {
+gbug("\t\t-- tmp-create-error 3");
 			// We encountered a write error during the download...
 			return Status::newFatal( 'tmp-write-error' );
 		}

@@ -301,7 +301,13 @@ abstract class VideoFeedIngester {
 				}
 			}
 			$uploadedTitle = null;
+gbug("=====================================");
+gbug("$provider - $id - $uploadedTitle");
+gbug("META: ", $metadata);
 			$result = VideoFileUploader::uploadVideo( $provider, $id, $uploadedTitle, $body, false, $metadata );
+gbug("---------------");
+gbug("Upload ".($result->ok ? 'succeeded' : 'FAILED'));
+gbug("RESULT: ", $result);
 			if ( $result->ok ) {
 				$fullUrl = WikiFactory::getLocalEnvURL($uploadedTitle->getFullURL());
 				print "Ingested {$uploadedTitle->getText()} from partner clip id $id. {$fullUrl}\n\n";

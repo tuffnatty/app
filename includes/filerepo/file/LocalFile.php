@@ -945,7 +945,9 @@ class LocalFile extends File {
 		// version in cache).
 		$comment = $wgContLang->truncate( $comment, 255 );
 		$this->lock(); // begin
+gbug("\t-- Publishing $srcPath : ", $flags);
 		$status = $this->publish( $srcPath, $flags );
+gbug("\t\tPublished with status: ", $status);
 
 		if ( $status->successCount > 0 ) {
 			# Essentially we are displacing any existing current file and saving
