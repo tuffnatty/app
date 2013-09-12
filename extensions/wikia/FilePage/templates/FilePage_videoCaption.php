@@ -1,3 +1,5 @@
+<iframe src="http://video.liz.wikia-dev.com/wiki/HP_test" width="100%" height="200"></iframe>
+
 <?
 	//$providerLink = '<a href="' . $detailUrl . '" target="_blank">' . $provider . '</a>';
 	$providerLink = '<a href="' . $providerUrl . '" target="_blank">' . $provider . '</a>';

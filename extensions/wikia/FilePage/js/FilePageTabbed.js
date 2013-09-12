@@ -136,10 +136,20 @@ $(function() {
 
 			this.initClickTracking();
 
+			this.initIGNIframe();
+
 			// Hide global usage sections in Oasis
 			$('#globalusage, #mw-imagepage-section-globalusage')
 				.hide();
 
+		},
+		initIGNIframe: function() {
+			$( '#mw-content-text' ).prepend( $('<iframe id="party"><html><body><div id="test">Testing</div></body></html></iframe>') );
+			var frame = $( '#party' )[0].contentDocument.innerHTML;
+
+			//var frame = $('#fullImageLink' ).children( 'iframe' );
+
+			console.log(frame);
 		},
 		/**
 		 * Set cookies for logged in users to save which tab is active when they exit the page
