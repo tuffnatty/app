@@ -24,7 +24,7 @@ var GlobalNotification = {
 	createDom: function(element) {
 		// create and store dom
 		if(!GlobalNotification.dom.length) {
-			GlobalNotification.dom = $( '<div class="global-notification"><button class="close wikia-chiclet-button"><img src="' + stylepath + '/oasis/images/icon_close.png"></button><div class="msg"></div></div>' ).hide();
+			GlobalNotification.dom = $( '<div class="global-notification notification-from-client"><button class="close wikia-chiclet-button"><img src="' + stylepath + '/oasis/images/icon_close.png"></button><div class="msg"></div></div>' ).hide();
 			GlobalNotification.setUpClose();
 		}
 		// allow notification wrapper element to be passed by extension (used for YUI modal in VET)
