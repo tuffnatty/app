@@ -6,7 +6,6 @@
  */
 
 define( 'config', ['editor', 'wikia.mustache', 'wikia.loader', 'toast'], function(editor, mustache, loader, toast){
-
     'use strict';
 
     var wrapper = document.getElementById( 'tagListWrapper' ),
