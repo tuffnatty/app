@@ -409,7 +409,7 @@ $config['wikiamobile_editor_scss'] = array(
 	'type' => AssetsManager::TYPE_SCSS,
 	'skin' => 'wikiamobile',
 	'assets' => array(
-		'//extensions/wikia/WikiaMobileEditor/css/WikiaMobileEditor.scss',
+		'//extensions/wikia/WikiaMobileEditor/css/WikiaMobileEditor2.scss',
 	)
 );
 

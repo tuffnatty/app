@@ -18,6 +18,8 @@ $wgAutoloadClasses['WikiaMobileEditorController'] =  $dir . 'WikiaMobileEditorCo
  */
 $wgHooks['WikiaMobileAssetsPackages'][] = 'WikiaMobileEditorController::onWikiaMobileAssetsPackages';
 $wgHooks['EditPage::showEditForm:initial'][] = 'WikiaMobileEditorController::onEditPageInitial';
+$wgHooks['AlternateEdit'][] = 'WikiaMobileEditorController::onAlternateEdit';
+$wgHooks['BeforePageDisplay'][] = 'WikiaMobileEditorController::onBeforePageDisplay';
 
 /**
  * message files

@@ -16,7 +16,16 @@ class  WikiaMobilePageHeaderService extends WikiaService {
 
 		if(self::$skipRendering) return false;
 
-		$this->response->setVal( 'pageTitle', $this->wg->Out->getPageTitle() );
+        $fullUrl = $this->wg->Request->getFullRequestURL();
+
+        $pageTitle = $this->wg->Out->getPageTitle();
+        $action = F::app()->wg->Request->getVal( 'action' );
+
+        if($action != 'edit'){
+            $pageTitle .= '<a href=\'' . $fullUrl . '?action=edit&section=0\'>Edit</a>';
+        }
+
+		$this->response->setVal( 'pageTitle', $pageTitle );
 		$this->response->setVal( 'sharingButton', $this->app->renderView( 'WikiaMobileSharingService', 'button' ) );
 		return true;
 	}
