@@ -2,7 +2,7 @@
 /**
  * FBConnectAPI uses Facebook REST API which is deprecated and therefore FBConnectAPI::getUserInfo() started to return only part of data we wanted.
  * I created this class only not to "break" FBConnectAPI ;) since it's not our extension. This class simply overwrites getUserInfo() method, uses Facebook SDK3
- * and sends FQL to get needed informations.
+ * and sends FQL to get needed information.
  *
  * @author Andrzej 'nAndy' Łukaszewski
  */
@@ -36,7 +36,7 @@ class FBConnectOpenGraphAPI extends FBConnectAPI {
 				//avoid Notice: Uninitialized string offset: 0
 				$userinfo[$user] = !empty($userData[0]) ? $userData[0] : null;
 			} catch( Exception $e ) {
-				error_log( 'Failure in the api when requesting ' . $fields . " on uid $user: " . $e->getMessage());
+				error_log( 'Failure in the api when requesting ' . $fields . " on uid $user: " . $e->getMessage() . ' Consider updating Facebook SDK.');
 			}
 		}
 
