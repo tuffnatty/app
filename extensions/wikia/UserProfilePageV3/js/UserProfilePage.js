@@ -432,7 +432,6 @@ var UserProfilePage = {
 
 	/**
 	 * This function is used to pull FB data of the user; It's fired on login event
-	 * @see UserProfilePageController.class.php line 777
 	 * @see UserProfilePageController.class.php line 834
 	 */
 	fbConnect: function() {
@@ -473,9 +472,10 @@ var UserProfilePage = {
 		});
 	},
 
-	// TODO: is this used anywhere
-	// nAndy: it was used to pull avatar from facebook account to our user profile page
-	// i've just checked it on production and it doesn't work there as well...
+	/**
+	 * This function is used to pull FB data of the user; It's fired on login event
+	 * @see UserProfilePageController.class.php line 777
+	 */
 	fbConnectAvatar: function() {
 		'use strict';
 
