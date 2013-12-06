@@ -430,9 +430,11 @@ var UserProfilePage = {
 		selectboxes.day.html( options );
 	},
 
-	// TODO: is this used anywhere
-	// nAndy: it was used to pull data from facebook account to our user profile page
-	// i've just checked it on production and it doesn't work there as well...
+	/**
+	 * This function is used to pull FB data of the user; It's fired on login event
+	 * @see UserProfilePageController.class.php line 777
+	 * @see UserProfilePageController.class.php line 834
+	 */
 	fbConnect: function() {
 		'use strict';
 
@@ -502,7 +504,7 @@ var UserProfilePage = {
 	fillFieldsWithFbData: function( i, key, fbData ) {
 		'use strict';
 
-		if ( typeof( fbData[ key ] ) === 'string' ) {
+		if ( fbData && typeof( fbData[ key ] ) === 'string' ) {
 			switch( key ) {
 				case 'birthday_date':
 					UserProfilePage.extractFbDateAndFill( fbData.birthday_date );
