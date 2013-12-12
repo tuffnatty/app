@@ -20,6 +20,10 @@ if( !empty( $_GET['forceprofile'] ) ) {
 	}
 	require_once( dirname(__FILE__).'/extensions/wikia/WyvProfiler/WyvProfiler.class.php' );
 	$wgProfiler = new WyvProfiler;
+} elseif (function_exists('xhprof_enable')) {
+	require_once( dirname(__FILE__).'/includes/profiler/ProfilerStub.php' );
+	require_once( dirname( __FILE__ ) . '/includes/wikia/profiler/Xhprof.class.php' );
+	$wgProfiler = new Wikia\Profiler\Xhprof($wgProfilerSamplePercent);
 } elseif (rand(1, 100) <= $wgProfilerSamplePercent  ) {
 	require_once( dirname(__FILE__).'/includes/profiler/ProfilerSimpleUDP.php' );
 	$wgProfiler = new ProfilerSimpleUDP(array());
