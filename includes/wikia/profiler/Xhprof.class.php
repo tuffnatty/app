@@ -47,11 +47,21 @@ class Xhprof extends \ProfilerStub {
 			return;
 		}
 
+		// Profiling data
 		$data = xhprof_disable();
+		$message['data'] = $data;
 
-		$json = json_encode($data);
+		// Also write to temp dir
 		$serialized = serialize($data);
+		file_put_contents("/tmp/xhprof/runs/".microtime(true).".xhprof", $serialized);
 
-		file_put_contents("/home/nelson/xhprof/runs/".microtime(true).".xhprof", $serialized);
+		// Add some additional context about the request
+		$message['request_url'] = wfGetCurrentUrl();
+		$message['entry_point'] = explode("/", $request['path'])[1];  // wikia.php, __am etc
+
+		$json = json_encode($message);
+
+		$endpoint = "http://10.4.1.156:8080";  // Nelson's macbook
+		$ret = \Http::post($endpoint, array("postData" => $message));
 	}
 }
