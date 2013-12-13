@@ -9,7 +9,7 @@ class WikiaSeleniumBaseTest extends PHPUnit_Framework_TestCase {
 	protected $webDriverHost;
 	public $session;
 
-	public function __construct( $config ) {
+	public function __construct( $config = [] ) {
 		$this->webDriverHost = (
 			is_string( $config['host'] ) && !empty( $config['host'] ) ?
 				$config['host'] :
