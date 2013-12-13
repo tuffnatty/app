@@ -4,6 +4,7 @@ require_once( '/home/nandy/Phpstormprojects/app/tests/php-webdriver-master/PHPWe
 class WikiaSeleniumBaseTest extends PHPUnit_Framework_TestCase {
 	const DEFAULT_WD_HOST = 'http://localhost:4444/wd/hub';
 	const DEFAULT_BROWSER = 'firefox';
+	const NO_ELEMENT_COUNT = 0;
 
 	protected $webDriver;
 	protected $webDriverHost;
@@ -42,6 +43,13 @@ class WikiaSeleniumBaseTest extends PHPUnit_Framework_TestCase {
 		$w->until( function( $session ) use ( $id, $session ) {
 			return count( $session->elements( PHPWebDriver_WebDriverBy::ID, $id ) );
 		} );
+	}
+
+	public function verifyElementByIdIsNotPresent( $id ) {
+		$this->assertEquals(
+			self::NO_ELEMENT_COUNT,
+			count( $this->session->elements( PHPWebDriver_WebDriverBy::ID, $id ) )
+		);
 	}
 
 }
