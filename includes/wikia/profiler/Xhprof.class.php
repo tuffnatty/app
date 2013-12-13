@@ -56,12 +56,23 @@ class Xhprof extends \ProfilerStub {
 		file_put_contents("/tmp/xhprof/runs/".microtime(true).".xhprof", $serialized);
 
 		// Add some additional context about the request
-		$message['request_url'] = wfGetCurrentUrl();
+		$request = wfGetCurrentUrl();
+		$message['request_url'] = $request['url'];
 		$message['entry_point'] = explode("/", $request['path'])[1];  // wikia.php, __am etc
 
 		$json = json_encode($message);
 
-		$endpoint = "http://10.4.1.156:8080";  // Nelson's macbook
-		$ret = \Http::post($endpoint, array("postData" => $message));
+		$endpoint = "http://10.4.1.156:80";  // Nelson's macbook
+		$ch = curl_init($endpoint);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+		    'Content-Type: application/json',
+		    'Content-Length: ' . strlen($json))
+		);
+
+		$result = curl_exec($ch);
 	}
 }
