@@ -868,6 +868,10 @@ function full_report($url_params, $symbol_tab, $sort, $run1, $run2) {
     }
 
     echo "</table>";
+
+		$request = WikiaRuns::getRequestData($run1);
+		echo "<br /><br />{$request->url}<br />{$request->total_time} seconds";
+
     print("</center></p>\n");
 
     $callgraph_report_title = '[View Full Callgraph]';
@@ -1431,7 +1435,14 @@ function displayXHProfReport($xhprof_runs_impl, $url_params, $source,
                          $run2);
 
   } else {
-    echo "No XHProf runs specified in the URL.";
+    echo "No XHProf runs specified in the URL.<br />";
+
+		if (method_exists($xhprof_runs_impl, 'getSlowestRequests')) {
+			echo $xhprof_runs_impl->getSlowestRequests(20);
+		}
+
+		echo "<br /><br />";
+
     if (method_exists($xhprof_runs_impl, 'list_runs')) {
       $xhprof_runs_impl->list_runs();
     }

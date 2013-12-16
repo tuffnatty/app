@@ -49,28 +49,25 @@ class Xhprof extends \ProfilerStub {
 
 		// Profiling data
 		$data = xhprof_disable();
-		$message['data'] = $data;
-
-		// Also write to temp dir
-		$serialized = serialize($data);
-		file_put_contents("/tmp/xhprof/runs/".microtime(true).".xhprof", $serialized);
-
-		// Add some additional context about the request
 		$request = wfGetCurrentUrl();
-		$message['request_url'] = $request['url'];
-		$message['entry_point'] = explode("/", $request['path'])[1];  // wikia.php, __am etc
 
-		$json = json_encode($message);
+		$json = json_encode([
+			'data' => $data,
+			'request_url' => $request['url'],
+			'entry_point' => explode("/", $request['path'])[1],
+			'total_time' => $totalTime,
+			'server' => gethostname(),
+		]);
 
-		$endpoint = "http://10.4.1.156:80";  // Nelson's macbook
+		$endpoint = "http://10.4.1.156/";  // Nelson's macbook
 		$ch = curl_init($endpoint);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-		    'Content-Type: application/json',
-		    'Content-Length: ' . strlen($json))
+			'Content-Type: application/json',
+			'Content-Length: ' . strlen($json))
 		);
 
 		$result = curl_exec($ch);

@@ -34,6 +34,7 @@
 $GLOBALS['XHPROF_LIB_ROOT'] = dirname(__FILE__) . '/../xhprof_lib';
 
 require_once $GLOBALS['XHPROF_LIB_ROOT'].'/display/xhprof.php';
+require_once(__DIR__.'/../WikiaRuns.class.php');
 
 ini_set('max_execution_time', 100);
 
@@ -78,7 +79,7 @@ if (!array_key_exists($type, $xhprof_legal_image_types)) {
   $type = $params['type'][1]; // default image type.
 }
 
-$xhprof_runs_impl = new XHProfRuns_Default();
+$xhprof_runs_impl = new WikiaRuns();
 
 if (!empty($run)) {
   // single run call graph image generation
