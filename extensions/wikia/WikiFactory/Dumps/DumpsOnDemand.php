@@ -41,7 +41,7 @@ class DumpsOnDemand {
 	 * @static
 	 */
 	static public function customSpecialStatistics( &$specialpage, &$text ) {
-		global $wgOut, $wgDBname, $wgLang, $wgRequest, $wgTitle, $wgUser, $wgCityId, $wgHTTPProxy;
+		global $wgOut, $wgDBname, $wgLang, $wgRequest, $wgTitle, $wgUser, $wgCityId, $wgHTTPProxy, $wgMemc;
 
 		$tmpl = new EasyTemplate( dirname( __FILE__ ) . "/templates/" );
 
@@ -81,7 +81,12 @@ class DumpsOnDemand {
 
 		$bIsAllowed = $wgUser->isAllowed( 'dumpsondemand' ) && !in_array( $wgUser->getName(), $aDumpRequestBlacklist );
 
+		// Has a non-staffer and non-admin reached the daily limit?
 		$sKey = wfSharedMemcKey( $iWikiaId, $wgUser->getId(), 'dumpsondemand-daily-limit' );
+		$iUserDumps = (int) $wgMemc->get( $sKey );
+		if ( $bIsAllowed && ! $wgUser->isAllowed( 'unlimiteddumps' ) ) {
+			$bIsAllowed = $iUserDumps < self::DAILY_LIMIT;
+		}
 
 		$tmpl->set( 'bIsAllowed', $bIsAllowed );
 
@@ -116,7 +121,7 @@ class DumpsOnDemand {
 			$file
 		);
 	}
-        
+
         /**
          * @static
          * @access public
