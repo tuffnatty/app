@@ -26,6 +26,11 @@ class DumpsOnDemand {
 	const S3_MIGRATION = '20131002154415';
 
 	/**
+	 * Non-staffers and non-admins can issue up to 5 requests per 24 hours.
+	 */
+	const DAILY_LIMIT = 5;
+
+	/**
 	 * @access public
 	 * @static
 	 */
