@@ -15,6 +15,12 @@ $wgGroupPermissions['sysop']['dumpsondemand'] = true;
 $wgGroupPermissions['bureaucrat']['dumpsondemand'] = true;
 $wgGroupPermissions['autoconfirmed']['dumpsondemand'] = true;
 
+$wgGroupPermissions['*']['unlimiteddumps'] = false;
+$wgGroupPermissions['staff']['unlimiteddumps'] = true;
+$wgGroupPermissions['sysop']['unlimiteddumps'] = true;
+$wgGroupPermissions['bureaucrat']['unlimiteddumps'] = true;
+$wgGroupPermissions['autoconfirmed']['unlimiteddumps'] = false;
+
 class DumpsOnDemand {
 
 	const BASEURL = "http://dumps.wikia.net";
