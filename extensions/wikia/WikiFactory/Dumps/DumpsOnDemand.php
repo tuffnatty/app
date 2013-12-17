@@ -74,6 +74,9 @@ class DumpsOnDemand {
 		$aDumpRequestBlacklist = (array) unserialize( WikiFactory::getVarByName( 'wgDumpRequestBlacklist', WikiFactory::COMMUNITY_CENTRAL )->cv_value );
 
 		$bIsAllowed = $wgUser->isAllowed( 'dumpsondemand' ) && !in_array( $wgUser->getName(), $aDumpRequestBlacklist );
+
+		$sKey = wfSharedMemcKey( $iWikiaId, $wgUser->getId(), 'dumpsondemand-daily-limit' );
+
 		$tmpl->set( 'bIsAllowed', $bIsAllowed );
 
 		$text .= $tmpl->render( "dod" );
