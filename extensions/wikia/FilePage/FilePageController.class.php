@@ -391,7 +391,7 @@ SQL;
 				];
 			}
 
-			$this->wg->Memc->set( $memcKey, $globalUsage, 60*60*24 );
+			$this->wg->Memc->set( $memcKey, $globalUsage, 60*60 );
 		}
 
 		$this->summary = $globalUsage;
@@ -432,14 +432,40 @@ SQL;
 	 * to the other wiki URLs
 	 */
 	public function addGlobalSummary( $data ) {
-		return $this->addSummary($data, function ($dbName, $articleIds) {
-			$url = WikiFactory::DBtoURL($dbName);
-			$url = WikiFactory::getLocalEnvURL($url);
-			$url .= '/wikia.php?controller=ArticleSummaryController&method=blurb&format=json&ids=';
-			$url .= implode(',', $articleIds);
+		return $this->addSummary( $data, function ( $dbName, $articleIds ) {
+			$ids = array();
+			$result = array();
+			foreach ( $articleIds as $id ) {
+				$memcKey = $this->getMemcKeyGlobalSummary( $dbName, $id );
+				$summary = $this->wg->Memc->get( $memcKey );
+				if ( is_array( $summary ) ) {
+					$result['summary'][$id] = $summary;
+				} else {
+					$ids[] = $id;
+				}
+			}
 
-			$out = Http::get($url);
-			return json_decode($out, true);
+			if ( !empty( $ids ) ) {
+				$params = array(
+					'controller' => 'ArticleSummaryController',
+					'method' => 'blurb',
+					'ids' => implode( ',', $ids ),
+				);
+
+				$response = ApiService::foreignCall( $dbName, $params, ApiService::WIKIA );
+				if ( !empty( $response['summary'] ) ) {
+					foreach ( $response['summary'] as $id => $info ) {
+						if ( !array_key_exists( 'error', $info ) ) {
+							$result['summary'][$id] = $info;
+
+							$memcKey = $this->getMemcKeyGlobalSummary( $dbName, $id );
+							$this->wg->Memc->set( $memcKey, $info, 60*60 );
+						}
+					}
+				}
+			}
+
+			return $result;
 		});
 	}
 
