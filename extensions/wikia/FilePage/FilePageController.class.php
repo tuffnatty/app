@@ -381,6 +381,10 @@ class FilePageController extends WikiaController {
 SQL;
 			$result = $db->query( $sql, __METHOD__ );
 
+			// We need to make sure $globalUsage is an array. If the query below returns no rows, $globalUsage
+			// ends up being null due to it's initial assignment of $globalUsage = $this->wg->Memc->get( $memcKey );
+			$globalUsage = array();
+        
 			while ( $row = $db->fetchObject( $result ) ) {
 				$globalUsage[$row->gil_wiki][] = [
 					'image' => $row->gil_page_title,
@@ -392,12 +396,6 @@ SQL;
 			}
 
 			$this->wg->Memc->set( $memcKey, $globalUsage, 60*60 );
-		}
-
-		// We need to make sure $globalUsage is an array. If the query above returns no rows, $globalUsage
-		// ends up being null due to it's initial assignment of $globalUsage = $this->wg->Memc->get( $memcKey );
-		if ( !$globalUsage ) {
-			$globalUsage = array();
 		}
 
 		$this->summary = $globalUsage;
