@@ -113,7 +113,7 @@ class UploadFreeImage extends UploadFromUrl {
 		return false;
 	}
 
-	public static function onUploadFormInitDescriptor( &$descriptor ) {
+	public static function onUploadFormInitDescriptor( $descriptor ) {
 		global $wgRequest;
 		if ( $wgRequest->getVal( 'wpSourceType' ) != 'IFI' || !$wgRequest->getCheck( 'wpFlickrId' ) )
 		{
