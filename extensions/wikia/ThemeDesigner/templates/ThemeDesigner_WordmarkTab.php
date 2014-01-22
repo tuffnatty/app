@@ -49,8 +49,11 @@
 			<p><?= wfMessage( 'themedesigner-upload-disabled' )->plain(); ?></p>
 		<?php } else { ?>
 			<form id="WordMarkUploadForm" action="<?= $wg->ScriptPath ?>/wikia.php?controller=ThemeDesigner&method=WordmarkUpload&format=html" method="POST" enctype="multipart/form-data">
-				<input id="WordMarkUploadFile" name="wpUploadFile" type="file" />
-				<br />
+				<div class="file-upload-wrapper">
+					<button data-for="WordMarkUploadFile" class="upload-proxy" type="button"><?= wfMsg('themedesigner-choose-file-button') ?></button>
+					<input class='file-upload-button' data-label="WordMarkUploadLabel" id="WordMarkUploadFile" name="wpUploadFile" type="file" />
+					<span id="WordMarkUploadLabel"></span>
+				</div>
 				<input type="submit" value="<?= wfMsg( 'themedesigner-button-upload-wordmark' ) ?>" onclick="return ThemeDesigner.wordmarkUpload(event);"/>
 			</form>
 		<?php } ?>
@@ -73,7 +76,11 @@
 			<p><?= wfMessage( 'themedesigner-upload-disabled' )->plain(); ?></p>
 		<?php } else { ?>
 			<form id="FaviconUploadForm" action="<?= $wg->ScriptPath ?>/wikia.php?controller=ThemeDesigner&method=FaviconUpload&format=html" method="POST" enctype="multipart/form-data">
-				<input id="FaviconUploadFile" name="wpUploadFile" type="file" />
+				<div class="file-upload-wrapper">
+					<button data-for="FaviconUploadFile" class="upload-proxy" type="button"><?= wfMsg('themedesigner-choose-file-button') ?></button>
+					<input class='file-upload-button' data-label="FaviconUploadLabel" id="FaviconUploadFile" name="wpUploadFile" type="file" />
+					<span id="FaviconUploadLabel"></span>
+				</div>
 				<input type="submit" value="<?= wfMsg( 'themedesigner-button-upload-wordmark' ) ?>" />
 			</form>
 		<?php } ?>

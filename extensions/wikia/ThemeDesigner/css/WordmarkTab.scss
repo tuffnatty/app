@@ -1,6 +1,9 @@
 @import "skins/oasis/css/core/color";
 @import "skins/oasis/css/mixins/box-shadow";
 @import "skins/oasis/css/mixins/opacity";
+@import "skins/oasis/css/mixins/ellipses";
+@import "skins/oasis/css/mixins/clearfix";
+
 
 $previewheight: 65px;
 $previewwidth: 250px;
@@ -128,6 +131,28 @@ $previewwidth: 250px;
 		position: absolute;
 		top: 0;
 	}
+
+	.file-upload-wrapper {
+		@include clearfix;
+	}
+
+	.file-upload-button {
+		visibility: collapse;
+		width: 0px;
+	}
+
+	.upload-proxy {
+		float: left;
+	}
+
+	#WordMarkUploadLabel,
+	#FaviconUploadLabel {
+		@include ellipses;
+		display: block;
+		float: left;
+		margin: 6px 0 0 6px;
+	}
+
 }
 body .tooltip {
 	.tooltip-inner {

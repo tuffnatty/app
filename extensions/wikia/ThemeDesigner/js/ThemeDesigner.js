@@ -284,6 +284,26 @@ var ThemeDesigner = {
 			$('#FaviconUploadForm')[0].reset();
 		});
 
+		$( '#WordmarkTab' ).find( '.upload-proxy' ).click( function( event ) {
+			var buttonId = '#' + $( this ).data( 'for' );
+			event.preventDefault();
+			$( buttonId ).click();
+		} );
+
+		$( '#WordmarkTab' ).find( '.file-upload-button' ).change( function() {
+			var fileName = this.value,
+				labelId  = '#' + $( this ).data( 'label' ),
+				$label = $( labelId ),
+				// container's width - button width - label's margins
+				maxWidth = $label.parent( 'div' ).innerWidth() - $label.siblings( 'button' ).outerWidth() - 12;
+			// Remove C:\ from the file name; We don't use this.files because IE9 does not support it.
+			fileName = fileName.split( '\\' ).pop();
+			$label
+				.text( fileName )
+				.attr( 'title', fileName )
+				.css( 'max-width', maxWidth );
+		} );
+
 		// submit handler for uploading favicon image
 		$('#FaviconUploadForm').submit(function() {
 			$.AIM.submit(this, ThemeDesigner.faviconUploadCallback);

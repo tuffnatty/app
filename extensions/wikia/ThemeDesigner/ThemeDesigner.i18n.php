@@ -64,6 +64,7 @@ $messages['en'] = array(
 	'themedesigner-wordmark-preview-error' => 'Oops! The name of the wiki can\'t be blank,
 please enter the name of the wiki to save.',
 	'themedesigner-upload-disabled' => 'Sorry, we\'ve temporarily disabled uploads. Check back shortly to make changes',
+	'themedesigner-choose-file-button' => 'Choose File',
 );
 
 /** Message documentation (Message documentation)
