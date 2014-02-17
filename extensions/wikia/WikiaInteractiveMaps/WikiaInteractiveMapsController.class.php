@@ -27,6 +27,7 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 			$this->setVal( 'coordinates', $point->getCoordinates() );
 			$this->setVal( 'createdby', $point->getAuthor() );
 			$this->setVal( 'created', $point->getCreateDate() );
+			$this->setVal( 'description', $point->getDescription() );
 			$this->setVal( 'notCreated', false );
 		} else {
 			$this->setVal( 'notCreated', true );

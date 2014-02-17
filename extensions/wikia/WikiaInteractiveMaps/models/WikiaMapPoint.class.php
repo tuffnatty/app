@@ -90,6 +90,11 @@ class WikiaMapPoint extends WikiaModel {
 		return '';
 	}
 
+	public function getDescription() {
+		$rev = Revision::newFromId( $this->title->getLatestRevID() );
+		return $rev->getText();
+	}
+
 	/**
 	 * @desc Based on namespace tells if it's a a map point
 	 *

@@ -1,23 +1,27 @@
 {{^notCreated}}
 	<table>
 		<tr>
-			<td>Title</td>
+			<td>Title:</td>
 			<td>{{title}}</td>
 		</tr>
 		<tr>
-			<td>Page id / point id</td>
+			<td>Page id / point id:</td>
 			<td>{{pointId}}</td>
 		</tr>
 		<tr>
-			<td>Link</td>
+			<td>Link:</td>
 			<td>{{link}}</td>
 		</tr>
 		{{#coordinates}}
 		<tr>
-			<td>Coordinates</td>
+			<td>Coordinates:</td>
 			<td>( {{coordinates.x}}, {{coordinates.y}} )</td>
 		</tr>
 		{{/coordinates}}
+		<tr>
+			<td>Description:</td>
+			<td>{{description}}</td>
+		</tr>
 	</table>
 {{/notCreated}}
 
