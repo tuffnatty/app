@@ -8,4 +8,7 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 	public function index() {
 	}
 
+	public function point() {
+	}
+
 }

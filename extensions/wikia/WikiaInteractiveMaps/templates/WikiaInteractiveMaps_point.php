@@ -1,0 +1,1 @@
+<p>Map point page</p>

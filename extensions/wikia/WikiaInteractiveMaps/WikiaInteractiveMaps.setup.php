@@ -15,10 +15,14 @@ $wgExtensionCredits[ 'specialpage' ][] = [
 $wgAutoloadClasses[ 'WikiaInteractiveMapsController' ] = $dir . 'WikiaInteractiveMapsController.class.php';
 
 // model classes
+$wgAutoloadClasses[ 'WikiaMapPointArticle' ] = $dir . '/models/WikiaMapPointArticle.class.php';
+$wgAutoloadClasses[ 'WikiaMapPoint' ] = $dir . '/models/WikiaMapPoint.class.php';
 
 // hooks classes
+$wgAutoloadClasses[ 'WikiaInteractiveMapsHooks' ] = $dir . 'WikiaInteractiveMapsHooks.class.php';
 
 // hooks
+$wgHooks[ 'ArticleFromTitle' ][] = 'WikiaInteractiveMapsHooks::onArticleFromTitle';
 
 // special pages
 $wgSpecialPages[ 'InteractiveMaps' ] = 'WikiaInteractiveMapsController';
