@@ -10,8 +10,7 @@ class WikiaInteractiveMapsHooks {
 	static public function onArticleFromTitle( &$title, &$article ) {
 		wfProfileIn(__METHOD__);
 
-		$model = new WikiaMapPoint( $title );
-		if( $model->isMapPoint( $title ) ) {
+		if( !is_null( $title ) && ( new WikiaMapPoint( $title ) )->isMapPoint( $title ) ) {
 			$article = new WikiaMapPointArticle( $title );
 		}
 
