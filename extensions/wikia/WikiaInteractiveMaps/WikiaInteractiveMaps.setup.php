@@ -12,9 +12,11 @@ $wgExtensionCredits[ 'specialpage' ][] = [
 ];
 
 // constroller classes
-$wgAutoloadClasses[ 'WikiaInteractiveMapsController' ] =  $dir . 'WikiaInteractiveMapsController.class.php';
+$wgAutoloadClasses[ 'WikiaInteractiveMapsController' ] = $dir . 'WikiaInteractiveMapsController.class.php';
 
 // model classes
+
+// hooks classes
 
 // hooks
 
@@ -24,3 +26,9 @@ $wgSpecialPageGroups[ 'InteractiveMaps' ] = 'wikia';
 
 // i18n mapping
 $wgExtensionMessagesFiles[ 'WikiaInteractiveMaps' ] = $dir . 'WikiaInteractiveMaps.i18n.php';
+
+// namespaces
+define( "NS_WIKIA_MAP", 600 );
+define( "NS_WIKIA_MAP_POINT", 602 );
+$wgExtensionNamespacesFiles[ 'WikiaInteractiveMaps' ] = $dir . 'WikiaInteractiveMaps.namespaces.php';
+wfLoadExtensionNamespaces( 'WikiaInteractiveMaps', array( NS_WIKIA_MAP, NS_WIKIA_MAP_POINT ) );
