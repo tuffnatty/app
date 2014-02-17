@@ -23,6 +23,7 @@ $wgAutoloadClasses[ 'WikiaInteractiveMapsHooks' ] = $dir . 'WikiaInteractiveMaps
 
 // hooks
 $wgHooks[ 'ArticleFromTitle' ][] = 'WikiaInteractiveMapsHooks::onArticleFromTitle';
+$wgHooks[ 'ArticleSaveComplete' ][] = 'WikiaInteractiveMapsHooks::onArticleSaveComplete';
 
 // special pages
 $wgSpecialPages[ 'InteractiveMaps' ] = 'WikiaInteractiveMapsController';

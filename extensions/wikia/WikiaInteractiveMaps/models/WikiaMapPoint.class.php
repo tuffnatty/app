@@ -1,6 +1,7 @@
 <?php
 class WikiaMapPoint extends WikiaModel {
 	const MAP_POINTS_TBL = 'wikia_map_point';
+	const MAP_POINTS_JSON_KEY = 'coordinates';
 
 	/**
 	 * @var Integer $pageId
@@ -21,6 +22,8 @@ class WikiaMapPoint extends WikiaModel {
 	 * @var Integer $y
 	 */
 	private $y;
+
+	private $existInDb = false;
 
 	public function __construct( Title $title ) {
 		$this->title = $title;
@@ -57,13 +60,29 @@ class WikiaMapPoint extends WikiaModel {
 		if( $res ) {
 			$this->x = $res->x;
 			$this->y = $res->y;
+			$this->existInDb = true;
 		} else {
 			$this->x = 0;
 			$this->y = 0;
+			$this->existInDb = false;
 		}
 	}
 
-	public function save( $data ) {
+	public function save() {
+		$db = $this->getDB( DB_MASTER );
+
+		$data = [
+			'x' => $this->getX(),
+			'y' => $this->getY(),
+			'flag' => 0,
+		];
+
+		if( $this->existInDb ) {
+			$db->update( self::MAP_POINTS_TBL, $data, [ 'page_id' => $this->pageId ], __METHOD__ );
+		} else {
+			$data[ 'page_id' ] = $this->pageId;
+			$db->insert( self::MAP_POINTS_TBL, $data, __METHOD__ );
+		}
 	}
 
 	public function getX() {
@@ -80,6 +99,20 @@ class WikiaMapPoint extends WikiaModel {
 		$coordinates->y = $this->getY();
 
 		return $coordinates;
+	}
+
+	public function getCoordinatesFromText() {
+		$rev = Revision::newFromId( $this->title->getLatestRevID() );
+		$text = $rev->getText();
+		$pattern = '/{"' . self::MAP_POINTS_JSON_KEY . '":(.*)}/';
+		$matches = [];
+		preg_match( $pattern, $text, $matches );
+		$results = ( !empty($matches[0]) ? $matches[0] : [] );
+		if( $results ) {
+			$json = json_decode( $results );
+			$this->x = ( isset( $json->coordinates->x ) ) ? $json->coordinates->x : $this->x;
+			$this->y = ( isset( $json->coordinates->y ) ) ? $json->coordinates->y : $this->y;
+		}
 	}
 
 	public function getAuthor() {
