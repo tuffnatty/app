@@ -1,0 +1,26 @@
+{{^notCreated}}
+	<table>
+		<tr>
+			<td>Title</td>
+			<td>{{title}}</td>
+		</tr>
+		<tr>
+			<td>Page id / point id</td>
+			<td>{{pointId}}</td>
+		</tr>
+		<tr>
+			<td>Link</td>
+			<td>{{link}}</td>
+		</tr>
+		{{#coordinates}}
+		<tr>
+			<td>Coordinates</td>
+			<td>( {{coordinates.x}}, {{coordinates.y}} )</td>
+		</tr>
+		{{/coordinates}}
+	</table>
+{{/notCreated}}
+
+{{#notCreated}}
+	<p>This map point page does not exist. Click "Create" to add it.</p>
+{{/notCreated}}
