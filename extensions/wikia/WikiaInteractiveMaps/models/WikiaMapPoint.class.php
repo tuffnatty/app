@@ -1,12 +1,18 @@
 <?php
 class WikiaMapPoint extends WikiaModel {
-	const MAP_POINTS_TBL = 'wikia_map_point';
-	const MAP_POINTS_JSON_KEY = 'coordinates';
+	const MAP_POINT_TBL = 'wikia_map_point';
+	
+	const MAP_POINT_JSON_PATTERN = '/{(.*)}/';
 
 	/**
 	 * @var Integer $pageId
 	 */
 	private $pageId;
+
+	/**
+	 * @var Integer $mapId
+	 */
+	private $mapId;
 
 	/**
 	 * @var Title MW title
@@ -63,9 +69,10 @@ class WikiaMapPoint extends WikiaModel {
 		}
 
 		$db = $this->getDB( ( $master ? DB_MASTER : DB_SLAVE ) );
-		$res = $db->selectRow(
-			self::MAP_POINTS_TBL,
+		$row = $db->selectRow(
+			self::MAP_POINT_TBL,
 			[
+				'map_id',
 				'x',
 				'y'
 			],
@@ -75,9 +82,10 @@ class WikiaMapPoint extends WikiaModel {
 			__METHOD__
 		);
 
-		if( $res ) {
-			$this->setX( $res->x );
-			$this->setY( $res->y );
+		if( $row ) {
+			$this->setMapId( $row->map_id );
+			$this->setX( $row->x );
+			$this->setY( $row->y );
 			$this->existInDb = true;
 		} else {
 			$this->setX( 0 );
@@ -94,16 +102,17 @@ class WikiaMapPoint extends WikiaModel {
 		$db = $this->getDB( DB_MASTER );
 
 		$data = [
+			'map_id' => $this->getMapId(),
 			'x' => $this->getX(),
 			'y' => $this->getY(),
 			'flag' => 0,
 		];
 
 		if( $this->existsInDb() ) {
-			$db->update( self::MAP_POINTS_TBL, $data, [ 'page_id' => $this->pageId ], __METHOD__ );
+			$db->update( self::MAP_POINT_TBL, $data, [ 'page_id' => $this->pageId ], __METHOD__ );
 		} else {
 			$data[ 'page_id' ] = $this->pageId;
-			$db->insert( self::MAP_POINTS_TBL, $data, __METHOD__ );
+			$db->insert( self::MAP_POINT_TBL, $data, __METHOD__ );
 		}
 
 		$db->commit();
@@ -117,12 +126,20 @@ class WikiaMapPoint extends WikiaModel {
 		return $this->y;
 	}
 
+	public function getMapId() {
+		return $this->mapId;
+	}
+
 	public function setX( $x ) {
 		$this->x = $x;
 	}
 
 	public function setY( $y ) {
 		$this->y = $y;
+	}
+
+	public function setMapId( $mapId ) {
+		$this->mapId = $mapId;
 	}
 
 	public function getCoordinates() {
@@ -134,16 +151,34 @@ class WikiaMapPoint extends WikiaModel {
 	}
 
 	public function getCoordinatesFromText() {
-		$rev = $this->getRevision();
-		$text = $rev->getText();
-		$pattern = '/{"' . self::MAP_POINTS_JSON_KEY . '":(.*)}/';
-		$matches = [];
-		preg_match( $pattern, $text, $matches );
-		$results = ( !empty($matches[0]) ? $matches[0] : [] );
-		if( $results ) {
-			$json = json_decode( $results );
+		$json = $this->getJsonFromText();
+		if( !empty( $json ) ) {
 			$this->setX( ( isset( $json->coordinates->x ) ? $json->coordinates->x : $this->getX() ) );
 			$this->setY( ( isset( $json->coordinates->y ) ? $json->coordinates->y : $this->getY() ) );
+		}
+	}
+
+	private function getJsonFromText() {
+		$rev = $this->getRevision();
+		$text = $rev->getText();
+
+		$json = '';
+		$matches = [];
+
+		preg_match( self::MAP_POINT_JSON_PATTERN, $text, $matches );
+		$results = ( !empty($matches[0]) ? $matches[0] : [] );
+
+		if( $results ) {
+			$json = json_decode( $results );
+		}
+
+		return $json;
+	}
+
+	public function getMapIdFromText() {
+		$json = $this->getJsonFromText();
+		if( !empty( $json ) ) {
+			$this->setMapId( $json->mapId );
 		}
 	}
 

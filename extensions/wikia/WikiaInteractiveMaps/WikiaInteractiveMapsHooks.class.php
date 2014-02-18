@@ -37,6 +37,7 @@ class WikiaInteractiveMapsHooks {
 
 		if( !is_null( $title ) && ( $point = new WikiaMapPoint( $title ) ) && $point->isMapPoint() ) {
 			$point->getCoordinatesFromText();
+			$point->getMapIdFromText();
 			$point->save();
 		}
 

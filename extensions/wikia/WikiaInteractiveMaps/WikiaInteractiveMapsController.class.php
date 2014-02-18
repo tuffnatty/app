@@ -44,6 +44,7 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 
 	/**
 	 * @requestParam String title unique title of the POI
+	 * @requestParam Integer map_id
 	 * @requestParam Integer x
 	 * @requestParam Integer y
 	 * @requestParam Integer flag
@@ -56,6 +57,7 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 
 		$data = [
 			'title' => $this->request->getVal( 'title' ),
+			'map_id' => $this->request->getVal( 'mapId' ),
 			'x' => $this->request->getInt( 'x' ),
 			'y' => $this->request->getInt( 'y' ),
 			'desc' => $this->request->getVal( 'desc' ),
@@ -69,6 +71,8 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 		$json = new stdClass();
 		$json->coordinates->x = $data['x'];
 		$json->coordinates->y = $data['y'];
+		$json->mapId = $data['map_id'];
+
 		$content = $data['desc'] . " ". json_encode( $json );
 
 		$this->status = $page->doEdit( $content, '', 0, false, $wgUser );
@@ -97,8 +101,13 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 			throw new Exception( 'Invalid description' );
 		}
 
-		$title = Title::newFromText( $data['title'], NS_WIKIA_MAP_POINT );
-		if( $title->exists() ) {
+		$mapTitle = Title::newFromID( $data['map_id'], Title::GAID_FOR_UPDATE );
+		if( is_null($mapTitle) || !$mapTitle->exists() ) {
+			throw new \Wikia\Sass\Exception( 'Invalid map id' );
+		}
+
+		$pointTitle = Title::newFromText( $data['title'], NS_WIKIA_MAP_POINT );
+		if( $pointTitle->exists() ) {
 			throw new \Wikia\Sass\Exception( 'This point already exist' );
 		}
 	}
