@@ -14,6 +14,10 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 	 * @requestParam Integer $point_id
 	 */
 	public function point() {
+		/** @var Language $wgLang */
+		/** @var User $wgUser */
+		global $wgLang, $wgUser;
+
 		$pointId = $this->request->getInt( 'point_id' );
 		$title = Title::newFromID( $pointId );
 
@@ -25,8 +29,10 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 			$this->setVal( 'link', $point->getFullURL() );
 			$this->setVal( 'photo', $point->getPhoto() );
 			$this->setVal( 'coordinates', $point->getCoordinates() );
-			$this->setVal( 'createdby', $point->getAuthor() );
-			$this->setVal( 'created', $point->getCreateDate() );
+			$this->setVal( 'createdBy', $point->getCreator() );
+			$this->setVal( 'created', $wgLang->userDate( $point->getCreateDate(), $wgUser ) );
+			$this->setVal( 'updated', $wgLang->userDate( $point->getUpdateDate(), $wgUser ) );
+			$this->setVal( 'updatedBy', $point->getAuthor() );
 			$this->setVal( 'description', $point->getDescription() );
 			$this->setVal( 'notCreated', false );
 		} else {

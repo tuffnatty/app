@@ -23,12 +23,30 @@ class WikiaMapPoint extends WikiaModel {
 	 */
 	private $y;
 
+	/**
+	 * @var Revision $revision
+	 */
+	private $revision;
+
+	/**
+	 * @var ImageServing $imageServing
+	 */
+	private $imageServing;
+
 	private $existInDb = false;
 
 	public function __construct( Title $title ) {
 		$this->title = $title;
 		$this->pageId = $title->getArticleID();
 		$this->load();
+
+		if( !$this->existsInDb() ) {
+			$this->load( true );
+		}
+	}
+
+	public function existsInDb() {
+		return $this->existInDb;
 	}
 
 	public function getText() {
@@ -39,11 +57,11 @@ class WikiaMapPoint extends WikiaModel {
 		return $this->title->getFullURL();
 	}
 
-	public function getPhoto() {
-		return '';
-	}
-
 	public function load( $master = false ) {
+		if( wfReadOnly() ) {
+			throw new Exception( 'DB in read-only mode' );
+		}
+
 		$db = $this->getDB( ( $master ? DB_MASTER : DB_SLAVE ) );
 		$res = $db->selectRow(
 			self::MAP_POINTS_TBL,
@@ -69,6 +87,10 @@ class WikiaMapPoint extends WikiaModel {
 	}
 
 	public function save() {
+		if( wfReadOnly() ) {
+			throw new Exception( 'DB in read-only mode' );
+		}
+
 		$db = $this->getDB( DB_MASTER );
 
 		$data = [
@@ -102,7 +124,7 @@ class WikiaMapPoint extends WikiaModel {
 	}
 
 	public function getCoordinatesFromText() {
-		$rev = Revision::newFromId( $this->title->getLatestRevID() );
+		$rev = $this->getRevision();
 		$text = $rev->getText();
 		$pattern = '/{"' . self::MAP_POINTS_JSON_KEY . '":(.*)}/';
 		$matches = [];
@@ -116,16 +138,64 @@ class WikiaMapPoint extends WikiaModel {
 	}
 
 	public function getAuthor() {
-		return '';
+		$rev = $this->getRevision();
+		$userId = $rev->getUser();
+		$user = User::newFromId( $userId );
+
+		return $user->getName();
+	}
+
+	public function getUpdateDate() {
+		$rev = $this->getRevision();
+		return $rev->getTimestamp();
+	}
+
+	public function getCreator() {
+		$rev = $this->title->getFirstRevision();
+		$userId = $rev->getUser();
+		$user = User::newFromId( $userId );
+
+		return $user->getName();
 	}
 
 	public function getCreateDate() {
-		return '';
+		$rev = $this->title->getFirstRevision();
+		return $rev->getTimestamp();
 	}
 
 	public function getDescription() {
-		$rev = Revision::newFromId( $this->title->getLatestRevID() );
+		$rev = $this->getRevision();
 		return $rev->getText();
+	}
+
+	public function getRevision() {
+		if( is_null( $this->revision ) ) {
+			$this->revision = Revision::newFromId( $this->title->getLatestRevID() );
+		}
+
+		return $this->revision;
+	}
+
+	public function getImageServing() {
+		if( is_null( $this->imageServing ) ) {
+			$this->imageServing = new ImageServing( [ $this->pageId ] );
+		}
+
+		return $this->imageServing;
+	}
+
+	public function getPhoto() {
+		$is = $this->getImageServing();
+		$images = $is->getImages( 1 ); //get one image from the article;
+
+		if( !empty( $images ) ) {
+			$images = array_shift( $images );
+			$photo = array_shift( $images );
+
+			return $photo['url'];
+		} else {
+			return '';
+		}
 	}
 
 	/**
