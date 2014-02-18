@@ -42,4 +42,65 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 		$this->response->setTemplateEngine( WikiaResponse::TEMPLATE_ENGINE_MUSTACHE );
 	}
 
+	/**
+	 * @requestParam String title unique title of the POI
+	 * @requestParam Integer x
+	 * @requestParam Integer y
+	 * @requestParam Integer flag
+	 * @requestParam String desc optional
+	 *
+	 * @throws Exception
+	 */
+	public function createPoint() {
+		global $wgUser;
+
+		$data = [
+			'title' => $this->request->getVal( 'title' ),
+			'x' => $this->request->getInt( 'x' ),
+			'y' => $this->request->getInt( 'y' ),
+			'desc' => $this->request->getVal( 'desc' ),
+			'flag' => $this->request->getInt( 'flag', 0 ),
+		];
+
+		$this->validateCreation( $data );
+		$pointTitle = Title::newFromText( $data['title'], NS_WIKIA_MAP_POINT );
+		$page = new WikiPage( $pointTitle );
+
+		$json = new stdClass();
+		$json->coordinates->x = $data['x'];
+		$json->coordinates->y = $data['y'];
+		$content = $data['desc'] . " ". json_encode( $json );
+
+		$this->status = $page->doEdit( $content, '', 0, false, $wgUser );
+	}
+
+	/**
+	 * @param Array $data
+	 * @throws Exception
+	 */
+	private function validateCreation( Array $data ) {
+		global $wgUser;
+
+		if( !$this->request->wasPosted() ) {
+			throw new Exception( 'This request should be send via POST' );
+		}
+
+		if( !$wgUser->isLoggedIn() ) {
+			throw new Exception( 'You are not authorized to execute this action' );
+		}
+
+		if( empty( $data[ 'title' ] ) ) {
+			throw new Exception( 'Invalid title' );
+		}
+
+		if( empty( $data[ 'desc' ] ) ) {
+			throw new Exception( 'Invalid description' );
+		}
+
+		$title = Title::newFromText( $data['title'], NS_WIKIA_MAP_POINT );
+		if( $title->exists() ) {
+			throw new \Wikia\Sass\Exception( 'This point already exist' );
+		}
+	}
+
 }

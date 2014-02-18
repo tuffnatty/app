@@ -76,12 +76,12 @@ class WikiaMapPoint extends WikiaModel {
 		);
 
 		if( $res ) {
-			$this->x = $res->x;
-			$this->y = $res->y;
+			$this->setX( $res->x );
+			$this->setY( $res->y );
 			$this->existInDb = true;
 		} else {
-			$this->x = 0;
-			$this->y = 0;
+			$this->setX( 0 );
+			$this->setY( 0 );
 			$this->existInDb = false;
 		}
 	}
@@ -99,12 +99,14 @@ class WikiaMapPoint extends WikiaModel {
 			'flag' => 0,
 		];
 
-		if( $this->existInDb ) {
+		if( $this->existsInDb() ) {
 			$db->update( self::MAP_POINTS_TBL, $data, [ 'page_id' => $this->pageId ], __METHOD__ );
 		} else {
 			$data[ 'page_id' ] = $this->pageId;
 			$db->insert( self::MAP_POINTS_TBL, $data, __METHOD__ );
 		}
+
+		$db->commit();
 	}
 
 	public function getX() {
@@ -113,6 +115,14 @@ class WikiaMapPoint extends WikiaModel {
 
 	public function getY() {
 		return $this->y;
+	}
+
+	public function setX( $x ) {
+		$this->x = $x;
+	}
+
+	public function setY( $y ) {
+		$this->y = $y;
 	}
 
 	public function getCoordinates() {
@@ -132,8 +142,8 @@ class WikiaMapPoint extends WikiaModel {
 		$results = ( !empty($matches[0]) ? $matches[0] : [] );
 		if( $results ) {
 			$json = json_decode( $results );
-			$this->x = ( isset( $json->coordinates->x ) ) ? $json->coordinates->x : $this->x;
-			$this->y = ( isset( $json->coordinates->y ) ) ? $json->coordinates->y : $this->y;
+			$this->setX( ( isset( $json->coordinates->x ) ? $json->coordinates->x : $this->getX() ) );
+			$this->setY( ( isset( $json->coordinates->y ) ? $json->coordinates->y : $this->getY() ) );
 		}
 	}
 
