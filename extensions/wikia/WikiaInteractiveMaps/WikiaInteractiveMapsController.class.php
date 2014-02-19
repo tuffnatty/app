@@ -60,12 +60,13 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 		if( !is_null( $title ) ) {
 			$this->setVal( 'notCreated', false );
 
-			JSMessages::registerPackage('WikiaInteractiveMaps', array(
+			JSMessages::registerPackage( 'WikiaInteractiveMaps', array(
 				'wikia-interactive-maps-add-new-point',
 				'wikia-interactive-maps-center-map-here',
 				'wikia-interactive-maps-zoom-in',
 				'wikia-interactive-maps-zoom-out',
 			));
+			JSMessages::enqueuePackage( 'WikiaInteractiveMaps', JSMessages::INLINE );
 
 			$this->wg->Out->addJsConfigVars([
 				'mapId' => $title->mArticleID,
