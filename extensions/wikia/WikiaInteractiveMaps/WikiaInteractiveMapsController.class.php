@@ -137,7 +137,19 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 
 		$content = $data['desc'] . " ". json_encode( $json );
 
-		$this->status = $page->doEdit( $content, '', 0, false, $wgUser );
+		$status = $page->doEdit( $content, '', 0, false, $wgUser );
+		$result = new stdClass();
+		if( $status->isOK() ) {
+			$result->status = 'ok';
+			$json->title = $data['title'];
+			$json->desc = $data['desc'];
+			$result->point = $json;
+		} else {
+			$result->status = 'fail';
+			$result->errors = $status->getErrorsArray();
+		}
+
+		$this->result = $result;
 	}
 
 	/**
