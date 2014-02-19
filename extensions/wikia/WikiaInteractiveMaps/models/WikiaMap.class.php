@@ -1,5 +1,8 @@
 <?php
 class WikiaMap extends WikiaModel {
+	const MAP_TYPE_EARTH_OPEN_MAPS = 1;
+	const MAP_TYPE_CUSTOM = 2;
+	const MAP_TYPE_EARTH_GOOGLE_MAPS = 3;
 
 	/**
 	 * @var Title MW title
@@ -16,6 +19,16 @@ class WikiaMap extends WikiaModel {
 	 */
 	private $imageServing;
 
+	/**
+	 * @var Integer type
+	 */
+	private $type;
+
+	/**
+	 * @var Revision $revision
+	 */
+	private $revision;
+
 	public function __construct( Title $title ) {
 		$this->title = $title;
 		$this->pageId = $title->getArticleID();
@@ -23,6 +36,29 @@ class WikiaMap extends WikiaModel {
 
 	public function getName() {
 		return $this->title->getText();
+	}
+
+	public function getType() {
+		if( is_null( $this->type ) ) {
+			$this->loadType();
+		}
+
+		return $this->type;
+	}
+
+	public function setType( $type ) {
+		$this->type = $type;
+	}
+
+	public function loadType() {
+		$rev = $this->getRevision( Title::GAID_FOR_UPDATE );
+		$text = $rev->getText();
+
+		if( stripos( $text, '__MAP_TYPE_CUSTOM__' ) !== false ) {
+			$this->setType( self::MAP_TYPE_CUSTOM );
+		} else {
+			$this->setType( self::MAP_TYPE_EARTH_OPEN_MAPS );
+		}
 	}
 
 	public function getAllPoints( $master = false ) {
@@ -73,7 +109,7 @@ class WikiaMap extends WikiaModel {
 		$parameters->max_zoom = 6;
 		$parameters->width = 600;
 		$parameters->height = 480;
-		$parameters->type = 2;
+		$parameters->type = $this->getType();
 		$parameters->status = 1;
 		$parameters->url = $this->title->getFullURL();
 		$parameters->image = $this->getImage();
@@ -102,6 +138,14 @@ class WikiaMap extends WikiaModel {
 		} else {
 			return '';
 		}
+	}
+
+	public function getRevision() {
+		if( is_null( $this->revision ) ) {
+			$this->revision = Revision::newFromId( $this->title->getLatestRevID() );
+		}
+
+		return $this->revision;
 	}
 
 	/**
