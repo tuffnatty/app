@@ -1,10 +1,11 @@
-require(['jquery', 'wikia.nirvana', 'wikia.leaflet'], function( $, nirvana, L) {
+require(['jquery', 'wikia.nirvana', 'wikia.leaflet', 'wikia.window'], function( $, nirvana, L, window) {
 	'use strict';
 
 	$(function (){
 		var map = null,
 			popup = null,
 			setup = {},
+			markers = [],
 			defaultSetup = {
 				container: 'interactive_map',
 				mapType: 'openstreetmap',
@@ -13,22 +14,22 @@ require(['jquery', 'wikia.nirvana', 'wikia.leaflet'], function( $, nirvana, L) {
 				contextmenu: true,
 				contextmenuItems: [
 					{
-						text: 'Add new point',
+						text: $.msg('wikia-interactive-maps-add-new-point'),
 						callback: function (event) {
 							addPoint(event);
 						}
 					}, {
-						text: 'Center map here',
+						text: $.msg('wikia-interactive-maps-center-map-here'),
 						callback: function(event) {
 							map.panTo(event.latlng);
 						}
 					}, '-', {
-						text: 'Zoom in',
+						text: $.msg('wikia-interactive-maps-zoom-in'),
 						callback: function() {
 							map.zoomIn();
 						}
 					}, {
-						text: 'Zoom out',
+						text: $.msg('wikia-interactive-maps-zoom-out'),
 						callback: function() {
 							map.zoomOut();
 						}
@@ -65,22 +66,47 @@ require(['jquery', 'wikia.nirvana', 'wikia.leaflet'], function( $, nirvana, L) {
 		}
 
 		function addPointOnMap(point) {
-			var marker = L.marker([ poi.y, poi.x ], {
-				icon: icons[poi.pointType || 0],
-				riseOnhover: true
+			var marker = L.marker([ point.y, point.x ], {
+				// FIXME: Add custom icons once we have them
+				// icon: icons[poi.pointType || 0],
+				riseOnHover: true
 			})
-				.bindPopup('<h3>' + poi.title + '</h3>')
+				.bindPopup('<h3>' + point.title + '</h3>')
 				.addTo(map);
 
 			return marker;
 		}
 
-		function loadMarkers(mapId) {
+		function clearMarkers() {
+			markers.forEach(function(marker){
+				marker.unbindPopup();
+				map.removeLayer(marker);
+			});
+			markers = [];
+		}
+
+		function onGetPointsError(data) {
+			// TODO: Error on getting points
+		}
+
+		function getPoints(mapId) {
 			clearMarkers();
-			$.get('/marker/' + mapId, function (data) {
-				data.forEach(function(point) {
-					markers.push(addPointOnMap(point));
-				});
+			nirvana.sendRequest({
+				controller: 'WikiaInteractiveMaps',
+				method: 'getPoints',
+				type: 'GET',
+				format: 'json',
+				data: {
+					mapId: mapId
+				},
+				callback: function(data) {
+					if (data.result == 'ok') {
+						data.points.forEach(function(point) {
+							markers.push(addPointOnMap(point));
+						});
+					}
+				},
+				onErrorCallback: onGetPointsError
 			});
 		}
 
@@ -93,8 +119,12 @@ require(['jquery', 'wikia.nirvana', 'wikia.leaflet'], function( $, nirvana, L) {
 				contextmenu: setup.contextmenu,
 				contextmenuItems: setup.contextmenuItems
 			});
+
+			getPoints(setup.mapId);
 		}
 
-		init({});
+		init({
+			mapId: window.mapId
+		});
 	});
 })

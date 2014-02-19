@@ -59,14 +59,35 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 
 		if( !is_null( $title ) ) {
 			$this->setVal( 'notCreated', false );
+
+			JSMessages::registerPackage('WikiaInteractiveMaps', array(
+				'wikia-interactive-maps-add-new-point',
+				'wikia-interactive-maps-center-map-here',
+				'wikia-interactive-maps-zoom-in',
+				'wikia-interactive-maps-zoom-out',
+			));
+
+			$this->wg->Out->addJsConfigVars([
+				'mapId' => $title->mArticleID,
+			]);
+
+			// Leaflet
+			$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/leaflet/leaflet-src.js' );
+			$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/leaflet/leaflet.css' );
+			// Leaflet Fullscreen
+			$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/leaflet/leaflet.fullscreen/Control.FullScreen.css' );
+			$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/leaflet/leaflet.fullscreen/Control.FullScreen.js' );
+			// Leaflet Context menu
+			$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/leaflet/Leaflet.contextmenu/dist/leaflet.contextmenu.js' );
+			$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/leaflet/Leaflet.contextmenu/dist/leaflet.contextmenu.css' );
+			// Custom assets
+			$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/css/InteractiveMaps.css');
+			$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/WikiaInteractiveMaps.js');
+
 		} else {
 			$this->setVal( 'notCreated', true );
 		}
 
-		$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/leaflet/leaflet-src.js' );
-		$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/leaflet/leaflet.css' );
-		$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/css/InteractiveMaps.css');
-		$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/WikiaMap.js');
 		$this->response->setTemplateEngine( WikiaResponse::TEMPLATE_ENGINE_MUSTACHE );
 	}
 
