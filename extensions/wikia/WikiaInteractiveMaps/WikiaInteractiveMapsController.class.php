@@ -63,6 +63,10 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 			$this->setVal( 'notCreated', true );
 		}
 
+		$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/leaflet/leaflet-src.js' );
+		$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/leaflet/leaflet.css' );
+		$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/css/InteractiveMaps.css');
+		$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/WikiaMap.js');
 		$this->response->setTemplateEngine( WikiaResponse::TEMPLATE_ENGINE_MUSTACHE );
 	}
 
