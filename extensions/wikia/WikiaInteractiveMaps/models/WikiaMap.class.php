@@ -112,7 +112,10 @@ class WikiaMap extends WikiaModel {
 		$parameters->type = $this->getType();
 		$parameters->status = 1;
 		$parameters->url = $this->title->getFullURL();
-		$parameters->image = $this->getImage();
+
+		if( $parameters->type === self::MAP_TYPE_CUSTOM ) {
+			$parameters->image = $this->getImage();
+		}
 
 		return $parameters;
 	}
