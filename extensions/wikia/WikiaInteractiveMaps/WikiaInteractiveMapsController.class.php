@@ -68,8 +68,15 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 			));
 			JSMessages::enqueuePackage( 'WikiaInteractiveMaps', JSMessages::INLINE );
 
+			$wikiaMap = new WikiaMap( $title );
+			$mapParameters = $wikiaMap->getMapsParameters();
 			$this->wg->Out->addJsConfigVars([
-				'mapId' => $title->mArticleID,
+				'mapMapId' => $title->mArticleID,
+				'mapMinZoom' => $mapParameters->min_zoom,
+				'mapMaxZoom' => $mapParameters->max_zoom,
+				'mapWidth' => $mapParameters->width,
+				'mapHeight' => $mapParameters->height,
+				'mapMapType' => $mapParameters->type,
 			]);
 
 			// Leaflet

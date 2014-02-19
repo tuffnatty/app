@@ -10,6 +10,9 @@ require(['jquery', 'wikia.nirvana', 'wikia.leaflet', 'wikia.window'], function( 
 				container: 'interactive_map',
 				mapType: 'openstreetmap',
 				zoom: 2,
+				minZoom: 0,
+				maxZoom: 18,
+				attribution: '',
 				fullscreenControl: true,
 				contextmenu: true,
 				contextmenuItems: [
@@ -110,6 +113,34 @@ require(['jquery', 'wikia.nirvana', 'wikia.leaflet', 'wikia.window'], function( 
 			});
 		}
 
+		function addMapLayer(map, setup) {
+			var mapTypes = {
+				1: function() {
+					// Custom map
+					return L.tileLayer(setup.pathTemplate, {
+						minZoom: setup.minZoom,
+						maxZoom: setup.maxZoom,
+						attribution: setup.attribution,
+						tms: true,
+						noWrap: true
+					}).addTo(map);
+				},
+				2: function() {
+					// Open Street Map
+					return L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						attribution: setup.attribution || 'Map data OpenStreetMap contributors',
+						minZoom: setup.minZoom || 0,
+						maxZoom: setup.maxZoom || 12
+					}).addTo(map);
+				}
+			}
+			if (mapTypes[setup.mapType]) {
+				return mapTypes[setup.mapType]();
+			} else {
+				throw 'Unknown map type: ' + setup.mapType + ' provided';
+			}
+		}
+
 		function init(customSetup) {
 			setup = $.extend(false, defaultSetup, customSetup );
 			map = L.map(setup.container, {
@@ -119,12 +150,17 @@ require(['jquery', 'wikia.nirvana', 'wikia.leaflet', 'wikia.window'], function( 
 				contextmenu: setup.contextmenu,
 				contextmenuItems: setup.contextmenuItems
 			});
-
+			addMapLayer(map, setup);
 			getPoints(setup.mapId);
 		}
 
 		init({
-			mapId: window.mapId
+			mapId: window.mapMapId,
+			minZoom: window.mapMinZoom,
+			maxZoom: window.mapMaxZoom,
+			width: window.mapWidth,
+			height: window.mapHeight,
+			mapType: window.mapMapType
 		});
 	});
 })
