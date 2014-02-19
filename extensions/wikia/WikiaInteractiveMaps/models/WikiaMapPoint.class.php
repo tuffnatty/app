@@ -4,6 +4,9 @@ class WikiaMapPoint extends WikiaModel {
 	
 	const MAP_POINT_JSON_PATTERN = '/{(.*)}/';
 
+	const MAP_POINT_TYPE_CHECKPOINT = 1;
+	const MAP_POINT_TYPE_BATTLE = 2;
+
 	/**
 	 * @var Integer $pageId
 	 */
@@ -35,6 +38,11 @@ class WikiaMapPoint extends WikiaModel {
 	private $revision;
 
 	/**
+	 * @var Integer $type
+	 */
+	private $type;
+
+	/**
 	 * @var ImageServing $imageServing
 	 */
 	private $imageServing;
@@ -57,6 +65,14 @@ class WikiaMapPoint extends WikiaModel {
 
 	public function getText() {
 		return $this->title->getText();
+	}
+
+	public function setType( $type ) {
+		$this->type = $type;
+	}
+
+	public function getType() {
+		return $this->type;
 	}
 
 	public function getFullURL() {
@@ -92,6 +108,8 @@ class WikiaMapPoint extends WikiaModel {
 			$this->setY( 0 );
 			$this->existInDb = false;
 		}
+
+		$this->setType( self::MAP_POINT_TYPE_CHECKPOINT );
 	}
 
 	public function save() {

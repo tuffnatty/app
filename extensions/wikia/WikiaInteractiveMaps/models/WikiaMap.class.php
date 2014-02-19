@@ -44,6 +44,8 @@ class WikiaMap extends WikiaModel {
 						'title' => $pointObj->getText(),
 						'x' => $pointObj->getX(),
 						'y' => $pointObj->getX(),
+						'point_type' => $pointObj->getType(),
+						'article' => $pointObj->getFullURL(),
 					];
 				}
 			}
