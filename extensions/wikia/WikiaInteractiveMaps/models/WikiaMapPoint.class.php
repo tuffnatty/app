@@ -244,7 +244,7 @@ class WikiaMapPoint extends WikiaModel {
 
 	public function getDescription() {
 		$rev = $this->getRevision();
-		return $rev->getText();
+		return trim( preg_replace( self::MAP_POINT_JSON_PATTERN, '', $rev->getText() ) );
 	}
 
 	public function getRevision() {
