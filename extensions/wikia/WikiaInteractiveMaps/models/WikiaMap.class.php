@@ -11,6 +11,11 @@ class WikiaMap extends WikiaModel {
 	 */
 	private $pageId;
 
+	/**
+	 * @var ImageServing $imageServing
+	 */
+	private $imageServing;
+
 	public function __construct( Title $title ) {
 		$this->title = $title;
 		$this->pageId = $title->getArticleID();
@@ -71,8 +76,32 @@ class WikiaMap extends WikiaModel {
 		$parameters->type = 2;
 		$parameters->status = 1;
 		$parameters->url = $this->title->getFullURL();
+		$parameters->image = $this->getImage();
 
 		return $parameters;
+	}
+
+	public function getImageServing() {
+		if( is_null( $this->imageServing ) ) {
+			$this->imageServing = new ImageServing( [ $this->pageId ] );
+		}
+
+		return $this->imageServing;
+	}
+
+	public function getImage() {
+		$is = $this->getImageServing();
+		$images = $is->getImages( 1 ); //get one image from the article;
+
+		if( !empty( $images ) ) {
+			$images = array_shift( $images );
+			$img = array_shift( $images );
+			$file = wfFindFile( $img['name'] );
+
+			return $file->getFullUrl();
+		} else {
+			return '';
+		}
 	}
 
 	/**
