@@ -65,11 +65,16 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 				'wikia-interactive-maps-center-map-here',
 				'wikia-interactive-maps-zoom-in',
 				'wikia-interactive-maps-zoom-out',
+				'wikia-interactive-maps-article',
+				'wikia-interactive-maps-description',
+				'wikia-interactive-maps-poi-type',
+				'wikia-interactive-maps-add-point'
 			));
 			JSMessages::enqueuePackage( 'WikiaInteractiveMaps', JSMessages::INLINE );
 
 			$wikiaMap = new WikiaMap( $title );
 			$mapParameters = $wikiaMap->getMapsParameters();
+			$this->setVal( 'title', $mapParameters->name );
 			$this->wg->Out->addJsConfigVars([
 				'mapMapId' => $title->mArticleID,
 				'mapMinZoom' => $mapParameters->min_zoom,

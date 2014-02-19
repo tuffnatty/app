@@ -1,4 +1,16 @@
-require(['jquery', 'wikia.nirvana', 'wikia.leaflet', 'wikia.window'], function( $, nirvana, L, window) {
+require([
+	'jquery',
+	'wikia.nirvana',
+	'wikia.leaflet',
+	'wikia.window',
+	'wikia.mustache'
+], function(
+	$,
+	nirvana,
+	L,
+	window,
+	mustache
+) {
 	'use strict';
 
 	$(function (){
@@ -6,6 +18,10 @@ require(['jquery', 'wikia.nirvana', 'wikia.leaflet', 'wikia.window'], function( 
 			popup = null,
 			setup = {},
 			markers = [],
+			mapTypes = {
+				MAP_TYPE_EARTH_OPEN_MAPS: 1,
+				MAP_TYPE_CUSTOM: 2
+			},
 			defaultSetup = {
 				container: 'interactive_map',
 				mapType: 'openstreetmap',
@@ -37,7 +53,12 @@ require(['jquery', 'wikia.nirvana', 'wikia.leaflet', 'wikia.window'], function( 
 							map.zoomOut();
 						}
 					}
-				]
+				],
+				formTemplate: '<form class="add_poi">' +
+					'<p><label>{{ label.article }}<br/><input name="article" value ="{{ article }}"/></label></p>' +
+					'<p><label>{{ label.description }}<br/><textarea name="description" value ="{{ description }}"/></textarea></label></p>' +
+					'<p><label>{{ label.poiType }}<br/><select name="point_type">{{#pointTypes}}<option value="{{ id }}">{{ name}}</option>{{/pointTypes}}</select></label></p>'+
+					'<button>{{label.button}}</button></form>'
 			};
 
 		function addPoint(event) {
@@ -46,22 +67,69 @@ require(['jquery', 'wikia.nirvana', 'wikia.leaflet', 'wikia.window'], function( 
 				closeOnClick: false
 			})
 				.setLatLng(event.latlng)
-				.setContent($('#add_poi_template').html())
+				.setContent(mustache.render(setup.formTemplate, {
+					label: {
+						article: $.msg('wikia-interactive-maps-article'),
+						description: $.msg('wikia-interactive-maps-description'),
+						poiType: $.msg('wikia-interactive-maps-poi-type'),
+						button: $.msg('wikia-interactive-maps-add-point')
+					},
+					pointTypes: [
+						{
+							id: 1,
+							name: 'Something'
+						},
+						{
+							id: 2,
+							name: 'Something else'
+						}
+					]
+				}))
 				.openOn(map);
 		}
+
+		$(document.body).on('submit', '.add_poi', function(event) {
+			if (popup) {
+				var $this = $(this),
+					coordinates = popup.getLatLng(),
+					formData = {
+						mapId: setup.mapId,
+						y: coordinates.lat,
+						x: coordinates.lng,
+						title: $this.find('[name=article]').val(),
+						desc: $this.find('[name=description]').val(),
+						flag: $this.find('[name=point_type]').val()
+					};
+				submitPoint(formData);
+			}
+			event.preventDefault();
+		});
+
 
 		function submitPoint(formData) {
 			nirvana.sendRequest({
 				controller: 'WikiaInteractiveMaps',
 				method: 'createPoint',
 				data: formData,
-				callback: onCreatePointSuccess,
+				callback: function(result) {
+					onCreatePointSuccess(result, formData);
+				},
 				onErrorCallback: onCreatePointError
 			});
 		}
 
-		function onCreatePointSuccess(data) {
-			//TODO: Add point on the map
+		function closePopup() {
+			if (popup) {
+				map.closePopup(popup);
+				popup = false;
+			}
+		}
+
+		function onCreatePointSuccess(result, formData) {
+			if (result.status.ok === true) {
+				addPointOnMap(formData);
+				closePopup();
+			}
 		}
 
 		function onCreatePointError(data) {
@@ -103,8 +171,8 @@ require(['jquery', 'wikia.nirvana', 'wikia.leaflet', 'wikia.window'], function( 
 					mapId: mapId
 				},
 				callback: function(data) {
-					if (data.result == 'ok') {
-						data.points.forEach(function(point) {
+					if (data.result.status === 'ok') {
+						data.result.points.forEach(function(point) {
 							markers.push(addPointOnMap(point));
 						});
 					}
@@ -114,28 +182,27 @@ require(['jquery', 'wikia.nirvana', 'wikia.leaflet', 'wikia.window'], function( 
 		}
 
 		function addMapLayer(map, setup) {
-			var mapTypes = {
-				1: function() {
-					// Custom map
-					return L.tileLayer(setup.pathTemplate, {
-						minZoom: setup.minZoom,
-						maxZoom: setup.maxZoom,
-						attribution: setup.attribution,
-						tms: true,
-						noWrap: true
-					}).addTo(map);
-				},
-				2: function() {
-					// Open Street Map
-					return L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-						attribution: setup.attribution || 'Map data OpenStreetMap contributors',
-						minZoom: setup.minZoom || 0,
-						maxZoom: setup.maxZoom || 12
-					}).addTo(map);
-				}
-			}
-			if (mapTypes[setup.mapType]) {
-				return mapTypes[setup.mapType]();
+			var mapTypeHandlers = {};
+			mapTypeHandlers[mapTypes.MAP_TYPE_CUSTOM] = function() {
+				// Custom map
+				return L.tileLayer(setup.pathTemplate, {
+					minZoom: setup.minZoom,
+					maxZoom: setup.maxZoom,
+					attribution: setup.attribution,
+					tms: true,
+					noWrap: true
+				}).addTo(map);
+			};
+			mapTypeHandlers[mapTypes.MAP_TYPE_EARTH_OPEN_MAPS] = function() {
+				// Open Street Map
+				return L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+					attribution: setup.attribution || 'Map data OpenStreetMap contributors',
+					minZoom: setup.minZoom || 0,
+					maxZoom: setup.maxZoom || 12
+				}).addTo(map);
+			};
+			if (mapTypeHandlers[setup.mapType]) {
+				return mapTypeHandlers[setup.mapType]();
 			} else {
 				throw 'Unknown map type: ' + setup.mapType + ' provided';
 			}
@@ -163,4 +230,4 @@ require(['jquery', 'wikia.nirvana', 'wikia.leaflet', 'wikia.window'], function( 
 			mapType: window.mapMapType
 		});
 	});
-})
+});
