@@ -16,6 +16,10 @@ class WikiaMap extends WikiaModel {
 		$this->pageId = $title->getArticleID();
 	}
 
+	public function getName() {
+		return $this->title->getText();
+	}
+
 	public function getAllPoints( $master = false ) {
 		if( wfReadOnly() ) {
 			throw new Exception( 'DB in read-only mode' );
@@ -54,6 +58,21 @@ class WikiaMap extends WikiaModel {
 		}
 
 		return $points;
+	}
+
+	public function getMapsParameters() {
+		$parameters = new stdClass();
+
+		$parameters->name = $this->getName();
+		$parameters->min_zoom = 0;
+		$parameters->max_zoom = 6;
+		$parameters->width = 600;
+		$parameters->height = 480;
+		$parameters->type = 2;
+		$parameters->status = 1;
+		$parameters->url = $this->title->getFullURL();
+
+		return $parameters;
 	}
 
 	/**

@@ -1,0 +1,25 @@
+<table>
+	<thead>
+		<tr>
+			<th>Map name</th>
+			<th>Type</th>
+			<th>Status</th>
+		</tr>
+	</thead>
+	<tbody>
+	{{#maps}}
+		<tr>
+			<td><a href="{{url}}">{{name}}</a></td>
+			<td>{{type}}</td>
+			<td>{{status}}</td>
+		</tr>
+	{{/maps}}
+
+	{{^maps}}
+		<tr>
+			<td colspan="3">There are no maps on this wiki yet.</td>
+		</tr>
+	{{/maps}}
+
+	</tbody>
+</table>

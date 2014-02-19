@@ -6,6 +6,11 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 	}
 
 	public function index() {
+		$mapsModel = new WikiaMaps();
+		$maps = $mapsModel->getAllMaps();
+		$this->setVal( 'maps', $maps );
+
+		$this->response->setTemplateEngine( WikiaResponse::TEMPLATE_ENGINE_MUSTACHE );
 	}
 
 	/**
