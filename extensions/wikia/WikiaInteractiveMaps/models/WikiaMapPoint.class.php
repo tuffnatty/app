@@ -150,6 +150,22 @@ class WikiaMapPoint extends WikiaModel {
 		return $coordinates;
 	}
 
+	public function getMap() {
+		$mapData = new stdClass();
+		$mapData->id = $this->getMapId();
+
+		$mapTitle = Title::newFromID( $mapData->id );
+		if( !is_null( $mapTitle ) ) {
+			$mapData->url = $mapTitle->getFullURL();
+			$mapData->title = $mapTitle->getText();
+		} else {
+			$mapData->url = '';
+			$mapData->title = '';
+		}
+
+		return $mapData;
+	}
+
 	public function getCoordinatesFromText() {
 		$json = $this->getJsonFromText();
 		if( !empty( $json ) ) {

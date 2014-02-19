@@ -28,6 +28,7 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 			$this->setVal( 'title', $point->getText() );
 			$this->setVal( 'link', $point->getFullURL() );
 			$this->setVal( 'photo', $point->getPhoto() );
+			$this->setVal( 'map', $point->getMap() );
 			$this->setVal( 'coordinates', $point->getCoordinates() );
 			$this->setVal( 'createdBy', $point->getCreator() );
 			$this->setVal( 'created', $wgLang->userDate( $point->getCreateDate(), $wgUser ) );
