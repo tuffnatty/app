@@ -122,13 +122,45 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 
 		$mapTitle = Title::newFromID( $data['map_id'], Title::GAID_FOR_UPDATE );
 		if( is_null($mapTitle) || !$mapTitle->exists() ) {
-			throw new \Wikia\Sass\Exception( 'Invalid map id' );
+			throw new Exception( 'Invalid map id' );
 		}
 
 		$pointTitle = Title::newFromText( $data['title'], NS_WIKIA_MAP_POINT );
 		if( $pointTitle->exists() ) {
-			throw new \Wikia\Sass\Exception( 'This point already exist' );
+			throw new Exception( 'This point already exist' );
 		}
+	}
+
+	/**
+	 * @desc Gets all points for a given map
+	 *
+	 * @requestParam Integer $mapId
+	 *
+	 * @return array
+	 * @throws Exception
+	 */
+	public function getPoints() {
+		$mapId = $this->request->getInt( 'mapId', 0 );
+
+		$mapTitle = Title::newFromID( $mapId, Title::GAID_FOR_UPDATE );
+		if( $mapId === 0 || is_null($mapTitle) || !$mapTitle->exists() ) {
+			throw new Exception( 'Invalid map id' );
+		}
+
+		try {
+			$mapModel = new WikiaMap( $mapTitle );
+			$out = [
+				'status' => 'ok',
+				'points' => $mapModel->getAllPoints(),
+			];
+		} catch( Exception $e ) {
+			$out = [
+				'status' => 'fail',
+				'error' => $e->getMessage(),
+			];
+		}
+
+		$this->result = $out;
 	}
 
 }
