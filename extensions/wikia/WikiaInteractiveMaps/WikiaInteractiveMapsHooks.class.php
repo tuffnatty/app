@@ -14,6 +14,10 @@ class WikiaInteractiveMapsHooks {
 			$article = new WikiaMapPointArticle( $title );
 		}
 
+		if( !is_null( $title ) && ( new WikiaMap( $title ) )->isMap() ) {
+			$article = new WikiaMapArticle( $title );
+		}
+
 		wfProfileOut(__METHOD__);
 		return true;
 	}

@@ -44,6 +44,24 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 	}
 
 	/**
+	 * @desc Displays map page
+	 *
+	 * @requestParam Integer $map_id
+	 */
+	public function map() {
+		$pointId = $this->request->getInt( 'map_id' );
+		$title = Title::newFromID( $pointId );
+
+		if( !is_null( $title ) ) {
+			$this->setVal( 'notCreated', false );
+		} else {
+			$this->setVal( 'notCreated', true );
+		}
+
+		$this->response->setTemplateEngine( WikiaResponse::TEMPLATE_ENGINE_MUSTACHE );
+	}
+
+	/**
 	 * @requestParam String title unique title of the POI
 	 * @requestParam Integer map_id
 	 * @requestParam Integer x
