@@ -70,7 +70,9 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 				'wikia-interactive-maps-article',
 				'wikia-interactive-maps-description',
 				'wikia-interactive-maps-poi-type',
-				'wikia-interactive-maps-add-point'
+				'wikia-interactive-maps-add-point',
+				'wikia-interactive-maps-edit-point',
+				'wikia-interactive-maps-delete-point',
 			));
 			JSMessages::enqueuePackage( 'WikiaInteractiveMaps', JSMessages::INLINE );
 

@@ -134,15 +134,18 @@ require([
 		}
 
 		function addPointOnMap(point) {
-			var marker = L.marker([ point.y, point.x ], {
+			var popupHtml = '<h3><a target="_blank" href="' + point.article + '">' + point.title + '</a></h3>' +
+				'<p>' +point.desc + '</p>';
+			if (setup.canEdit) {
+				popupHtml += '<button class="edit_poi">' + $.msg('wikia-interactive-maps-edit-point') + '</button>' +
+					'&nbsp;<button class="delete_poi">' + $.msg('wikia-interactive-maps-delete-point') + '</button>';
+			}
+			return L.marker([ point.y, point.x ], {
 				icon: setup.defaultIcon,
 				riseOnHover: true
 			})
-				.bindPopup('<h3><a target="_blank" href="' + point.article + '">' + point.title + '</a></h3><p>' +
-					point.desc + '</p>')
+				.bindPopup(popupHtml)
 				.addTo(map);
-
-			return marker;
 		}
 
 		function clearMarkers() {
