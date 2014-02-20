@@ -14,7 +14,7 @@ class WikiaInteractiveMapsHooks {
 			$article = new WikiaMapPointArticle( $title );
 		}
 
-		if( !is_null( $title ) && ( new WikiaMap( $title ) )->isMap() ) {
+		if( !is_null( $title ) && ( WikiaMapFactory::build( $title )->isMap() ) ) {
 			$article = new WikiaMapArticle( $title );
 		}
 

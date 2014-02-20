@@ -54,6 +54,8 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 	 * @requestParam Integer $map_id
 	 */
 	public function map() {
+		global $wgUser;
+
 		$pointId = $this->request->getInt( 'map_id' );
 		$title = Title::newFromID( $pointId );
 
@@ -72,16 +74,19 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 			));
 			JSMessages::enqueuePackage( 'WikiaInteractiveMaps', JSMessages::INLINE );
 
-			$wikiaMap = new WikiaMap( $title );
+			$wikiaMap = WikiaMapFactory::build( $title );
 			$mapParameters = $wikiaMap->getMapsParameters();
 			$this->setVal( 'title', $mapParameters->name );
 			$this->wg->Out->addJsConfigVars([
-				'mapMapId' => $title->mArticleID,
-				'mapMinZoom' => $mapParameters->min_zoom,
-				'mapMaxZoom' => $mapParameters->max_zoom,
-				'mapWidth' => $mapParameters->width,
-				'mapHeight' => $mapParameters->height,
-				'mapMapType' => $mapParameters->type,
+				interactiveMapSetup => [
+					'canEdit' => $wgUser->isLoggedIn(),
+					'mapId' => $title->mArticleID,
+					'width' => $mapParameters->width,
+					'height' => $mapParameters->height,
+					'mapType' => $mapParameters->type,
+					'pathTemplate' => $mapParameters->pathTemplate,
+					'mapSetup' => $mapParameters->mapSetup
+				]
 			]);
 
 			// Leaflet
@@ -203,7 +208,7 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 		}
 
 		try {
-			$mapModel = new WikiaMap( $mapTitle );
+			$mapModel = WikiaMapFactory::build( $mapTitle );
 			$out = [
 				'status' => 'ok',
 				'points' => $mapModel->getAllPoints(),

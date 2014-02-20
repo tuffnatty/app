@@ -18,8 +18,13 @@ $wgAutoloadClasses[ 'WikiaInteractiveMapsController' ] = $dir . 'WikiaInteractiv
 $wgAutoloadClasses[ 'WikiaMapPointArticle' ] = $dir . '/models/WikiaMapPointArticle.class.php';
 $wgAutoloadClasses[ 'WikiaMapPoint' ] = $dir . '/models/WikiaMapPoint.class.php';
 $wgAutoloadClasses[ 'WikiaMapArticle' ] = $dir . '/models/WikiaMapArticle.class.php';
-$wgAutoloadClasses[ 'WikiaMap' ] = $dir . '/models/WikiaMap.class.php';
 $wgAutoloadClasses[ 'WikiaMaps' ] = $dir . '/models/WikiaMaps.class.php';
+$wgAutoloadClasses[ 'WikiaMapFactory' ] = $dir . '/models/WikiaMapFactory.class.php';
+$wgAutoloadClasses[ 'WikiaBaseMap' ] = $dir . '/models/maps/WikiaBaseMap.class.php';
+$wgAutoloadClasses[ 'WikiaBaseMap' ] = $dir . '/models/maps/WikiaBaseMap.class.php';
+$wgAutoloadClasses[ 'WikiaCustomMap' ] = $dir . '/models/maps/WikiaCustomMap.class.php';
+$wgAutoloadClasses[ 'WikiaEarthOpenMap' ] = $dir . '/models/maps/WikiaEarthOpenMap.class.php';
+
 
 // hooks classes
 $wgAutoloadClasses[ 'WikiaInteractiveMapsHooks' ] = $dir . 'WikiaInteractiveMapsHooks.class.php';

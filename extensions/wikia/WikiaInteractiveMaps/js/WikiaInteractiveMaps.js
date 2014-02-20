@@ -18,26 +18,14 @@ require([
 			popup = null,
 			setup = {},
 			markers = [],
-			mapTypes = {
-				MAP_TYPE_EARTH_OPEN_MAPS: 1,
-				MAP_TYPE_CUSTOM: 2
-			},
 			defaultSetup = {
 				container: 'interactive_map',
 				mapType: 'openstreetmap',
-				zoom: 2,
-				minZoom: 0,
-				maxZoom: 18,
-				attribution: '',
 				fullscreenControl: true,
+				zoom: 2,
 				contextmenu: true,
 				contextmenuItems: [
 					{
-						text: $.msg('wikia-interactive-maps-add-new-point'),
-						callback: function (event) {
-							addPoint(event);
-						}
-					}, {
 						text: $.msg('wikia-interactive-maps-center-map-here'),
 						callback: function(event) {
 							map.panTo(event.latlng);
@@ -150,7 +138,8 @@ require([
 				icon: setup.defaultIcon,
 				riseOnHover: true
 			})
-				.bindPopup('<h3>' + point.title + '</h3><p>' + point.desc + '</p>')
+				.bindPopup('<h3><a target="_blank" href="' + point.article + '">' + point.title + '</a></h3><p>' +
+					point.desc + '</p>')
 				.addTo(map);
 
 			return marker;
@@ -190,52 +179,32 @@ require([
 		}
 
 		function addMapLayer(map, setup) {
-			var mapTypeHandlers = {};
-			mapTypeHandlers[mapTypes.MAP_TYPE_CUSTOM] = function() {
-				// Custom map
-				return L.tileLayer(setup.pathTemplate, {
-					minZoom: setup.minZoom,
-					maxZoom: setup.maxZoom,
-					attribution: setup.attribution,
-					tms: true,
-					noWrap: true
-				}).addTo(map);
-			};
-			mapTypeHandlers[mapTypes.MAP_TYPE_EARTH_OPEN_MAPS] = function() {
-				// Open Street Map
-				return L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-					attribution: setup.attribution || 'Map data OpenStreetMap contributors',
-					minZoom: setup.minZoom || 0,
-					maxZoom: setup.maxZoom || 12
-				}).addTo(map);
-			};
-			if (mapTypeHandlers[setup.mapType]) {
-				return mapTypeHandlers[setup.mapType]();
-			} else {
-				throw 'Unknown map type: ' + setup.mapType + ' provided';
-			}
+			return L.tileLayer(setup.pathTemplate, setup.mapSetup).addTo(map);
 		}
 
 		function init(customSetup) {
 			setup = $.extend(false, defaultSetup, customSetup );
+			var contextmenuItems = setup.contextmenuItems;
+			if (setup.mapCanEdit) {
+				// Enable add point for users with privilegues
+				contextmenuItems.unshift({
+					text: $.msg('wikia-interactive-maps-add-new-point'),
+						callback: function (event) {
+							addPoint(event);
+						}
+				});
+			}
 			map = L.map(setup.container, {
 				center: [-50, 0],
 				zoom: setup.zoom,
 				fullscreenControl: setup.fullscreenControl,
 				contextmenu: setup.contextmenu,
-				contextmenuItems: setup.contextmenuItems
+				contextmenuItems: contextmenuItems
 			});
 			addMapLayer(map, setup);
 			getPoints(setup.mapId);
 		}
 
-		init({
-			mapId: window.mapMapId,
-			minZoom: window.mapMinZoom,
-			maxZoom: window.mapMaxZoom,
-			width: window.mapWidth,
-			height: window.mapHeight,
-			mapType: window.mapMapType
-		});
+		init(window.interactiveMapSetup || {});
 	});
 });

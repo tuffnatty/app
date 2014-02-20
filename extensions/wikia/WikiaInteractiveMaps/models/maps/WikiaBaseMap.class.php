@@ -1,36 +1,41 @@
 <?php
-class WikiaMap extends WikiaModel {
-	const MAP_TYPE_EARTH_OPEN_MAPS = 1;
-	const MAP_TYPE_CUSTOM = 2;
-	const MAP_TYPE_EARTH_GOOGLE_MAPS = 3;
+abstract class WikiaBaseMap extends WikiaModel {
 
 	/**
 	 * @var Title MW title
 	 */
-	private $title;
+	protected $title;
 
 	/**
 	 * @var Integer pageId
 	 */
-	private $pageId;
+	protected $pageId;
 
 	/**
 	 * @var ImageServing $imageServing
 	 */
-	private $imageServing;
+	protected $imageServing;
 
 	/**
 	 * @var Integer type
 	 */
-	private $type;
+	protected $type;
 
 	/**
 	 * @var Revision $revision
 	 */
-	private $revision;
+	protected $revision;
 
-	public function __construct( Title $title ) {
+	abstract protected function getAttribution();
+	abstract protected function getTms();
+	abstract protected function noWrap( );
+	abstract protected function getPathTemplate();
+	abstract protected function getImage();
+	abstract protected function getMapSetup();
+
+	public function __construct( Title $title, $mapType ) {
 		$this->title = $title;
+		$this->setType( $mapType );
 		$this->pageId = $title->getArticleID();
 	}
 
@@ -39,26 +44,11 @@ class WikiaMap extends WikiaModel {
 	}
 
 	public function getType() {
-		if( is_null( $this->type ) ) {
-			$this->loadType();
-		}
-
 		return $this->type;
 	}
 
 	public function setType( $type ) {
 		$this->type = $type;
-	}
-
-	public function loadType() {
-		$rev = $this->getRevision( Title::GAID_FOR_UPDATE );
-		$text = $rev->getText();
-
-		if( stripos( $text, '__MAP_TYPE_CUSTOM__' ) !== false ) {
-			$this->setType( self::MAP_TYPE_CUSTOM );
-		} else {
-			$this->setType( self::MAP_TYPE_EARTH_OPEN_MAPS );
-		}
 	}
 
 	public function getAllPoints( $master = false ) {
@@ -106,50 +96,17 @@ class WikiaMap extends WikiaModel {
 		$parameters = new stdClass();
 
 		$parameters->name = $this->getName();
-		$parameters->min_zoom = 0;
-		$parameters->max_zoom = 6;
+
 		$parameters->width = 600;
 		$parameters->height = 480;
 		$parameters->type = $this->getType();
 		$parameters->status = 1;
 		$parameters->url = $this->title->getFullURL();
-
-		if( $parameters->type === self::MAP_TYPE_CUSTOM ) {
-			$parameters->image = $this->getImage();
-		}
-
+		$parameters->type = $this->getType();
+		$parameters->pathTemplate = $this->getPathTemplate();
+		$parameters->image = $this->getImage();
+		$parameters->mapSetup = $this->getMapSetup();
 		return $parameters;
-	}
-
-	public function getImageServing() {
-		if( is_null( $this->imageServing ) ) {
-			$this->imageServing = new ImageServing( [ $this->pageId ] );
-		}
-
-		return $this->imageServing;
-	}
-
-	public function getImage() {
-		$is = $this->getImageServing();
-		$images = $is->getImages( 1 ); //get one image from the article;
-
-		if( !empty( $images ) ) {
-			$images = array_shift( $images );
-			$img = array_shift( $images );
-			$file = wfFindFile( $img['name'] );
-
-			return $file->getFullUrl();
-		} else {
-			return '';
-		}
-	}
-
-	public function getRevision() {
-		if( is_null( $this->revision ) ) {
-			$this->revision = Revision::newFromId( $this->title->getLatestRevID() );
-		}
-
-		return $this->revision;
 	}
 
 	/**

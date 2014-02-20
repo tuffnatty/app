@@ -13,7 +13,7 @@ class WikiaMaps extends WikiaModel {
 				$mapId = $map->page_id;
 				$mapTitle = Title::newFromID( $mapId );
 				if( !is_null( $mapTitle ) ) {
-					$mapObj = new WikiaMap( $mapTitle );
+					$mapObj = WikiaMapFactory::build( $mapTitle );
 					$mapParams = $mapObj->getMapsParameters();
 
 					$mapParams->type = ( $mapParams->type === 2 ) ? 'Custom' : 'Real world';
