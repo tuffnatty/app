@@ -77,17 +77,9 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 			$wikiaMap = WikiaMapFactory::build( $title );
 			$mapParameters = $wikiaMap->getMapsParameters();
 			$this->setVal( 'title', $mapParameters->name );
-			$this->wg->Out->addJsConfigVars([
-				interactiveMapSetup => [
-					'canEdit' => $wgUser->isLoggedIn(),
-					'mapId' => $title->mArticleID,
-					'width' => $mapParameters->width,
-					'height' => $mapParameters->height,
-					'mapType' => $mapParameters->type,
-					'pathTemplate' => $mapParameters->pathTemplate,
-					'mapSetup' => $mapParameters->mapSetup
-				]
-			]);
+			$this->wg->Out->addJsConfigVars( [
+				'interactiveMapSetup' => $this->getMapData( $wikiaMap )
+			] );
 
 			// Leaflet
 			$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/leaflet/leaflet-src.js' );
@@ -225,6 +217,38 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 		}
 
 		$this->result = $out;
+	}
+
+	private function getMapData( $wikiaMap ) {
+		global $wgUser;
+
+		$mapParameters = $wikiaMap->getMapsParameters();
+		return [
+			'canEdit' => $wgUser->isLoggedIn(),
+			'mapId' => $wikiaMap->getMapId(),
+			'width' => $mapParameters->width,
+			'height' => $mapParameters->height,
+			'mapType' => $mapParameters->type,
+			'pathTemplate' => $mapParameters->pathTemplate,
+			'mapSetup' => $mapParameters->mapSetup
+		];
+	}
+
+	public function getMap() {
+		$mapTitleText = $this->request->getVal( 'title' );
+		$mapTitle = Title::newFromText( $mapTitleText, NS_WIKIA_MAP );
+
+		if( $mapTitleText === '' || is_null($mapTitle) || !$mapTitle->exists() ) {
+			throw new Exception( 'Invalid map title' );
+		}
+		$wikiaMap = WikiaMapFactory::build( $mapTitle );
+		if( is_null( $wikiaMap ) ) {
+			throw new Exception( 'Map not found' );
+		}
+		$this->result = [
+			'status' => 'ok',
+			'setup' => $this->getMapData( $wikiaMap )
+		];
 	}
 
 }

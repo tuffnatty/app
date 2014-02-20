@@ -43,6 +43,10 @@ abstract class WikiaBaseMap extends WikiaModel {
 		return $this->title->getText();
 	}
 
+	public function getMapId() {
+		return $this->title->mArticleID;
+	}
+
 	public function getType() {
 		return $this->type;
 	}
