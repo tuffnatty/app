@@ -39,7 +39,7 @@ class WikiaCustomMap extends WikiaBaseMap {
 		return $this->noWrap;
 	}
 	protected function getPathTemplate() {
-		return '/i/<?php echo $id; ?>/{z}/{x}/{y}.png';
+		return 'http://localhost:8000/{z}/{x}/{y}.png';
 	}
 
 	protected function getMapSetup() {

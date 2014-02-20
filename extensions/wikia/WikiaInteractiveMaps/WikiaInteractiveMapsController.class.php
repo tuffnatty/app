@@ -251,4 +251,11 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 		];
 	}
 
+	public function getMaps() {
+		$mapsModel = new WikiaMaps();
+		$this->result = [
+			'status' => 'ok',
+			'setup' => $mapsModel->getAllMaps()
+		];
+	}
 }
