@@ -109,7 +109,7 @@ require([
 				method: 'createPoint',
 				data: formData,
 				callback: function(response) {
-					onCreatePointSuccess(response, formData);
+					onCreatePointSuccess(response);
 				},
 				onErrorCallback: onCreatePointError
 			});
@@ -122,9 +122,9 @@ require([
 			}
 		}
 
-		function onCreatePointSuccess(response, formData) {
+		function onCreatePointSuccess(response) {
 			if (response.result.status === 'ok') {
-				addPointOnMap(formData);
+				addPointOnMap(response.result.point);
 				closePopup();
 			}
 		}

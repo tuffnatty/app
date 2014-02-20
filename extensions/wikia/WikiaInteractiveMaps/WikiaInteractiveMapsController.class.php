@@ -125,7 +125,7 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 		$data = [
 			'title' => $this->request->getVal( 'title' ),
 			'map_id' => $this->request->getVal( 'mapId' ),
-			'x' => (float)$this->request->getVal('x'),
+			'x' => (float)$this->request->getVal( 'x' ),
 			'y' => (float)$this->request->getVal( 'y' ),
 			'desc' => $this->request->getVal( 'desc' ),
 			'flag' => $this->request->getInt( 'flag', 0 ),
@@ -146,8 +146,12 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 		$result = new stdClass();
 		if( $status->isOK() ) {
 			$result->status = 'ok';
+			$json->x = $json->coordinates->x;
+			$json->y = $json->coordinates->y;
+			unset( $json->coordinates );
 			$json->title = $data['title'];
 			$json->desc = $data['desc'];
+			$json->article = $pointTitle->getFullURL();
 			$result->point = $json;
 		} else {
 			$result->status = 'fail';

@@ -18,7 +18,7 @@ class WikiaInteractiveMapsHooks {
 			}
 
 			$WikiaMap = WikiaMapFactory::build( $title );
-			if( !( is_null( $WikiaMap ) && $WikiaMap->isMap() ) ) {
+			if( !is_null( $WikiaMap ) && $WikiaMap->isMap() ) {
 				$article = new WikiaMapArticle( $title );
 				wfProfileOut(__METHOD__);
 				return true;

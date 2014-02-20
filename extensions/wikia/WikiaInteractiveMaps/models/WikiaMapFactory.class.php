@@ -25,8 +25,11 @@ class WikiaMapFactory {
 		return null;
 	}
 
-	public static function getType(Title $title) {
+	public static function getType( Title $title ) {
 		$rev = self::getRevision( $title );
+		if ( is_null( $rev ) ) {
+			return null;
+		}
 		$text = $rev->getText();
 
 		if( stripos( $text, '__MAP_TYPE_CUSTOM__' ) !== false ) {
