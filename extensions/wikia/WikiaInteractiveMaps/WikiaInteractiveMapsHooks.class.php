@@ -10,14 +10,20 @@ class WikiaInteractiveMapsHooks {
 	static public function onArticleFromTitle( &$title, &$article ) {
 		wfProfileIn(__METHOD__);
 
-		if( !is_null( $title ) && ( new WikiaMapPoint( $title ) )->isMapPoint() ) {
-			$article = new WikiaMapPointArticle( $title );
-		}
+		if ( !is_null( $title ) ) {
+			if ( ( new WikiaMapPoint( $title ) )->isMapPoint() ) {
+				$article = new WikiaMapPointArticle( $title );
+				wfProfileOut(__METHOD__);
+				return true;
+			}
 
-		if( !is_null( $title ) && ( WikiaMapFactory::build( $title )->isMap() ) ) {
-			$article = new WikiaMapArticle( $title );
+			$WikiaMap = WikiaMapFactory::build( $title );
+			if( !( is_null( $WikiaMap ) && $WikiaMap->isMap() ) ) {
+				$article = new WikiaMapArticle( $title );
+				wfProfileOut(__METHOD__);
+				return true;
+			}
 		}
-
 		wfProfileOut(__METHOD__);
 		return true;
 	}

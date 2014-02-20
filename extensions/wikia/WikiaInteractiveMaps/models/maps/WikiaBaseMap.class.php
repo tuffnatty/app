@@ -78,7 +78,7 @@ abstract class WikiaBaseMap extends WikiaModel {
 					$points[] = [
 						'title' => $pointObj->getText(),
 						'x' => $pointObj->getX(),
-						'y' => $pointObj->getX(),
+						'y' => $pointObj->getY(),
 						'desc' => $pointObj->getDescription(),
 						'point_type' => $pointObj->getType(),
 						'article' => $pointObj->getFullURL(),

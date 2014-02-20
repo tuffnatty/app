@@ -22,7 +22,7 @@ class WikiaMapFactory {
 			break;
 		}
 		// FIXME: in case of unknown map
-		return false;
+		return null;
 	}
 
 	public static function getType(Title $title) {

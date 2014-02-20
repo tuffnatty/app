@@ -125,8 +125,8 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 		$data = [
 			'title' => $this->request->getVal( 'title' ),
 			'map_id' => $this->request->getVal( 'mapId' ),
-			'x' => $this->request->getInt( 'x' ),
-			'y' => $this->request->getInt( 'y' ),
+			'x' => (float)$this->request->getVal('x'),
+			'y' => (float)$this->request->getVal( 'y' ),
 			'desc' => $this->request->getVal( 'desc' ),
 			'flag' => $this->request->getInt( 'flag', 0 ),
 		];

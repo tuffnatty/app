@@ -91,8 +91,8 @@ require([
 					coordinates = popup.getLatLng(),
 					formData = {
 						mapId: setup.mapId,
-						y: coordinates.lat,
 						x: coordinates.lng,
+						y: coordinates.lat,
 						title: $this.find('[name=article]').val(),
 						desc: $this.find('[name=description]').val(),
 						flag: $this.find('[name=point_type]').val()
@@ -108,8 +108,8 @@ require([
 				controller: 'WikiaInteractiveMaps',
 				method: 'createPoint',
 				data: formData,
-				callback: function(result) {
-					onCreatePointSuccess(result, formData);
+				callback: function(response) {
+					onCreatePointSuccess(response, formData);
 				},
 				onErrorCallback: onCreatePointError
 			});
@@ -122,8 +122,8 @@ require([
 			}
 		}
 
-		function onCreatePointSuccess(result, formData) {
-			if (result.status === 'ok') {
+		function onCreatePointSuccess(response, formData) {
+			if (response.result.status === 'ok') {
 				addPointOnMap(formData);
 				closePopup();
 			}
@@ -184,10 +184,9 @@ require([
 
 		function init(customSetup) {
 			setup = $.extend(false, defaultSetup, customSetup );
-			var contextmenuItems = setup.contextmenuItems;
-			if (setup.mapCanEdit) {
+			if (setup.canEdit) {
 				// Enable add point for users with privilegues
-				contextmenuItems.unshift({
+				setup.contextmenuItems.unshift({
 					text: $.msg('wikia-interactive-maps-add-new-point'),
 						callback: function (event) {
 							addPoint(event);
@@ -199,7 +198,7 @@ require([
 				zoom: setup.zoom,
 				fullscreenControl: setup.fullscreenControl,
 				contextmenu: setup.contextmenu,
-				contextmenuItems: contextmenuItems
+				contextmenuItems: setup.contextmenuItems
 			});
 			addMapLayer(map, setup);
 			getPoints(setup.mapId);
