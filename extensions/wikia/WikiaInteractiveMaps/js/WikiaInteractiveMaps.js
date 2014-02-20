@@ -58,7 +58,16 @@ require([
 					'<p><label>{{ label.article }}<br/><input name="article" value ="{{ article }}"/></label></p>' +
 					'<p><label>{{ label.description }}<br/><textarea name="description" value ="{{ description }}"/></textarea></label></p>' +
 					'<p><label>{{ label.poiType }}<br/><select name="point_type">{{#pointTypes}}<option value="{{ id }}">{{ name}}</option>{{/pointTypes}}</select></label></p>'+
-					'<button>{{label.button}}</button></form>'
+					'<button>{{label.button}}</button></form>',
+				defaultIcon: L.icon({
+					iconUrl: window.wgResourceBasePath + '/extensions/wikia/WikiaInteractiveMaps/js/leaflet/images/marker-icon.png',
+					iconRetinaUrl: window.wgResourceBasePath + '/extensions/wikia/WikiaInteractiveMaps/js/leaflet/images/marker-icon@2x.png',
+					iconSize: [25, 41],
+					iconAnchor: [12, 41],
+					popupAnchor: [1, -34],
+					shadowSize: [41, 41],
+					shadowUrl: window.wgResourceBasePath + '/extensions/wikia/WikiaInteractiveMaps/js/leaflet/images/marker-shadow.png',
+				})
 			};
 
 		function addPoint(event) {
@@ -126,7 +135,7 @@ require([
 		}
 
 		function onCreatePointSuccess(result, formData) {
-			if (result.status.ok === true) {
+			if (result.status === 'ok') {
 				addPointOnMap(formData);
 				closePopup();
 			}
@@ -138,11 +147,10 @@ require([
 
 		function addPointOnMap(point) {
 			var marker = L.marker([ point.y, point.x ], {
-				// FIXME: Add custom icons once we have them
-				// icon: icons[poi.pointType || 0],
+				icon: setup.defaultIcon,
 				riseOnHover: true
 			})
-				.bindPopup('<h3>' + point.title + '</h3>')
+				.bindPopup('<h3>' + point.title + '</h3><p>' + point.desc + '</p>')
 				.addTo(map);
 
 			return marker;
