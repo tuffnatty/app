@@ -57,6 +57,10 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 		global $wgUser;
 
 		$pointId = $this->request->getInt( 'map_id' );
+		$x = $this->request->getVal( 'x', null );
+		$y = $this->request->getVal( 'x', null );
+		$z = $this->request->getVal( 'z', null );
+
 		$title = Title::newFromID( $pointId );
 
 		if( !is_null( $title ) ) {
@@ -73,15 +77,21 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 				'wikia-interactive-maps-add-point',
 				'wikia-interactive-maps-edit-point',
 				'wikia-interactive-maps-delete-point',
+				'wikia-interactive-maps-get-link',
 			));
 			JSMessages::enqueuePackage( 'WikiaInteractiveMaps', JSMessages::INLINE );
 
 			$wikiaMap = WikiaMapFactory::build( $title );
 			$mapParameters = $wikiaMap->getMapsParameters();
 			$this->setVal( 'title', $mapParameters->name );
-			$this->wg->Out->addJsConfigVars( [
+			$configVars = [
 				'interactiveMapSetup' => $this->getMapData( $wikiaMap )
-			] );
+			];
+			if ($x && $y && $z) {
+				$configVars['interactiveMapSetup']['init'] = ['lat' => $y, 'lon' => $y, 'zoom' => $z];
+			}
+
+			$this->wg->Out->addJsConfigVars( $configVars );
 
 			// Leaflet
 			$this->response->addAsset( 'extensions/wikia/WikiaInteractiveMaps/js/leaflet/leaflet-src.js' );
@@ -232,6 +242,7 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 			'height' => $mapParameters->height,
 			'mapType' => $mapParameters->type,
 			'pathTemplate' => $mapParameters->pathTemplate,
+			'url' => $mapParameters->url,
 			'mapSetup' => $mapParameters->mapSetup
 		];
 	}

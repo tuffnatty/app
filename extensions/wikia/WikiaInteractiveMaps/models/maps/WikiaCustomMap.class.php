@@ -27,7 +27,7 @@ class WikiaCustomMap extends WikiaBaseMap {
 	/**
 	 * @var int
 	 */
-	private $maxZoom = 6;
+	private $maxZoom = 5;
 
 	protected function getAttribution() {
 		return 'Attribution for wikia map';
@@ -39,7 +39,7 @@ class WikiaCustomMap extends WikiaBaseMap {
 		return $this->noWrap;
 	}
 	protected function getPathTemplate() {
-		return 'http://localhost:8000/{z}/{x}/{y}.png';
+		return 'http://localhost:8000/15/{z}/{x}/{y}.png';
 	}
 
 	protected function getMapSetup() {

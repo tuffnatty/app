@@ -22,7 +22,11 @@ require([
 				container: 'interactive_map',
 				mapType: 'openstreetmap',
 				fullscreenControl: true,
-				zoom: 2,
+				init: {
+					lat: -50,
+					lon: 0,
+					zoom: 2
+				},
 				contextmenu: true,
 				contextmenuItems: [
 					{
@@ -30,7 +34,25 @@ require([
 						callback: function(event) {
 							map.panTo(event.latlng);
 						}
-					}, '-', {
+					}, {
+						text: $.msg('wikia-interactive-maps-get-link'),
+						callback: function() {
+							var latlng = map.getCenter(),
+								url = setup.url + '?' + [
+								'x=' + latlng.lat.toFixed(6),
+								'y=' + latlng.lng.toFixed(6),
+								'z=' + map.getZoom()
+							].join('&');
+							window.prompt('', url);
+						}
+					}, {
+						text: 'Show coordinates',
+						callback: function showCoordinates (event) {
+							alert(event.latlng);
+						}
+					},
+					'-',
+					{
 						text: $.msg('wikia-interactive-maps-zoom-in'),
 						callback: function() {
 							map.zoomIn();
@@ -196,15 +218,17 @@ require([
 						}
 				});
 			}
+
 			map = L.map(setup.container, {
-				center: [-50, 0],
-				zoom: setup.zoom,
+				center: [setup.init.lat, setup.init.lon],
+				zoom: setup.init.zoom,
 				fullscreenControl: setup.fullscreenControl,
 				contextmenu: setup.contextmenu,
 				contextmenuItems: setup.contextmenuItems
 			});
-			addMapLayer(map, setup);
+			map.panTo(L.latLng(setup.init.lat, setup.init.lon));
 			getPoints(setup.mapId);
+			addMapLayer(map, setup);
 		}
 
 		init(window.interactiveMapSetup || {});

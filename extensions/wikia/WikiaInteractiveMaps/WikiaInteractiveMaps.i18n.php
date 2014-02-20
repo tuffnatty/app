@@ -11,7 +11,8 @@ $messages[ 'en' ] = [
 	'wikia-interactive-maps-poi-type' => 'Point type',
 	'wikia-interactive-maps-add-point' => 'Add point',
 	'wikia-interactive-maps-edit-point' => 'Edit point',
-	'wikia-interactive-maps-delete-point' => 'Delete point'
+	'wikia-interactive-maps-delete-point' => 'Delete point',
+	'wikia-interactive-maps-get-link' => 'Get link',
 ];
 
 $messages[ 'qqq' ] = [

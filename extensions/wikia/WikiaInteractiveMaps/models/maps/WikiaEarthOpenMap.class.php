@@ -30,7 +30,7 @@ class WikiaEarthOpenMap extends WikiaBaseMap {
 	private $maxZoom = 16;
 
 	protected function getAttribution() {
-		return 'Attribution for Open Street Maps';
+		return '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 	}
 	protected function getTms() {
 		return $this->tms;

@@ -5,7 +5,7 @@ class WikiaMapArticle extends Article {
 	 * @desc Render hubs page
 	 */
 	public function view() {
-		global $wgOut;
+		global $wgOut, $wgRequest;
 		wfProfileIn(__METHOD__);
 
 		$wgOut->clearHTML();
@@ -13,7 +13,10 @@ class WikiaMapArticle extends Article {
 			'WikiaInteractiveMapsController',
 			'map',
 			[
-				'map_id' => $this->getTitle()->getArticleID()
+				'map_id' => $this->getTitle()->getArticleID(),
+				'x' => $wgRequest->getVal('x'),
+				'y' => $wgRequest->getVal('y'),
+				'z' => $wgRequest->getVal('z')
 			]
 		) );
 
