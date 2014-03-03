@@ -4,26 +4,26 @@
  * @author Jakub "Student" Olek
  */
 define('pager', ['wikia.window'], function (window) {
-	var tr = ('ontransitionend' in window) ? 'transitionend' : ('onwebkittransitionend' in window) ?  'webkitTransitionEnd' : false,
-		addTransitionEnd = (function(){
+	var tr = ('ontransitionend' in window) ? 'transitionend' : ('onwebkittransitionend' in window) ? 'webkitTransitionEnd' : false,
+		addTransitionEnd = (function () {
 			return (tr) ?
-				function(elm, c){
+				function (elm, c) {
 					elm.addEventListener(tr, c, true);
-				} :
-				function(elm, c, t){
+			} :
+				function (elm, c, t) {
 					window.setTimeout(c, t);
-				};
+			};
 		})(),
-		removeTransitionEnd = (function(){
+		removeTransitionEnd = (function () {
 			return (tr) ?
-				function(elm, c){
+				function (elm, c) {
 					elm.removeEventListener(tr, c, true)
-				} :
-				function(){};
+			} :
+				function () {};
 		})(),
-		setTransform = function(prev, current, next, x, padding){
-			x = ~~(x * 1.2);
-			var	translate = 'translate3d(' + x + 'px,0,0)',
+		setTransform = function (prev, current, next, x, padding) {
+			x = ~~ (x * 1.2);
+			var translate = 'translate3d(' + x + 'px,0,0)',
 				style;
 
 			current.style.webkitTransform = translate;
@@ -31,9 +31,9 @@ define('pager', ['wikia.window'], function (window) {
 			if (prev) {
 				style = prev.style;
 
-				if(x > padding) {
+				if (x > padding) {
 					style.webkitTransform = translate;
-				}else if(style.webkitTransform != '') {
+				} else if (style.webkitTransform != '') {
 					style.webkitTransform = '';
 				}
 			}
@@ -41,24 +41,24 @@ define('pager', ['wikia.window'], function (window) {
 			if (next) {
 				style = next.style;
 
-				if(x < -padding) {
+				if (x < -padding) {
 					style.webkitTransform = translate;
-				}else if(style.webkitTransform != '') {
+				} else if (style.webkitTransform != '') {
 					style.webkitTransform = '';
 				}
 			}
 		},
-		wrap = function(pages){
-			var i = pages.length-1;
+		wrap = function (pages) {
+			var i = pages.length - 1;
 
-			while(i >= 0){
+			while (i >= 0) {
 				pages[i] = '<section>' + pages[i--] + '</section>';
 			}
 
 			return pages;
 		};
 
-	return function(options){
+	return function (options) {
 		var pos,
 			isFunction,
 			container,
@@ -81,7 +81,7 @@ define('pager', ['wikia.window'], function (window) {
 			width,
 			padding,
 			eventsNotAdded = true,
-			end = function(){
+			end = function () {
 				var insertPage,
 					changePage = (toX !== 0),
 					elem,
@@ -90,40 +90,40 @@ define('pager', ['wikia.window'], function (window) {
 				removeTransitionEnd(current, end);
 
 				current.style.webkitTransform = '';
-				if(next) next.style.webkitTransform = '';
-				if(prev) prev.style.webkitTransform = '';
+				if (next) next.style.webkitTransform = '';
+				if (prev) prev.style.webkitTransform = '';
 
 				current.style.webkitTransition = '';
-				if(next) next.style.webkitTransition = '';
-				if(prev) prev.style.webkitTransition = '';
+				if (next) next.style.webkitTransition = '';
+				if (prev) prev.style.webkitTransition = '';
 
-				if(changePage) {
-					if(toX > 0){
+				if (changePage) {
+					if (toX > 0) {
 						current = current.previousElementSibling;
 						currentPageNum--;
 
-						if(currentPageNum > 0){
-							insertPage = currentPageNum-1;
-						}else if(circle){
-							if(currentPageNum === 0){
+						if (currentPageNum > 0) {
+							insertPage = currentPageNum - 1;
+						} else if (circle) {
+							if (currentPageNum === 0) {
 								insertPage = lastPage;
-							}else if(currentPageNum === -1){
+							} else if (currentPageNum === -1) {
 								currentPageNum = lastPage;
-								insertPage = currentPageNum-1;
+								insertPage = currentPageNum - 1;
 							}
 						}
 
 						where = 'afterbegin';
-					}else{
+					} else {
 						current = current.nextElementSibling;
 						currentPageNum++;
 
-						if(currentPageNum < lastPage){
-							insertPage = currentPageNum+1;
-						}else if(circle){
-							if(currentPageNum == lastPage){
+						if (currentPageNum < lastPage) {
+							insertPage = currentPageNum + 1;
+						} else if (circle) {
+							if (currentPageNum == lastPage) {
 								insertPage = 0;
-							}else if(currentPageNum == lastPage+1){
+							} else if (currentPageNum == lastPage + 1) {
 								currentPageNum = 0;
 								insertPage = 1;
 							}
@@ -132,64 +132,64 @@ define('pager', ['wikia.window'], function (window) {
 						where = 'beforeend';
 					}
 
-					if(insertPage >= 0 && where) container.insertAdjacentHTML(where, pages[insertPage]);
+					if (insertPage >= 0 && where) container.insertAdjacentHTML(where, pages[insertPage]);
 
 					current.className = 'swiperPage current';
 
-					if(prev = current.previousElementSibling) {
+					if (prev = current.previousElementSibling) {
 						prev.className = 'swiperPage prev';
-						if(elem = prev.previousElementSibling) container.removeChild(elem);
+						if (elem = prev.previousElementSibling) container.removeChild(elem);
 					}
-					if(next = current.nextElementSibling){
+					if (next = current.nextElementSibling) {
 						next.className = 'swiperPage next';
-						if(elem = next.nextElementSibling) container.removeChild(elem);
+						if (elem = next.nextElementSibling) container.removeChild(elem);
 					}
 				}
 
 				onStartFired = animating = false;
 				onEnd && onEnd(pages[currentPageNum], current, currentPageNum);
 			},
-			loadCurrentPage = function(){
-				container.innerHTML = ((currentPageNum > 0) ? pages[currentPageNum-1] :
+			loadCurrentPage = function () {
+				container.innerHTML = ((currentPageNum > 0) ? pages[currentPageNum - 1] :
 					(circle && currentPageNum === 0) ? pages[lastPage] : '') +
 					pages[currentPageNum] +
-					((lastPage > 0 && currentPageNum < lastPage) ? pages[currentPageNum+1] :
-						(circle && currentPageNum === lastPage) ? pages[0] : '');
+					((lastPage > 0 && currentPageNum < lastPage) ? pages[currentPageNum + 1] :
+					(circle && currentPageNum === lastPage) ? pages[0] : '');
 
 				var elems = container.childNodes;
 
-				if(elems.length <= 2){
-					if(currentPageNum !== 0) {
+				if (elems.length <= 2) {
+					if (currentPageNum !== 0) {
 						prev = elems[0];
 						current = elems[1];
 						next = false;
-					}else{
+					} else {
 						prev = false;
 						current = elems[0];
 						next = elems[1];
 					}
 
-				}else{
+				} else {
 					prev = elems[0];
 					current = elems[1];
 					next = elems[2];
 				}
 
 				current.className = 'swiperPage current';
-				if(prev) prev.className = 'swiperPage prev';
-				if(next) next.className = 'swiperPage next';
+				if (prev) prev.className = 'swiperPage prev';
+				if (next) next.className = 'swiperPage next';
 
 				width = container.offsetWidth;
 				padding = width * 0.2;
 			},
-			goTo = function(delta){
+			goTo = function (delta) {
 				toX = (delta < -100 && next) ? -width :
 					(delta > 100 && prev) ? width :
 					0;
 
 				current.style.webkitTransition = '-webkit-transform .3s';
-				if(prev) prev.style.webkitTransition = '-webkit-transform .3s';
-				if(next) next.style.webkitTransition = '-webkit-transform .3s';
+				if (prev) prev.style.webkitTransition = '-webkit-transform .3s';
+				if (next) next.style.webkitTransition = '-webkit-transform .3s';
 
 				animating = true;
 
@@ -197,7 +197,7 @@ define('pager', ['wikia.window'], function (window) {
 
 				setTransform(prev, current, next, toX, padding);
 			},
-			onTouchStart = function(ev){
+			onTouchStart = function (ev) {
 				if (ev.touches.length == 1) {
 
 					//since this is internal tool for now
@@ -205,9 +205,9 @@ define('pager', ['wikia.window'], function (window) {
 					//we can assume that this should always be at the top
 					//if need arises better place for this probably is onStart
 					//so fix it with this line in case:
-					window.scrollTo(0,1);
+					window.scrollTo(0, 1);
 
-					if ( isFunction ? !checkCancel() : true ) {
+					if (isFunction ? !checkCancel() : true) {
 						pos = ev.touches[0].pageX;
 
 						wrapper.removeEventListener('touchstart', onTouchStart);
@@ -218,9 +218,9 @@ define('pager', ['wikia.window'], function (window) {
 				}
 
 			},
-			onTouchMove = function(ev){
-				if ( ev.touches.length === 1 ) {
-					if( isFunction ? !checkCancel() : true ) {
+			onTouchMove = function (ev) {
+				if (ev.touches.length === 1) {
+					if (isFunction ? !checkCancel() : true) {
 						ev.preventDefault();
 
 						var delta = ev.touches[0].pageX - pos;
@@ -233,10 +233,10 @@ define('pager', ['wikia.window'], function (window) {
 					}
 				}
 			},
-			onTouchEnd = function(ev){
-				if(ev.touches.length === 0) {
+			onTouchEnd = function (ev) {
+				if (ev.touches.length === 0) {
 
-					if ( isFunction ? !checkCancel() : true ) {
+					if (isFunction ? !checkCancel() : true) {
 						onStartFired && goTo(ev.changedTouches[0].pageX - pos);
 					}
 
@@ -246,18 +246,18 @@ define('pager', ['wikia.window'], function (window) {
 					wrapper.removeEventListener('touchcancel', onTouchEnd);
 				}
 			},
-			cleanup = function(onePage){
+			cleanup = function (onePage) {
 				eventsNotAdded = true;
 				!onePage && window.removeEventListener('viewportsize', onResize);
 				wrapper.removeEventListener('touchstart', onTouchStart);
 			},
-			events = function(){
-				if(eventsNotAdded){
+			events = function () {
+				if (eventsNotAdded) {
 					eventsNotAdded = false;
 					wrapper.addEventListener('touchstart', onTouchStart);
 				}
 			},
-			onResize = function(){
+			onResize = function () {
 				width = wrapper.offsetWidth;
 				padding = width * 0.2;
 				onOrientCallback && onOrientCallback();
@@ -277,8 +277,8 @@ define('pager', ['wikia.window'], function (window) {
 		center = options.center || false;
 
 		//true init
-		if(container && pages){
-			lastPage = pages.length-1;
+		if (container && pages) {
+			lastPage = pages.length - 1;
 			circle = (circle && lastPage);
 			pages = (center) ? wrap(pages) : pages;
 			loadCurrentPage();
@@ -287,17 +287,17 @@ define('pager', ['wikia.window'], function (window) {
 			(lastPage || circle) && events();
 
 			return {
-				prev: function(){
+				prev: function () {
 					goTo(101);
 				},
-				next: function(){
+				next: function () {
 					goTo(-101);
 				},
-				reset: function(options){
-					if(options.pages){
+				reset: function (options) {
+					if (options.pages) {
 						pages = center ? wrap(options.pages) : options.pages;
 					}
-					lastPage = pages.length-1;
+					lastPage = pages.length - 1;
 					circle = (circle && lastPage);
 					currentPageNum = (typeof options.pageNumber === 'number') ? options.pageNumber : currentPageNum;
 
@@ -310,7 +310,7 @@ define('pager', ['wikia.window'], function (window) {
 					return current;
 				}
 			};
-		}else {
+		} else {
 			throw 'no container or pages specified';
 		}
 	};

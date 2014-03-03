@@ -24,18 +24,18 @@ define('share', ['wikia.cache', 'JSMessages', 'wikia.loader', 'wikia.window'], f
 		$4 = /__4__/g,
 		cacheKey = 'shareButtons';
 
-	return function(link){
-		return function(cnt){
-			function handle(html){
-				if(link){
+	return function (link) {
+		return function (cnt) {
+			function handle(html) {
+				if (link) {
 					var imgUrl = pageUrl + '?file=' + encodeURIComponent(encodeURIComponent(link));
 					cnt.innerHTML = html.replace($1, imgUrl).replace($2, shrImgTxt).replace($3, shrMailImgTxt).replace($4, shrImgTxt);
-				}else{
+				} else {
 					cnt.innerHTML = html.replace($1, pageUrl).replace($2, shrPageTxt).replace($3, shrMailPageTxt).replace($4, shrPageTxt);
 				}
 			}
 
-			if(!shrData){
+			if (!shrData) {
 				shrData = cache.getVersioned(cacheKey);
 				shrPageTxt = msg('wikiamobile-sharing-page-text', w.wgTitle, w.wgSitename);
 				shrMailPageTxt = encodeURIComponent(msg('wikiamobile-sharing-email-text', shrPageTxt));
@@ -43,10 +43,10 @@ define('share', ['wikia.cache', 'JSMessages', 'wikia.loader', 'wikia.window'], f
 				shrMailImgTxt = encodeURIComponent(msg('wikiamobile-sharing-email-text', shrImgTxt));
 			}
 
-			if(shrData){
+			if (shrData) {
 				loader.processStyle(shrData[1]);
 				handle(shrData[0]);
-			}else{
+			} else {
 				loader({
 					type: loader.MULTI,
 					resources: {
@@ -58,7 +58,7 @@ define('share', ['wikia.cache', 'JSMessages', 'wikia.loader', 'wikia.window'], f
 						ttl: 86400
 					}
 				}).done(
-					function(res){
+					function (res) {
 						var html = res.templates.WikiaMobileSharingService_index,
 							style = res.styles;
 
@@ -66,7 +66,7 @@ define('share', ['wikia.cache', 'JSMessages', 'wikia.loader', 'wikia.window'], f
 						handle(html);
 
 						shrData = [html, style];
-						cache.setVersioned(cacheKey, shrData, 604800);/*7 days*/
+						cache.setVersioned(cacheKey, shrData, 604800); /*7 days*/
 					}
 				)
 			}

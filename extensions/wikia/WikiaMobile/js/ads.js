@@ -27,7 +27,9 @@ define('ads', ['wikia.cookies', 'wikia.window', 'wikia.dartmobilehelper', 'wikia
 	 * @param {Number} time An amount of time in seconds, bigger than 0
 	 */
 	function stop(time) {
-		ck.set(STOP_COOKIE_NAME, 1, {expires: time * 1000});
+		ck.set(STOP_COOKIE_NAME, 1, {
+			expires: time * 1000
+		});
 	}
 
 	function shouldRequestAd() {
@@ -41,7 +43,7 @@ define('ads', ['wikia.cookies', 'wikia.window', 'wikia.dartmobilehelper', 'wikia
 			wikiaMobileId = Math.round(Math.random() * 23456787654);
 
 			ck.set(ID_COOKIE_NAME, wikiaMobileId, {
-				expires: 1000*60*60*24*180, // 3 months
+				expires: 1000 * 60 * 60 * 24 * 180, // 3 months
 				path: window.wgCookiePath,
 				domain: window.wgCookieDomain
 			});
@@ -62,8 +64,8 @@ define('ads', ['wikia.cookies', 'wikia.window', 'wikia.dartmobilehelper', 'wikia
 	 * 		wrapper - html element
 	 * 		init - function to be called
 	 */
-	function setupSlot( options ) {
-		if ( shouldRequestAd() ) {
+	function setupSlot(options) {
+		if (shouldRequestAd()) {
 			scriptWriter.injectScriptByUrl(
 				options.wrapper,
 				dartHelper.getMobileUrl({
@@ -71,7 +73,7 @@ define('ads', ['wikia.cookies', 'wikia.window', 'wikia.dartmobilehelper', 'wikia
 					size: options.size,
 					uniqueId: getUniqueId()
 				}),
-				findAd( options.wrapper, options.init )
+				findAd(options.wrapper, options.init)
 			);
 		}
 	}
@@ -84,9 +86,9 @@ define('ads', ['wikia.cookies', 'wikia.window', 'wikia.dartmobilehelper', 'wikia
 	 *
 	 * @return function - callback for postscribe
 	 */
-	function findAd( wrapper, init ) {
-		return function(){
-			if ( wrapper ) {
+	function findAd(wrapper, init) {
+		return function () {
+			if (wrapper) {
 				var i,
 					imgs,
 					width,
@@ -97,31 +99,31 @@ define('ads', ['wikia.cookies', 'wikia.window', 'wikia.dartmobilehelper', 'wikia
 				//search for any real ad content
 				//unfortunately some iframes can be empty
 				//but we have no access to them
-				var found = (wrapper.getElementsByTagName( 'iframe' ).length > 0 ||
-					wrapper.getElementsByTagName( 'video' ).length > 0 ||
-					wrapper.getElementsByTagName( 'object' ).length > 0 ||
-					wrapper.getElementsByTagName( 'embed' ).length > 0 ||
-					wrapper.getElementsByClassName( 'celtra-ad-v3' ).length > 0);
+				var found = (wrapper.getElementsByTagName('iframe').length > 0 ||
+					wrapper.getElementsByTagName('video').length > 0 ||
+					wrapper.getElementsByTagName('object').length > 0 ||
+					wrapper.getElementsByTagName('embed').length > 0 ||
+					wrapper.getElementsByClassName('celtra-ad-v3').length > 0);
 
 				//despite the above check's result, run this anyways
 				//as it also takes care of hiding tracking pixels
-				if ( ( imgs = wrapper.getElementsByTagName( 'img' ) ).length > 0 ) {
+				if ((imgs = wrapper.getElementsByTagName('img')).length > 0) {
 					for (x = 0, y = imgs.length; x < y; x += 1) {
 						i = imgs[x];
-						width = i.getAttribute( 'width' );
-						height = i.getAttribute( 'height' );
+						width = i.getAttribute('width');
+						height = i.getAttribute('height');
 
 						//try calculating the size if there were no attributes
 						//this is expensive, so attributes were checked first
-						if ( !width ) {
+						if (!width) {
 							width = i.clientWidth;
 						}
 
-						if ( !height ) {
+						if (!height) {
 							height = i.clientHeight;
 						}
 
-						if ( width > 1 && height > 1 ) {
+						if (width > 1 && height > 1) {
 							//if image is not a tracking pixel
 							found = true;
 							break;
@@ -134,8 +136,8 @@ define('ads', ['wikia.cookies', 'wikia.window', 'wikia.dartmobilehelper', 'wikia
 					}
 				}
 
-				if( typeof init == 'function' ) {
-					init( found )
+				if (typeof init == 'function') {
+					init(found)
 				}
 			}
 		}
@@ -147,9 +149,9 @@ define('ads', ['wikia.cookies', 'wikia.window', 'wikia.dartmobilehelper', 'wikia
 	return window.MobileAd = {
 		setupSlot: setupSlot,
 		shouldRequestAd: shouldRequestAd,
-		init: function(name, options){
-			if( options && options.hasOwnProperty( 'stop' ) ){
-				stop( options.stop );
+		init: function (name, options) {
+			if (options && options.hasOwnProperty('stop')) {
+				stop(options.stop);
 			}
 		},
 		stop: stop

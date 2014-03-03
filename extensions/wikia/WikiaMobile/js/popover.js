@@ -11,8 +11,8 @@
  *
  * @author Jakub "Student" Olek
  */
-define('popover', ['throbber'], function popover(throbber){
-	return function(options){
+define('popover', ['throbber'], function popover(throbber) {
+	return function (options) {
 		options = options || {};
 
 		var elm = options.on,
@@ -20,26 +20,26 @@ define('popover', ['throbber'], function popover(throbber){
 			isOpen = false,
 			cnt;
 
-		if(elm){
-			elm.addEventListener('click', function(event){
-				if(this.className.indexOf('on') > -1){
+		if (elm) {
+			elm.addEventListener('click', function (event) {
+				if (this.className.indexOf('on') > -1) {
 					close(event);
-				}else{
-					if(!initialized){
+				} else {
+					if (!initialized) {
 						var position = options.position || 'bottom',
 							horizontal = (position == 'bottom' || position == 'top'),
-							offset = (horizontal)?this.offsetHeight:this.offsetWidth,
+							offset = (horizontal) ? this.offsetHeight : this.offsetWidth,
 							onCreate = options.create,
 							style = options.style || '';
 
 						this.insertAdjacentHTML('afterbegin', '<div class=ppOvr></div>');
 						cnt = this.getElementsByClassName('ppOvr')[0];
 
-						if(typeof onCreate == 'function'){
+						if (typeof onCreate == 'function') {
 							changeContent(onCreate);
-						}else if(typeof onCreate == 'string'){
+						} else if (typeof onCreate == 'string') {
 							cnt.insertAdjacentHTML('afterbegin', onCreate);
-						}else if(!open){
+						} else if (!open) {
 							throw 'No content or on open callback provided';
 						}
 
@@ -55,30 +55,33 @@ define('popover', ['throbber'], function popover(throbber){
 					open(event);
 				}
 			}, true);
-		}else{
+		} else {
 			throw 'Non existing element';
 		}
 
-		function changeContent(onCreate){
+		function changeContent(onCreate) {
 			cnt.innerHTML = '';
-			throbber.show(cnt, {center: true, size: '20px'});
+			throbber.show(cnt, {
+				center: true,
+				size: '20px'
+			});
 			onCreate(cnt);
 		}
 
-		function close(ev){
-			if(isOpen){
+		function close(ev) {
+			if (isOpen) {
 				elm.className = elm.className.replace(" on", "");
-				if(typeof options.close == 'function') {
+				if (typeof options.close == 'function') {
 					options.close(ev, elm);
 				}
 				isOpen = false;
 			}
 		}
 
-		function open(ev){
-			if(!isOpen){
+		function open(ev) {
+			if (!isOpen) {
 				elm.className += " on";
-				if(typeof options.open == 'function') {
+				if (typeof options.open == 'function') {
 					options.open(ev, elm);
 				}
 				isOpen = true;

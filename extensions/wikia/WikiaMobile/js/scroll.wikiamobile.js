@@ -8,11 +8,11 @@
  *
  */
 
-(function(w){
+(function (w) {
 	var m = Math,
 		vendor = (/webkit/i).test(navigator.appVersion) ? 'webkit' :
 			(/firefox/i).test(navigator.userAgent) ? 'Moz' :
-				'opera' in w ? 'O' : '',
+			'opera' in w ? 'O' : '',
 
 		// Browser capabilities
 		has3d = 'WebKitCSSMatrix' in w && 'm11' in new WebKitCSSMatrix(),
@@ -47,10 +47,15 @@
 			scroll.style[vendor + 'TransitionProperty'] = hasTransform ? '-' + vendor.toLowerCase() + '-transform' : 'left';
 			scroll.style[vendor + 'TransitionDuration'] = '0';
 			scroll.style[vendor + 'TransformOrigin'] = '0 0';
-			if (hasTransitionEnd) {scroll.style[vendor + 'TransitionTimingFunction'] = 'cubic-bezier(0.33,0.66,0.66,1)';}
+			if (hasTransitionEnd) {
+				scroll.style[vendor + 'TransitionTimingFunction'] = 'cubic-bezier(0.33,0.66,0.66,1)';
+			}
 
-			if (hasTransform) {scroll.style[vendor + 'Transform'] = trnOpen + '0,0' + trnClose;}
-			else {scroll.style.cssText += ';position:absolute;left:0;';}
+			if (hasTransform) {
+				scroll.style[vendor + 'Transform'] = trnOpen + '0,0' + trnClose;
+			} else {
+				scroll.style.cssText += ';position:absolute;left:0;';
+			}
 
 			this.scrollerW = this.scroller.offsetWidth;
 			this.refresh();
@@ -71,24 +76,26 @@
 			var that = this,
 				point,
 				x;
-			switch(e.type) {
+			switch (e.type) {
 			case START_EV:
 				point = e.touches[0];
 
-				if (hasTransitionEnd) {this._transitionTime(0);}
+				if (hasTransitionEnd) {
+					this._transitionTime(0);
+				}
 
 				this.moved = false;
 				this.animating = false;
 				this.distX = 0;
 
-				if(hasTransform) {
+				if (hasTransform) {
 					// Very lame general purpose alternative to CSSMatrix
 					x = ~~getComputedStyle(this.scroller, null)[vendor + 'Transform'].replace(/[^0-9\-.,]/g, '').split(',')[4];
 				} else {
 					x = ~~getComputedStyle(this.scroller, null).left.replace(/[^0-9\-]/g, '');
 				}
 
-				if(x != this.x) {
+				if (x != this.x) {
 					if (hasTransitionEnd) {
 						this.scroller.removeEventListener('webkitTransitionEnd', this);
 					} else {
@@ -104,32 +111,32 @@
 				this.startTime = e.timeStamp || Date.now();
 				break;
 			case MOVE_EV:
-					point = e.touches[0];
-					var deltaX = point.pageX - that.pointX,
-						newX = that.x + deltaX,
-						timestamp = e.timeStamp || Date.now();
+				point = e.touches[0];
+				var deltaX = point.pageX - that.pointX,
+					newX = that.x + deltaX,
+					timestamp = e.timeStamp || Date.now();
 
-					that.pointX = point.pageX;
+				that.pointX = point.pageX;
 
-					// Slow down if outside of the boundaries
-					if (newX > 0 || newX < that.maxScrollX) {
-						newX = that.x + (deltaX / 2);
-					}
+				// Slow down if outside of the boundaries
+				if (newX > 0 || newX < that.maxScrollX) {
+					newX = that.x + (deltaX / 2);
+				}
 
-					that.distX += deltaX;
+				that.distX += deltaX;
 
-					if (m.abs(that.distX) > 15) {
-						e.preventDefault();
-					}
+				if (m.abs(that.distX) > 15) {
+					e.preventDefault();
+				}
 
-					that.moved = true;
-					that._pos(newX);
+				that.moved = true;
+				that._pos(newX);
 
-					if (timestamp - that.startTime > 300) {
-						that.startTime = timestamp;
-						that.startX = that.x;
-					}
-					break;
+				if (timestamp - that.startTime > 300) {
+					that.startTime = timestamp;
+					that.startX = that.x;
+				}
+				break;
 			case END_EV:
 			case CANCEL_EV:
 				if (e.touches.length != 0) return;
@@ -144,11 +151,19 @@
 				}
 
 				if (duration < 300) {
-					momentumX = newPosX ? that._momentum(newPosX - that.startX, duration) : { dist:0, time:0 };
+					momentumX = newPosX ? that._momentum(newPosX - that.startX, duration) : {
+						dist: 0,
+						time: 0
+					};
 
 					newPosX = newPosX + momentumX.dist;
 
-					if ((that.x > 0 && newPosX > 0) || (that.x < that.maxScrollX && newPosX < that.maxScrollX)) {momentumX = { dist:0, time:0 };}
+					if ((that.x > 0 && newPosX > 0) || (that.x < that.maxScrollX && newPosX < that.maxScrollX)) {
+						momentumX = {
+							dist: 0,
+							time: 0
+						};
+					}
 				}
 
 				if (momentumX.dist) {
@@ -158,7 +173,9 @@
 
 				that._resetPos(200);
 				break;
-			case RESIZE_EV: this.refresh(); break;
+			case RESIZE_EV:
+				this.refresh();
+				break;
 			case 'webkitTransitionEnd':
 				if (e.target != this.scroller) return;
 
@@ -180,13 +197,15 @@
 		},
 
 		_resetPos: function (time) {
-			var	x = this.x,
+			var x = this.x,
 				max = this.maxScrollX,
-				resetX = x >= 0 ? 0 : x <  max ? max : x;
+				resetX = x >= 0 ? 0 : x < max ? max : x;
 
 			if (resetX == x) {
-				if(this.moved){
-					if(typeof this.onstop == 'function') {this.onstop(this.wrapper, -x, -max - 10);}
+				if (this.moved) {
+					if (typeof this.onstop == 'function') {
+						this.onstop(this.wrapper, -x, -max - 10);
+					}
 					this.moved = false;
 				}
 				return;
@@ -216,7 +235,9 @@
 
 			step = that.steps.shift();
 
-			if (step.x == startX) {step.time = 0;}
+			if (step.x == startX) {
+				step.time = 0;
+			}
 
 			that.animating = true;
 			that.moved = true;
@@ -233,7 +254,7 @@
 				return;
 			}
 
-			animate = function() {
+			animate = function () {
 				var now = Date.now(),
 					newX;
 
@@ -248,7 +269,9 @@
 				easeOut = m.sqrt(1 - now * now);
 				newX = (step.x - startX) * easeOut + startX;
 				that._pos(newX);
-				if (that.animating) {that.aniTime = setTimeout(animate, 17);}
+				if (that.animating) {
+					that.aniTime = setTimeout(animate, 17);
+				}
 			};
 
 			animate();
@@ -274,7 +297,10 @@
 				maxDist = maxDistLower + outsideDist;
 			}
 
-			return { dist: (maxDist * (dist < 0 ? -1 : 1)), time: (~~((s * maxDist / newDist) / decele)) };
+			return {
+				dist: (maxDist * (dist < 0 ? -1 : 1)),
+				time: (~~((s * maxDist / newDist) / decele))
+			};
 		},
 
 		/**
@@ -282,7 +308,7 @@
 		 * Public methods
 		 *
 		 */
-		destroy: function() {
+		destroy: function () {
 			var scroller = this.scroller;
 			scroller.style[vendor + 'Transform'] = '';
 
@@ -292,10 +318,12 @@
 			scroller.removeEventListener(MOVE_EV, this);
 			scroller.removeEventListener(END_EV, this);
 			scroller.removeEventListener(CANCEL_EV, this);
-			if (hasTransitionEnd) {scroller.removeEventListener('webkitTransitionEnd', this);}
+			if (hasTransitionEnd) {
+				scroller.removeEventListener('webkitTransitionEnd', this);
+			}
 		},
 
-		refresh: function() {
+		refresh: function () {
 			this.wrapperW = this.wrapper.offsetWidth;
 			this.maxScrollX = this.wrapperW - this.scrollerW - 10;
 			this.scroller.style[vendor + 'TransitionDuration'] = '0';
@@ -306,7 +334,10 @@
 			clearTimeout(this.aniTime);
 			this.moved = false;
 			this.animating = false;
-			this.steps = [{ x: x, time: time }];
+			this.steps = [{
+				x: x,
+				time: time
+			}];
 			this._startAni();
 		}
 	};

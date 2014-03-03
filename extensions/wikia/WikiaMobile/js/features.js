@@ -14,7 +14,7 @@
 /*global window*/
 
 window.Features = {
-	addTest: function(name, test){
+	addTest: function (name, test) {
 		//we don't want WeIrd names
 		name = name.toLowerCase();
 
@@ -29,4 +29,3 @@ window.Features = {
 		document.documentElement.className += (result ? ' ' : ' no-') + name;
 	}
 };
-
