@@ -37,14 +37,19 @@
 	foreach( $extraButtons as $button ){
 		echo $button;
 	}
+	?>
 
-	// "pages on this wiki" counter
+	<? // "pages on this wiki" counter
 	if (!is_null($tallyMsg)): ?>
         <div class="tally">
 			<?= $tallyMsg ?>
         </div>
 	<?php endif ?>
 
+	<div class="buttons">
+		<?= $app->renderView( 'ContributeMenu', 'Index' ) ?>
+		<?= $app->renderView( 'SharingToolbar', 'ShareButton' ) ?>
+	</div>
 </header>
 <?php
 // render search box
