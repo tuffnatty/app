@@ -196,17 +196,18 @@
 
 .tally {
 	@include clearfix;
+	float: right;
 	font-size: 10px;
 	line-height: 1.3em;
 	padding-left: 2px;
 	text-transform: uppercase;
 	em {
 		float: left;
-		font-size: 27px;
+		font-size: 28px;
 		font-style: normal;
 		letter-spacing: -1px;
 		line-height: 26px;
-		margin-right: 2px;
+		margin-right: 6px;
 	}
 	span {
 		float: left;

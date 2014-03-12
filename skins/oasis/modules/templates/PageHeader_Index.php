@@ -1,4 +1,15 @@
 <header id="WikiaPageHeader" class="WikiaPageHeader">
+	<?php
+	// render page type line
+	if ( !empty($pageSubtitle) ): ?>
+		<h2><?= $pageSubtitle ?></h2>
+	<?php endif ?>
+	<?php
+	// MW subtitle
+	// include undelete message (BugId:1137)
+	if ( !empty($subtitle)): ?>
+		<div class="subtitle"><?= $subtitle ?></div>
+	<?php endif ?>
     <h1><?= !empty($displaytitle) ? $title : htmlspecialchars($title) ?></h1>
 
 	<?php
@@ -28,29 +39,12 @@
 	}
 
 	// "pages on this wiki" counter
-	if (!is_null($tallyMsg)) {
-		?>
+	if (!is_null($tallyMsg)): ?>
         <div class="tally">
 			<?= $tallyMsg ?>
         </div>
-		<?php
-	}
+	<?php endif ?>
 
-	// render page type line
-	if ( !empty($pageSubtitle) ) {
-		?>
-        <h2><?= $pageSubtitle ?></h2>
-		<?php
-	}
-
-	// MW subtitle
-	// include undelete message (BugId:1137)
-	if ( !empty($subtitle)) {
-		?>
-        <div class="subtitle"><?= $subtitle ?></div>
-		<?php
-	}
-	?>
 </header>
 <?php
 // render search box

@@ -33,10 +33,10 @@
 		}
 	}
 	h1 {
-		display: inline;
-		font-size: 26px;
-		margin: 0 10px 0 0;
-		line-height: 27px;
+		font-size: 28px;
+		font-weight: bold;
+		margin: 0 0 13px;
+		line-height: 32px;
 		word-wrap: break-word;
 		strong {
 			font-weight: bold;
@@ -61,8 +61,8 @@
 	}
 	h2, p {
 		border: none;
-		font-size: 14px;
-		margin-top: 4px;
+		font-size: 12px;
+		margin-bottom: 5px;
 	}
 	.subtitle {
 		line-height: 1.5em;
@@ -77,14 +77,6 @@
 		vertical-align: top;
 		z-index: 3;
 	}
-	.mainpage-tally {
-		float: right;
-		margin-right: 10px;
-		padding: 1px 0;
-		> span {
-			float: left;
-		}
-	}
 	.mainpage-add-page {
 		border-right: 1px solid $color-page-border;
 		float: right;
@@ -98,31 +90,18 @@
 .wikinav2 {
 	.WikiaPageHeader {
 		border-bottom: solid 1px $color-page-border;
-		padding: 15px 175px 15px 0;
 		margin-bottom: 10px;
 
 		> .comments {
 			margin: 2px 10px 0 10px;
 		}
-
-		> .tally {
-			position: absolute;
-			right: 0;
-			top: 0;
-			&.mainpage-tally {
-				position: static;
-			}
-		}
 	}
 	&.oasis-one-column {
 		.WikiaPageHeader {
-			padding-right: 505px;
+			padding-right: 310px;
 			&.WikiaPageHeaderDiffHistory {
 				margin-right: 10px;
 				padding-right: 320px;
-			}
-			.tally {
-				right: 330px;
 			}
 		}
 		.WikiaSearchHeader {
