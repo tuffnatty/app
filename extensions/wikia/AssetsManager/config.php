@@ -52,10 +52,10 @@ $config['adengine2_js'] = array(
 		'//extensions/wikia/AdEngine/js/Krux.js',
 		'//extensions/wikia/AdEngine/js/SlotTweaker.js',
 		'//extensions/wikia/AdEngine/js/AdEngine2.js',
-		'//extensions/wikia/AdEngine/js/AdTracker.js',
 		'//extensions/wikia/AdEngine/js/SlotTracker.js',
 
 		// high prio
+		'//extensions/wikia/AdEngine/js/AdSlotMapConfig.js',
 		'//extensions/wikia/AdEngine/js/OoyalaTracking.js',
 		'//extensions/wikia/AdEngine/js/DartUrl.js',
 		'//extensions/wikia/AdEngine/js/WikiaDartHelper.js',
@@ -64,7 +64,6 @@ $config['adengine2_js'] = array(
 		'//extensions/wikia/AdEngine/js/SevenOneMediaHelper.js',
 		'//extensions/wikia/AdEngine/js/EvolveHelper.js',
 		'//extensions/wikia/AdEngine/js/AdProviderEvolve.js',
-		'//extensions/wikia/AdEngine/js/AdProviderGamePro.js',
 		'//extensions/wikia/AdEngine/js/AdProviderSevenOneMedia.js',
 		'//extensions/wikia/AdEngine/js/AdProviderGpt.js',
 		'//extensions/wikia/AdEngine/js/AdProviderLater.js',
@@ -142,22 +141,6 @@ $config['oasis_noads_extensions_js'] = array(
 		'//extensions/wikia/EditorSurvey/js/EditorSurvey.js',
 		// Image and video thumbnail mustache templates
 		'//extensions/wikia/Thumbnails/scripts/templates.mustache.js',
-	)
-);
-
-/** Site specific CSS **/
-$config['site_anon_css'] = array(
-	'type' => AssetsManager::TYPE_CSS,
-	'assets' => array(
-		'#function_AssetsConfig::getSiteCSS'
-	)
-);
-
-/** User specific CSS **/
-$config['site_user_css'] = array(
-	'type' => AssetsManager::TYPE_CSS,
-	'assets' => array(
-		'#group_site_anon_css',
 	)
 );
 
@@ -608,7 +591,7 @@ $config['wikiamobile_tables_js'] = array(
 	)
 );
 
-$config['wikiamobile_js_ads'] = array(
+$config['wikiamobile_ads_js'] = array(
 	'type' => AssetsManager::TYPE_JS,
 	'skin' => 'wikiamobile',
 	'assets' => array(
@@ -628,6 +611,31 @@ $config['wikiamobile_js_ads'] = array(
 		'//resources/wikia/modules/geo.js',
 		'//extensions/wikia/WikiaMobile/js/ads.js',
 		'//extensions/wikia/WikiaMobile/js/ad_slots.js',
+	)
+);
+
+$config['wikiamobile_ads_gpt_js'] = array(
+	'type' => AssetsManager::TYPE_JS,
+	'skin' => 'wikiamobile',
+	'assets' => array(
+		// Modules
+		'//resources/wikia/modules/lazyqueue.js',
+
+		// Advertisement libs
+		'//extensions/wikia/AdEngine/js/AdLogicPageLevelParams.js',
+		'//extensions/wikia/AdEngine/js/AdConfigMobile.js',
+		'//extensions/wikia/AdEngine/js/AdEngine2.js',
+		'//extensions/wikia/AdEngine/js/AdProviderGptMobile.js',
+		'//extensions/wikia/AdEngine/js/AdProviderNull.js',
+		'//extensions/wikia/AdEngine/js/SlotTracker.js',
+		'//extensions/wikia/AdEngine/js/SlotTweaker.js',
+		'//extensions/wikia/AdEngine/js/WikiaFullGptHelper.js',
+
+		// Video ads
+		'//extensions/wikia/AdEngine/js/WikiaDartVideoHelper.js',
+
+		// Run!
+		'//extensions/wikia/WikiaMobile/js/ad_slots2.js',
 	)
 );
 
@@ -1670,9 +1678,11 @@ $config['videos_module_js'] = [
 
 		'//extensions/wikia/VideosModule/scripts/templates.mustache.js',
 		'//extensions/wikia/VideosModule/scripts/models/abTestBottom.js',
+		'//extensions/wikia/VideosModule/scripts/models/abTestRail.js',
 		'//extensions/wikia/VideosModule/scripts/models/videos.js',
 		'//extensions/wikia/VideosModule/scripts/views/titleThumbnail.js',
 		'//extensions/wikia/VideosModule/scripts/views/bottomModule.js',
+		'//extensions/wikia/VideosModule/scripts/views/rail.js',
 		'//extensions/wikia/VideosModule/scripts/controllers/index.js',
 	]
 ];
