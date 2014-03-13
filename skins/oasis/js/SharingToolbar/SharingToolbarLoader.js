@@ -2,8 +2,8 @@ jQuery(function( $ ) {
 	'use strict';
 
 	var $toolbar,
-		$header = $( '#WikiHeader' ),
-		$button = $header.find( '.share-button' );
+		$buttonsContainer = $( '#WikiaMainContentContainer' ).find('.share-container'),
+		$button = $buttonsContainer.find( '.share-button' );
 
 	function initialize( event ) {
 		$button.addClass('share-enabled');
@@ -38,7 +38,7 @@ jQuery(function( $ ) {
 
 					// Attach toolbar to DOM
 					$toolbar = $( response.templates.SharingToolbar_Index );
-					$header.append( $toolbar.addClass('loading') );
+					$buttonsContainer.append( $toolbar.addClass('loading') );
 
 					// Initialize the Sharing Toolbar
 					Wikia.SharingToolbar.init({

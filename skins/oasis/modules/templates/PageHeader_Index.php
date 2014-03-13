@@ -11,7 +11,9 @@
 		<div class="subtitle"><?= $subtitle ?></div>
 	<?php endif ?>
     <h1><?= !empty($displaytitle) ? $title : htmlspecialchars($title) ?></h1>
+</header>
 
+<div class="buttons">
 	<?php
 	// edit button with actions dropdown
 	if (!empty($action)) {
@@ -27,8 +29,8 @@
 
 	// "Add a video" button
 	if (!empty($isSpecialVideos) && !empty($wg->EnableUploads) && $showAddVideoBtn): ?>
-        <a class="button addVideo" href="#" rel="tooltip" title="<?=wfMsg('related-videos-tooltip-add');?>"><img src="<?=wfBlankImgUrl();?>" class="sprite addRelatedVideo" /> <?=wfMsg('videos-add-video')?></a>
-		<? endif; 
+		<a class="button addVideo" href="#" rel="tooltip" title="<?=wfMsg('related-videos-tooltip-add');?>"><img src="<?=wfBlankImgUrl();?>" class="sprite addRelatedVideo" /> <?=wfMsg('videos-add-video')?></a>
+	<? endif;
 
 	// comments & like button
 	if( !$isWallEnabled ) {
@@ -39,18 +41,17 @@
 	}
 	?>
 
+	<?= $app->renderView( 'ContributeMenu', 'Index' ) ?>
+	<?= $app->renderView( 'SharingToolbar', 'ShareButton' ) ?>
+
 	<? // "pages on this wiki" counter
 	if (!is_null($tallyMsg)): ?>
-        <div class="tally">
+		<div class="tally">
 			<?= $tallyMsg ?>
-        </div>
+		</div>
 	<?php endif ?>
+</div>
 
-	<div class="buttons">
-		<?= $app->renderView( 'ContributeMenu', 'Index' ) ?>
-		<?= $app->renderView( 'SharingToolbar', 'ShareButton' ) ?>
-	</div>
-</header>
 <?php
 // render search box
 if ($showSearchBox) {

@@ -1,3 +1,4 @@
+<nav class="share-container">
 <?php
 
 // render "Share" button
@@ -12,3 +13,5 @@ echo F::app()->renderView('MenuButton', 'Index', array(
 	'name' => 'shareButton',
 	'class' => 'share-button secondary'
 ));
+?>
+</nav>

@@ -2,7 +2,6 @@
 	'use strict';
 
 	var $window = $( window ),
-		scroll = 'scroll.SharingToolbar',
 		Wikia = window.Wikia || {},
 
 		SharingToolbar = {
@@ -15,10 +14,6 @@
 				// Bind events
 				this.$button.bind( 'click', $.proxy( this.toggleToolbar, this ) );
 				this.$toolbar.find( '.email-link' ).bind( 'click', this.onEmailClick );
-			},
-			onScroll: function () {
-				var fixed = $window.scrollTop() >= this.$button.offset().top - this.buttonHeight;
-				this.$toolbar.toggleClass( 'fixed', fixed );
 			},
 			onEmailClick: function ( event ) {
 				event.preventDefault();
@@ -184,13 +179,7 @@
 				this.$button.toggleClass( 'share-enabled', show );
 				this.$toolbar.toggleClass( 'hidden', !show );
 
-				if ( show ) {
-					$window.on( scroll, $.proxy( this.onScroll, this ) );
-
-				} else {
-					this.checkWidth();
-					$window.off( scroll );
-				}
+				this.checkWidth();
 			}
 		};
 
