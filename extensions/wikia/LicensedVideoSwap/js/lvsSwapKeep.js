@@ -7,8 +7,9 @@ define( 'lvs.swapkeep', [
 	'lvs.videocontrols',
 	'jquery',
 	'wikia.nirvana',
-	'lvs.tracker'
-], function( QueryString, commonAjax, videoControls, $, nirvana, tracker ) {
+	'lvs.tracker',
+	'wikia.ui.factory'
+], function( QueryString, commonAjax, videoControls, $, nirvana, tracker, uiFactory ) {
 	'use strict';
 
 	var $parent,
@@ -69,35 +70,113 @@ define( 'lvs.swapkeep', [
 				request;
 
 		request = {};
-		currTitleText =  currTitle.replace(/_/g, ' ' );
+		currTitleText = currTitle.replace(/_/g, ' ' );
+
+		uiFactory.init( [ 'modal' ] ).then( function( uiModal ) {
+			// modal component configuration
+			var modalConfig = {
+				vars: {
+					id: 'lvsModal',
+					size: 'medium', // size of the modal
+					content: $.msg( 'lvs-confirm-keep-message', currTitleText ), // content
+					title: $.msg( 'lvs-confirm-keep-title' ), // title
+					buttons: [ // buttons in the footer
+						{
+							vars: {
+								value: $.msg( 'lvs-button-yes' ),
+								data: [
+									{
+										key: 'event',
+										value: 'yes'
+									}
+								],
+								classes: [ 'normal', 'primary' ]
+							}
+						},
+						{
+							vars: {
+								value: $.msg( 'lvs-button-no' ),
+								data: [
+									{
+										key: 'event',
+										value: 'no'
+									}
+								]
+							}
+						}
+					]
+				}
+			};
+
+			// create the wrapping JS Object using the modalConfig
+			uiModal.createComponent( modalConfig, function( sampleModal ) {
+
+				// bind the Save button to this anon. function
+				sampleModal.bind( 'yes', function( event ) {
+					event.preventDefault();
+
+					request.forever = false;
+					doRequest( request );
+
+					// track click on 'yes'
+					tracker.track({
+						action: tracker.actions.CONFIRM,
+						label: tracker.labels.KEEP
+					});
+
+					// to close the modal, call the trigger event with 'close'
+					sampleModal.trigger('close');
+				});
+
+				sampleModal.bind('no', function (event) {
+					event.preventDefault();
+
+					request.forever = true;
+					doRequest( request );
+					// Track click on 'no' button
+					tracker.track({
+						action: tracker.actions.CONFIRM,
+						label: tracker.labels.KEEP
+					});
+
+					// to close the modal, call the trigger event with 'close'
+					sampleModal.trigger('close');
+				});
+
+				// show the modal
+				sampleModal.show();
+			});
+		});
+
+
 
 		// Show confirmation modal only on "Keep"
-		$.confirm({
-			okMsg: $.msg( 'lvs-button-yes' ),
-			cancelMsg: $.msg( 'lvs-button-no' ),
-			title: $.msg( 'lvs-confirm-keep-title' ),
-			content: $.msg( 'lvs-confirm-keep-message', currTitleText ),
-			onCancel: function() {
-				request.forever = true;
-				doRequest( request );
-				// Track click on 'no' button
-				tracker.track({
-					action: tracker.actions.CONFIRM,
-					label: tracker.labels.KEEP
-				});
-			},
-			onOk: function() {
-				request.forever = false;
-				doRequest( request );
-
-				// track click on 'yes'
-				tracker.track({
-					action: tracker.actions.CONFIRM,
-					label: tracker.labels.KEEP
-				});
-			},
-			width: 700
-		});
+//		$.confirm({
+//			okMsg: $.msg( 'lvs-button-yes' ),
+//			cancelMsg: $.msg( 'lvs-button-no' ),
+//			title: $.msg( 'lvs-confirm-keep-title' ),
+//			content: $.msg( 'lvs-confirm-keep-message', currTitleText ),
+//			onCancel: function() {
+//				request.forever = true;
+//				doRequest( request );
+//				// Track click on 'no' button
+//				tracker.track({
+//					action: tracker.actions.CONFIRM,
+//					label: tracker.labels.KEEP
+//				});
+//			},
+//			onOk: function() {
+//				request.forever = false;
+//				doRequest( request );
+//
+//				// track click on 'yes'
+//				tracker.track({
+//					action: tracker.actions.CONFIRM,
+//					label: tracker.labels.KEEP
+//				});
+//			},
+//			width: 700
+//		});
 	}
 
 	function init( $elem ) {
@@ -145,21 +224,21 @@ define( 'lvs.swapkeep', [
 				// no new title b/c we're keeping the current video
 				newTitle = '';
 
-				if ( $keepButton.data( 'subsequent-keep' ) ) {
-
+//				if ( $keepButton.data( 'subsequent-keep' ) ) {
+//
 					confirmModal();
-
-				} else {
-
-					doRequest();
-
-					videoControls.reset();
-
-					tracker.track({
-						action: tracker.actions.CONFIRM,
-						label: tracker.labels.KEEP
-					});
-				}
+//
+//				} else {
+//
+//					doRequest();
+//
+//					videoControls.reset();
+//
+//					tracker.track({
+//						action: tracker.actions.CONFIRM,
+//						label: tracker.labels.KEEP
+//					});
+//				}
 			}
 		});
 	}
