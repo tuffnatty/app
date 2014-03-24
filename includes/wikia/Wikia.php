@@ -2080,12 +2080,14 @@ class Wikia {
 	/**
 	 * @param $user User
 	 */
-	public static function invalidateUser( $user, $disabled = false, $ajax = false ) {
+	public static function invalidateUser( $user, $disabled = false, $clearEmail = false, $ajax = false ) {
 		global $wgExternalAuthType;
 
 		if ( $disabled ) {
-			$user->setEmail( '' );
-			$user->setPassword( wfGenerateToken() . self::REQUIRED_CHARS );
+			if ( $clearEmail ) {
+				$user->setEmail( '' );
+			}
+			$user->setPassword( null );
 			$user->setOption( 'disabled', 1 );
 			$user->setOption( 'disabled_date', wfTimestamp( TS_DB ) );
 			$user->mToken = null;

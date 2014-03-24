@@ -131,7 +131,8 @@ class EditAccount extends SpecialPage {
 				$this->mStatusMsg = $this->mStatus ? wfMsg( 'editaccount-requested' ) : wfMsg( 'editaccount-not-requested' );
 				break;
 			case 'closeaccountconfirm':
-				$this->mStatus = $this->closeAccount( $this->mUser, $changeReason, $this->mStatusMsg, $this->mStatusMsg2 );
+				$clearEmail = $wgRequest->getBool( 'clearemail', false );
+				$this->mStatus = self::closeAccount( $this->mUser, $changeReason, $this->mStatusMsg, $this->mStatusMsg2, $clearEmail );
 				$template = $this->mStatus ? 'selectuser' : 'displayuser';
 				break;
 			case 'clearunsub':
@@ -343,7 +344,7 @@ class EditAccount extends SpecialPage {
 	 * @param $mStatusMsg2 String Secondary (non-critical) error message
 	 * @return Boolean: true on success, false on failure
 	 */
-	public static function closeAccount( $user = '', $changeReason = '', &$mStatusMsg = '', &$mStatusMsg2 = '' ) {
+	public static function closeAccount( $user = '', $changeReason = '', &$mStatusMsg = '', &$mStatusMsg2 = '', $clearEmail = false ) {
 		if ( empty( $user ) ) {
 			throw new Exception( 'User object is invalid.' );
 		}
@@ -371,9 +372,9 @@ class EditAccount extends SpecialPage {
 		}
 
 		# close account and invalidate cache + cluster data
-		Wikia::invalidateUser( $user, true, true );
+		Wikia::invalidateUser( $user, true, $clearEmail, true );
 
-		if ( $user->getEmail() == ''  ) {
+		if ( ( $clearEmail && $user->getEmail() == '' ) || ( !$clearEmail && !$user->isEmailConfirmed() ) ) {
 			$title = Title::newFromText( 'EditAccount', NS_SPECIAL );
 			// Log what was done
 			$log = new LogPage( 'editaccnt' );
