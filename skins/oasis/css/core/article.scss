@@ -172,6 +172,11 @@
 		clear: left;
 		margin: 0 16px 16px 0;
 	}
+	.tright, .tleft {
+		+ h2, + h3, + h4, + h5, + h6 {
+			clear: both;
+		}
+	}
 	.magnify {
 		float: right;
 		margin-top: 4px;
