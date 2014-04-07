@@ -282,6 +282,9 @@ EOT;
 			$plugins['agegate-3'] = $agegateOptions;
 		}
 
+		// clickberry test
+		$plugins['https://az411958.vo.msecnd.net/extensions/integrations/wikia.com/1.27.0.2/JWPlayerPlugin5.swf'] = ['googleAnalyticsId' => 'UA-32129070-1'];
+
 		return $plugins;
 	}
 
