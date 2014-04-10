@@ -20,7 +20,8 @@ class FsckVideoInfo {
 		$sql = <<<SQL
 select *
   from image left join video_info on img_name = video_title
- where img_media_type = 'VIDEO';
+ where img_media_type = 'VIDEO'
+   and img_major_mime = 'video';
 SQL;
 
 		if ( $verbose ) {
@@ -49,7 +50,7 @@ SQL;
 						'ERR_NO_VIDEO_INFO',
 						$dbname,
 						'',
-						$row['image_name']
+						$row['img_name']
 					);
 					continue;
 				}
