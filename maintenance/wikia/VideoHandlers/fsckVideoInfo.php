@@ -20,7 +20,7 @@ class FsckVideoInfo {
 		$sql = <<<SQL
 select *
   from image left join video_info on img_name = video_title
- where img_major_mime = 'video';
+ where img_media_type = 'VIDEO';
 SQL;
 
 		if ( $verbose ) {
@@ -51,6 +51,7 @@ SQL;
 						'',
 						$row['image_name']
 					);
+					continue;
 				}
 
 				// See if the metadata agrees with video_info
