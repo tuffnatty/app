@@ -18,6 +18,9 @@ class VideoInfo extends WikiaModel {
 	protected $hdfile = 0;
 	protected $removed = 0;
 	protected $featured = 0;
+	protected $viewsTotal = 0;
+	protected $viewsWeek = 0;
+	protected $viewsMonth = 0;
 
 	protected static $fields = array(
 		'videoTitle',
@@ -30,6 +33,9 @@ class VideoInfo extends WikiaModel {
 		'hdfile',
 		'removed',
 		'featured',
+		'viewsTotal',
+		'viewsWeek',
+		'viewsMonth'
 	);
 
 	public function __construct( $data = array() ) {
@@ -158,6 +164,27 @@ class VideoInfo extends WikiaModel {
 	 */
 	public function isFeatured() {
 		return ( $this->featured == 1 );
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getViewsTotal() {
+		return $this->viewsTotal;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getViewsWeek() {
+		return $this->viewsWeek;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getViewsMonth() {
+		return $this->viewsMonth;
 	}
 
 	/**
@@ -366,7 +393,7 @@ SQL;
 	/**
 	 * get video object from title
 	 * @param string $videoTitle
-	 * @return object $video
+	 * @return VideoInfo $video
 	 */
 	public static function newFromTitle( $videoTitle ) {
 		$app = F::App();
@@ -416,6 +443,9 @@ SQL;
 			'hdfile' => $row->hdfile,
 			'removed' => $row->removed,
 			'featured' => $row->featured,
+			'viewsTotal' => $row->views_total,
+			'viewsWeek' => $row->views_7day,
+			'viewsMonth' => $row->views_30day
 		);
 
 		$class = get_class();
