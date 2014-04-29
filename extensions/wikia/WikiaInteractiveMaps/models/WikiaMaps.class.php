@@ -29,7 +29,7 @@ class WikiaMaps {
 	 * @param array $params
 	 * @return string - URL
 	 */
-	private function buildUrl($entryPoint, Array $params = [] ) {
+	public function buildUrl($entryPoint, Array $params = [] ) {
 		return sprintf(
 			'%s://%s:%d/api/%s/%s%s',
 			$this->config['protocol'],

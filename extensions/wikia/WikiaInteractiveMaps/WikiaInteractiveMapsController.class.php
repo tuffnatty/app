@@ -55,4 +55,33 @@ class WikiaInteractiveMapsController extends WikiaSpecialPageController {
 		$this->response->setTemplateEngine( WikiaResponse::TEMPLATE_ENGINE_MUSTACHE );
 	}
 
+	/**
+	 * @desc Displays map page
+	 *
+	 * @requestParam Integer $map_id
+	 */
+	public function map() {
+
+		$mapId = $this->request->getInt( 'map_id' );
+		$title = Title::newFromID( $mapId );
+
+		if( !is_null( $title ) ) {
+			$this->setVal( 'notCreated', false );
+
+			$article = Article::newFromID( $title->getArticleId() );
+			$mapId = $article->getContent();
+
+			$mapsModel = new WikiaMaps( $this->wg->IntMapConfig );
+
+			$mapUrl = $mapsModel->buildUrl( 'render/' . $mapId );
+			$this->setVal( 'map_url', $mapUrl );
+			$this->setVal( 'width', '100%' );
+			$this->setVal( 'height', '600' );
+
+		} else {
+			$this->setVal( 'notCreated', true );
+		}
+
+		$this->response->setTemplateEngine( WikiaResponse::TEMPLATE_ENGINE_MUSTACHE );
+	}
 }
